@@ -327,7 +327,25 @@ function Sidebar({ activePage, onNav, pendingCount }) {
       <div style={{position:'absolute',top:-60,right:-60,width:180,height:180,borderRadius:'50%',background:'rgba(255,255,255,.07)'}}/>
       <div style={{position:'absolute',bottom:-40,left:-40,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,.05)'}}/>
       <div style={{textAlign:'center',marginBottom:32,position:'relative',zIndex:1}}>
-        <div style={{width:54,height:54,background:'white',borderRadius:'50%',margin:'0 auto 8px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,boxShadow:'0 4px 16px rgba(0,0,0,.15)'}}>🐾</div>
+        {/* LOGO PAU */}
+        <div style={{margin:'0 auto 10px',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <div style={{
+            width:62,height:62,borderRadius:18,background:'white',
+            boxShadow:'0 6px 22px rgba(0,0,0,.18)',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            flexDirection:'column',overflow:'hidden',position:'relative'
+          }}>
+            <div style={{
+              position:'absolute',inset:0,
+              background:'linear-gradient(135deg,#dff5ec 0%,#fde8ed 100%)',
+              opacity:.9
+            }}/>
+            <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',alignItems:'center',lineHeight:1}}>
+              <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:26,fontWeight:700,color:'#4caf8e',letterSpacing:-1}}>Pp</span>
+              <span style={{fontSize:14,marginTop:-2}}>🐾</span>
+            </div>
+          </div>
+        </div>
         <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:20,color:'white',letterSpacing:.5}}>Paupet</h1>
         <span style={{fontSize:10,color:'rgba(255,255,255,.7)',fontWeight:300,letterSpacing:1,textTransform:'uppercase'}}>Peluquería Canina</span>
       </div>
@@ -349,21 +367,34 @@ function Sidebar({ activePage, onNav, pendingCount }) {
 // ══════════════════════════════════════════════
 //  DASHBOARD
 // ══════════════════════════════════════════════
-function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino }) {
+function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino, onEditTurno }) {
   const hoy = new Date();
   const hoyISO = todayStr();
   const hoyTurnos = turnos.filter(t => t.fecha === hoyISO && t.estado !== 'completed');
   const pending = turnos.filter(t => t.estado === 'pending');
   const mes = hoy.getMonth(), yr = hoy.getFullYear();
-  const ing = turnos.filter(t => t.estado==='completed' && new Date(t.fecha).getMonth()===mes && new Date(t.fecha).getFullYear()===yr).reduce((s,t) => s+(t.precio||0), 0);
-  const conInasistencias = clientes.filter(c => c.inasistencias > 0).sort((a,b) => b.inasistencias-a.inasistencias);
+  // Ingresos SOLO de turnos completados este mes
+  const ingTurnos = turnos
+    .filter(t => t.estado==='completed' && new Date(t.fecha+'T12:00:00').getMonth()===mes && new Date(t.fecha+'T12:00:00').getFullYear()===yr)
+    .reduce((s,t) => s+(t.precio||0), 0);
 
-  const stats = [
-    {label:'Clientes Activos', val:clientes.length, sub:'mascotas registradas', emoji:'🐶'},
-    {label:'Turnos Hoy', val:hoyTurnos.length, sub:'pendientes y confirmados', emoji:'📅'},
-    {label:'Ingresos del Mes', val:fmtPeso(ing), sub:'visitas completadas', emoji:'💚'},
-    {label:'Pendientes', val:pending.length, sub:'esperando confirmación', emoji:'⏳'},
-  ];
+  // Ingreso extra editable (guardado en localStorage para simplicidad)
+  const mesKey = `ingreso_extra_${yr}_${mes}`;
+  const [ingresoExtra, setIngresoExtra] = useState(() => parseFloat(localStorage.getItem(mesKey)||'0'));
+  const [editingIngreso, setEditingIngreso] = useState(false);
+  const [ingresoInput, setIngresoInput] = useState('');
+
+  const ingTotal = ingTurnos + ingresoExtra;
+
+  const startEditIngreso = () => { setIngresoInput(String(ingresoExtra||'')); setEditingIngreso(true); };
+  const saveIngreso = () => {
+    const v = parseFloat(ingresoInput)||0;
+    setIngresoExtra(v);
+    localStorage.setItem(mesKey, String(v));
+    setEditingIngreso(false);
+  };
+
+  const conInasistencias = clientes.filter(c => c.inasistencias > 0).sort((a,b) => b.inasistencias-a.inasistencias);
 
   return (
     <section>
@@ -375,14 +406,55 @@ function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino }) {
         <Btn onClick={() => onNav('calendario')}>+ Nuevo turno</Btn>
       </div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:22}}>
-        {stats.map(s => (
-          <div key={s.label} style={{background:'white',borderRadius:18,padding:'18px 20px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',position:'relative',overflow:'hidden'}}>
-            <div style={{position:'absolute',right:-8,top:-4,fontSize:52,opacity:.1}}>{s.emoji}</div>
-            <div style={{fontSize:11,color:'#9a9090',textTransform:'uppercase',letterSpacing:.5}}>{s.label}</div>
-            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:34,fontWeight:600,lineHeight:1,margin:'4px 0'}}>{s.val}</div>
-            <div style={{fontSize:11,color:'#9a9090'}}>{s.sub}</div>
+        {/* Clientes activos */}
+        <div style={{background:'white',borderRadius:18,padding:'18px 20px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',right:-8,top:-4,fontSize:52,opacity:.1}}>🐶</div>
+          <div style={{fontSize:11,color:'#9a9090',textTransform:'uppercase',letterSpacing:.5}}>Clientes Activos</div>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:34,fontWeight:600,lineHeight:1,margin:'4px 0'}}>{clientes.length}</div>
+          <div style={{fontSize:11,color:'#9a9090'}}>mascotas registradas</div>
+        </div>
+        {/* Turnos hoy */}
+        <div style={{background:'white',borderRadius:18,padding:'18px 20px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',right:-8,top:-4,fontSize:52,opacity:.1}}>📅</div>
+          <div style={{fontSize:11,color:'#9a9090',textTransform:'uppercase',letterSpacing:.5}}>Turnos Hoy</div>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:34,fontWeight:600,lineHeight:1,margin:'4px 0'}}>{hoyTurnos.length}</div>
+          <div style={{fontSize:11,color:'#9a9090'}}>pendientes y confirmados</div>
+        </div>
+        {/* Ingresos del mes — EDITABLE */}
+        <div style={{background:'white',borderRadius:18,padding:'18px 20px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',position:'relative',overflow:'hidden',cursor:'pointer'}} onClick={!editingIngreso ? startEditIngreso : undefined}>
+          <div style={{position:'absolute',right:-8,top:-4,fontSize:52,opacity:.1}}>💚</div>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:2}}>
+            <div style={{fontSize:11,color:'#9a9090',textTransform:'uppercase',letterSpacing:.5}}>Ingresos del Mes</div>
+            <button onClick={e=>{e.stopPropagation();startEditIngreso();}} style={{background:'#dff5ec',border:'none',borderRadius:6,padding:'2px 7px',fontSize:10,color:'#3a9b7b',cursor:'pointer',fontFamily:"'Outfit',sans-serif"}}>✏️ Editar</button>
           </div>
-        ))}
+          {editingIngreso ? (
+            <div onClick={e=>e.stopPropagation()} style={{marginTop:4}}>
+              <div style={{fontSize:10,color:'#9a9090',marginBottom:3}}>Ingresos extras / ajuste manual</div>
+              <div style={{display:'flex',gap:5,alignItems:'center'}}>
+                <input autoFocus type="number" value={ingresoInput} onChange={e=>setIngresoInput(e.target.value)}
+                  onKeyDown={e=>{if(e.key==='Enter')saveIngreso();if(e.key==='Escape')setEditingIngreso(false);}}
+                  style={{...inputStyle,padding:'5px 8px',fontSize:13,width:'100%'}} placeholder="0" />
+                <button onClick={saveIngreso} style={{background:'#5fbf9b',border:'none',borderRadius:8,padding:'5px 9px',color:'white',cursor:'pointer',fontSize:12,fontFamily:"'Outfit',sans-serif",whiteSpace:'nowrap'}}>✓</button>
+                <button onClick={()=>setEditingIngreso(false)} style={{background:'#f0eeed',border:'none',borderRadius:8,padding:'5px 7px',color:'#9a9090',cursor:'pointer',fontSize:12}}>✕</button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:600,lineHeight:1,margin:'4px 0',color:'#3a9b7b'}}>{fmtPeso(ingTotal)}</div>
+              <div style={{fontSize:10,color:'#9a9090'}}>
+                {fmtPeso(ingTurnos)} turnos
+                {ingresoExtra>0 && <span style={{color:'#5fbf9b'}}> + {fmtPeso(ingresoExtra)} extra</span>}
+              </div>
+            </>
+          )}
+        </div>
+        {/* Pendientes */}
+        <div style={{background:'white',borderRadius:18,padding:'18px 20px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',right:-8,top:-4,fontSize:52,opacity:.1}}>⏳</div>
+          <div style={{fontSize:11,color:'#9a9090',textTransform:'uppercase',letterSpacing:.5}}>Pendientes</div>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:34,fontWeight:600,lineHeight:1,margin:'4px 0'}}>{pending.length}</div>
+          <div style={{fontSize:11,color:'#9a9090'}}>esperando confirmación</div>
+        </div>
       </div>
       <div style={{display:'grid',gridTemplateColumns:'1.4fr 1fr',gap:18}}>
         <div style={{background:'white',borderRadius:18,padding:'20px 22px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
@@ -402,6 +474,7 @@ function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino }) {
                   <div style={{display:'flex',gap:6}}>
                     <Btn size="xs" onClick={() => onCompletar(t.id)}>✓ Completar</Btn>
                     <Btn size="xs" variant="pink" onClick={() => onNoVino(t.id)}>✕ No vino</Btn>
+                    <Btn size="xs" variant="ghost" onClick={() => onEditTurno(t)}>✏️</Btn>
                   </div>
                 </div>
               );
@@ -541,7 +614,14 @@ function ModalCliente({ open, cliente, onClose, onSaveVisit, onDelete, onEdit, o
         {showForm && (
           <div style={{background:'#dff5ec',borderRadius:10,padding:14,marginTop:10}}>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:10}}>
-              <FormGroup label="Servicio"><input value={svc} onChange={e=>setSvc(e.target.value)} placeholder="Baño y corte" style={inputStyle} /></FormGroup>
+              <FormGroup label="Servicio">
+                <select value={SERVICIOS_PELUQUERIA.includes(svc)?svc:'__custom__'} onChange={e=>{if(e.target.value!=='__custom__')setSvc(e.target.value);else setSvc('');}} style={inputStyle}>
+                  <option value="">— Servicio —</option>
+                  {SERVICIOS_PELUQUERIA.map(s=><option key={s} value={s}>{s}</option>)}
+                  <option value="__custom__">✏️ Otro</option>
+                </select>
+                {(!SERVICIOS_PELUQUERIA.includes(svc)||svc==='')&&<input value={SERVICIOS_PELUQUERIA.includes(svc)?'':svc} onChange={e=>setSvc(e.target.value)} placeholder="Otro servicio..." style={{...inputStyle,marginTop:6}} />}
+              </FormGroup>
               <FormGroup label="Precio"><input type="number" value={precio} onChange={e=>setPrecio(e.target.value)} placeholder="0" style={inputStyle} /></FormGroup>
               <FormGroup label="Fecha"><input type="date" value={fecha} onChange={e=>setFecha(e.target.value)} style={inputStyle} /></FormGroup>
             </div>
@@ -611,7 +691,7 @@ function ModalClienteForm({ open, onClose, onSave, initial }) {
 // ══════════════════════════════════════════════
 //  CALENDARIO
 // ══════════════════════════════════════════════
-function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, onDelete, onConfirmar }) {
+function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, onDelete, onConfirmar, onEditTurno }) {
   const hoy = new Date();
   const [year, setYear] = useState(hoy.getFullYear());
   const [month, setMonth] = useState(hoy.getMonth());
@@ -686,6 +766,7 @@ function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, o
                       {t.estado==='pending' && <Btn size="xs" onClick={()=>onConfirmar(t.id)}>✓ Confirmar</Btn>}
                       <Btn size="xs" onClick={()=>onCompletar(t.id,selectedDay)}>✓ Completar</Btn>
                       <Btn size="xs" variant="pink" onClick={()=>onNoVino(t.id,selectedDay)}>✕ No vino</Btn>
+                      <Btn size="xs" variant="ghost" onClick={()=>onEditTurno(t)}>✏️</Btn>
                       <Btn size="xs" variant="ghost" onClick={()=>onDelete(t.id)}>🗑</Btn>
                     </div>
                   )}
@@ -700,25 +781,111 @@ function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, o
 }
 
 // ══════════════════════════════════════════════
+//  SERVICIOS (desplegable compartido)
+// ══════════════════════════════════════════════
+const SERVICIOS_PELUQUERIA = [
+  'Baño y corte',
+  'Solo baño',
+  'Solo corte',
+  'Baño, corte y uñas',
+  'Baño completo (secar + cepillar)',
+  'Corte de uñas',
+  'Limpieza de oídos',
+  'Deslanado',
+  'Baño medicinal',
+  'Servicio completo premium',
+];
+
+// Detecta superposición: dado un turno nuevo (fecha, hora), ¿choca con alguno existente?
+// Cada turno dura 1 hora y media (90 min).
+function detectarSuperposicion(fecha, hora, turnos, excludeId = null) {
+  const toMin = h => { const [hh,mm] = h.split(':').map(Number); return hh*60+mm; };
+  const duracion = 90;
+  const ini = toMin(hora);
+  const fin = ini + duracion;
+  return turnos.filter(t => {
+    if (t.id === excludeId) return false;
+    if (t.fecha !== fecha) return false;
+    if (!t.hora) return false;
+    if (t.estado === 'completed') return false;
+    const tIni = toMin(t.hora);
+    const tFin = tIni + 90;
+    return ini < tFin && fin > tIni;
+  });
+}
+
+// ══════════════════════════════════════════════
 //  MODAL NUEVO TURNO
 // ══════════════════════════════════════════════
-function ModalNuevoTurno({ open, onClose, onSave, clientes, defaultFecha }) {
+function ModalNuevoTurno({ open, onClose, onSave, onUpdate, clientes, defaultFecha, turnoEdit, turnos }) {
+  const isEdit = !!turnoEdit;
   const [mode, setMode] = useState('exist');
   const [form, setForm] = useState({clientId:'',dog:'',owner:'',raza:'',tel:'',svc:'',fecha:defaultFecha||todayStr(),hora:'10:00',precio:'',estado:'confirmed'});
-  useEffect(() => { if (open) { setForm(f=>({...f,fecha:defaultFecha||todayStr(),clientId:'',dog:'',owner:'',raza:'',tel:'',svc:'',hora:'10:00',precio:'',estado:'confirmed'})); setMode('exist'); } }, [open]);
-  const set = (k,v) => setForm(f=>({...f,[k]:v}));
+  const [overlap, setOverlap] = useState([]);
+
+  useEffect(() => {
+    if (open) {
+      if (isEdit) {
+        setMode('exist');
+        setForm({
+          clientId: String(turnoEdit.clientId||''),
+          dog:'',owner:'',raza:'',tel:'',
+          svc: turnoEdit.servicio||'',
+          fecha: turnoEdit.fecha||todayStr(),
+          hora: turnoEdit.hora||'10:00',
+          precio: String(turnoEdit.precio||''),
+          estado: turnoEdit.estado||'confirmed'
+        });
+      } else {
+        setForm(f=>({...f,fecha:defaultFecha||todayStr(),clientId:'',dog:'',owner:'',raza:'',tel:'',svc:'',hora:'10:00',precio:'',estado:'confirmed'}));
+        setMode('exist');
+      }
+      setOverlap([]);
+    }
+  }, [open, isEdit, turnoEdit, defaultFecha]);
+
+  const set = (k,v) => {
+    setForm(f => {
+      const nf = {...f,[k]:v};
+      // check overlap when fecha or hora changes
+      if ((k==='fecha'||k==='hora') && nf.fecha && nf.hora) {
+        setOverlap(detectarSuperposicion(nf.fecha, nf.hora, turnos||[], isEdit?turnoEdit?.id:null));
+      }
+      return nf;
+    });
+  };
+
+  const handleFechaHora = (k,v) => set(k,v);
+
+  const handleSave = () => {
+    if (isEdit) {
+      onUpdate(turnoEdit.id, {
+        servicio: form.svc,
+        fecha: form.fecha,
+        hora: form.hora,
+        precio: parseFloat(form.precio)||0,
+        estado: form.estado,
+        cliente_id: parseInt(form.clientId)||turnoEdit.clientId,
+      });
+    } else {
+      onSave(mode, form);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose} width={480}>
-      <ModalHead title="Agregar Turno" onClose={onClose} />
+      <ModalHead title={isEdit ? '✏️ Editar Turno' : 'Agregar Turno'} onClose={onClose} />
       <div style={{padding:'20px 26px'}}>
-        <div style={{marginBottom:16,padding:14,background:'#dff5ec',borderRadius:10}}>
-          <div style={{fontSize:12,fontWeight:600,color:'#3a9b7b',marginBottom:10,textTransform:'uppercase'}}>¿Cliente nuevo o existente?</div>
-          <div style={{display:'flex',gap:10}}>
-            <Btn size="sm" variant={mode==='exist'?'primary':'ghost'} onClick={()=>setMode('exist')} style={{flex:1,justifyContent:'center'}}>Existente</Btn>
-            <Btn size="sm" variant={mode==='new'?'primary':'ghost'} onClick={()=>setMode('new')} style={{flex:1,justifyContent:'center'}}>Crear nuevo</Btn>
+        {!isEdit && (
+          <div style={{marginBottom:16,padding:14,background:'#dff5ec',borderRadius:10}}>
+            <div style={{fontSize:12,fontWeight:600,color:'#3a9b7b',marginBottom:10,textTransform:'uppercase'}}>¿Cliente nuevo o existente?</div>
+            <div style={{display:'flex',gap:10}}>
+              <Btn size="sm" variant={mode==='exist'?'primary':'ghost'} onClick={()=>setMode('exist')} style={{flex:1,justifyContent:'center'}}>Existente</Btn>
+              <Btn size="sm" variant={mode==='new'?'primary':'ghost'} onClick={()=>setMode('new')} style={{flex:1,justifyContent:'center'}}>Crear nuevo</Btn>
+            </div>
           </div>
-        </div>
-        {mode==='exist' ? (
+        )}
+        {(mode==='exist'||isEdit) ? (
           <FormGroup label="Seleccionar cliente">
             <select value={form.clientId} onChange={e=>set('clientId',e.target.value)} style={{...inputStyle,marginBottom:14}}>
               <option value="">— Seleccionar —</option>
@@ -737,20 +904,53 @@ function ModalNuevoTurno({ open, onClose, onSave, clientes, defaultFecha }) {
             </div>
           </>
         )}
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:12}}>
-          <FormGroup label="Servicio"><input value={form.svc} onChange={e=>set('svc',e.target.value)} placeholder="Baño y corte" style={inputStyle} /></FormGroup>
-          <FormGroup label="Fecha"><input type="date" value={form.fecha} onChange={e=>set('fecha',e.target.value)} style={inputStyle} /></FormGroup>
+
+        {/* SERVICIO: desplegable */}
+        <div style={{marginBottom:14}}>
+          <FormGroup label="Servicio">
+            <select value={SERVICIOS_PELUQUERIA.includes(form.svc)?form.svc:'__custom__'} onChange={e=>{if(e.target.value!=='__custom__')set('svc',e.target.value);}} style={inputStyle}>
+              <option value="">— Seleccioná un servicio —</option>
+              {SERVICIOS_PELUQUERIA.map(s=><option key={s} value={s}>{s}</option>)}
+              <option value="__custom__">✏️ Otro (escribir)</option>
+            </select>
+          </FormGroup>
+          {(!SERVICIOS_PELUQUERIA.includes(form.svc) && form.svc!=='' || !SERVICIOS_PELUQUERIA.includes(form.svc)) && (
+            <input value={SERVICIOS_PELUQUERIA.includes(form.svc)?'':form.svc} onChange={e=>set('svc',e.target.value)} placeholder="Describí el servicio..." style={{...inputStyle,marginTop:7}} />
+          )}
         </div>
+
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:12}}>
-          <FormGroup label="Hora"><input type="time" value={form.hora} onChange={e=>set('hora',e.target.value)} style={inputStyle} /></FormGroup>
+          <FormGroup label="Fecha"><input type="date" value={form.fecha} onChange={e=>handleFechaHora('fecha',e.target.value)} style={inputStyle} /></FormGroup>
+          <FormGroup label="Hora"><input type="time" value={form.hora} onChange={e=>handleFechaHora('hora',e.target.value)} style={inputStyle} /></FormGroup>
+        </div>
+
+        {/* ALERTA DE SUPERPOSICIÓN */}
+        {overlap.length > 0 && (
+          <div style={{background:'#fff3e0',border:'1.5px solid #e6860a',borderRadius:10,padding:'11px 14px',marginBottom:14,display:'flex',gap:10,alignItems:'flex-start'}}>
+            <span style={{fontSize:18,flexShrink:0}}>⚠️</span>
+            <div>
+              <div style={{fontSize:12,fontWeight:600,color:'#e6860a',marginBottom:4}}>¡Superposición de turnos! (duración: 1:30 hs)</div>
+              {overlap.map(t => {
+                const c = clientes.find(x=>x.id===t.clientId)||{};
+                return <div key={t.id} style={{fontSize:12,color:'#9a9090'}}>🐶 {t.dogName||c.dog||'—'} a las {t.hora} ({t.servicio})</div>;
+              })}
+              <div style={{fontSize:11,color:'#e6860a',marginTop:4}}>Podés igualmente guardar si querés.</div>
+            </div>
+          </div>
+        )}
+
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:12}}>
           <FormGroup label="Precio"><input type="number" value={form.precio} onChange={e=>set('precio',e.target.value)} placeholder="0" style={inputStyle} /></FormGroup>
+          <FormGroup label="Estado">
+            <select value={form.estado} onChange={e=>set('estado',e.target.value)} style={inputStyle}>
+              <option value="confirmed">Confirmado</option><option value="pending">Pendiente</option>
+            </select>
+          </FormGroup>
         </div>
-        <FormGroup label="Estado">
-          <select value={form.estado} onChange={e=>set('estado',e.target.value)} style={{...inputStyle,marginBottom:16}}>
-            <option value="confirmed">Confirmado</option><option value="pending">Pendiente</option>
-          </select>
-        </FormGroup>
-        <Btn onClick={()=>onSave(mode,form)} style={{width:'100%',justifyContent:'center',marginTop:4}}>✓ Guardar turno</Btn>
+
+        <Btn onClick={handleSave} style={{width:'100%',justifyContent:'center',marginTop:4,background:overlap.length?'#e6860a':undefined}}>
+          {overlap.length>0 ? '⚠️ ' : '✓ '}{isEdit ? 'Guardar cambios' : 'Guardar turno'}
+        </Btn>
       </div>
     </Modal>
   );
@@ -996,7 +1196,7 @@ export default function App() {
   // Modals
   const [modalCliente,     setModalCliente]     = useState({open:false,id:null});
   const [modalNuevoCliente,setModalNuevoCliente] = useState({open:false,initial:null});
-  const [modalTurno,       setModalTurno]       = useState({open:false,fecha:null});
+  const [modalTurno,       setModalTurno]       = useState({open:false,fecha:null,turnoEdit:null});
   const [modalNota,        setModalNota]        = useState({open:false,tipo:'compra'});
 
   const toast = useCallback((msg, error=false) => {
@@ -1098,6 +1298,19 @@ export default function App() {
     } catch(e) { toast(e.message, true); }
   };
 
+  const handleEditTurno = turno => {
+    setModalTurno({open:true, fecha:turno.fecha, turnoEdit:turno});
+  };
+
+  const handleUpdateTurno = async (id, fields) => {
+    try {
+      await db.updateTurno(id, fields);
+      setModalTurno({open:false,fecha:null,turnoEdit:null});
+      await loadAll();
+      toast('Turno actualizado ✅');
+    } catch(e) { toast(e.message, true); }
+  };
+
   const handleDeleteTurno = async id => {
     if (!confirm('¿Eliminar este turno?')) return;
     try {
@@ -1184,9 +1397,9 @@ export default function App() {
         <main style={{flex:1,overflowY:'auto',padding:'28px 32px',minWidth:0}}>
           {loading ? <Spinner /> : (
             <>
-              {page==='dashboard'  && <Dashboard clientes={clientes} turnos={turnos} onNav={setPage} onCompletar={handleCompletar} onNoVino={handleNoVino}/>}
+              {page==='dashboard'  && <Dashboard clientes={clientes} turnos={turnos} onNav={setPage} onCompletar={handleCompletar} onNoVino={handleNoVino} onEditTurno={handleEditTurno}/>}
               {page==='clientes'   && <ClientesPage clientes={clientes} onOpenClient={handleOpenClient} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>}
-              {page==='calendario' && <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={fecha=>setModalTurno({open:true,fecha})} onCompletar={handleCompletar} onNoVino={handleNoVino} onDelete={handleDeleteTurno} onConfirmar={handleConfirmar}/>}
+              {page==='calendario' && <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={fecha=>setModalTurno({open:true,fecha,turnoEdit:null})} onCompletar={handleCompletar} onNoVino={handleNoVino} onDelete={handleDeleteTurno} onConfirmar={handleConfirmar} onEditTurno={handleEditTurno}/>}
               {page==='historial'  && <HistorialPage clientes={clientes} turnos={turnos}/>}
               {page==='notas'      && <NotasPage notas={notas} onToggleCompra={handleToggleCompra} onDeleteNota={handleDeleteNota} onAgregar={tipo=>setModalNota({open:true,tipo})}/>}
               {page==='config'     && <ConfigPage config={config} onSave={handleSaveConfig}/>}
@@ -1197,7 +1410,7 @@ export default function App() {
 
       <ModalCliente open={modalCliente.open} cliente={activeCliente} onClose={()=>setModalCliente({open:false,id:null})} onSaveVisit={handleSaveVisit} onDelete={handleDeleteClient} onEdit={c=>{setModalCliente({open:false,id:null});setModalNuevoCliente({open:true,initial:c});}} onDecrementarInasistencia={handleDecrementarInasistencia}/>
       <ModalClienteForm open={modalNuevoCliente.open} initial={modalNuevoCliente.initial} onClose={()=>setModalNuevoCliente({open:false,initial:null})} onSave={handleSaveNewClient}/>
-      <ModalNuevoTurno open={modalTurno.open} onClose={()=>setModalTurno({open:false,fecha:null})} onSave={handleSaveNewTurno} clientes={clientes} defaultFecha={modalTurno.fecha}/>
+      <ModalNuevoTurno open={modalTurno.open} onClose={()=>setModalTurno({open:false,fecha:null,turnoEdit:null})} onSave={handleSaveNewTurno} onUpdate={handleUpdateTurno} clientes={clientes} defaultFecha={modalTurno.fecha} turnoEdit={modalTurno.turnoEdit} turnos={turnos}/>
       <ModalNota open={modalNota.open} defaultTipo={modalNota.tipo} onClose={()=>setModalNota({open:false,tipo:'compra'})} onSave={handleSaveNota}/>
       <ToastContainer toasts={toasts}/>
     </>
