@@ -2,19 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "./supabase";
 
 // ══════════════════════════════════════════════
-//  RESPONSIVE HOOK
-// ══════════════════════════════════════════════
-function useWindowWidth() {
-  const [w, setW] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
-  useEffect(() => {
-    const fn = () => setW(window.innerWidth);
-    window.addEventListener('resize', fn);
-    return () => window.removeEventListener('resize', fn);
-  }, []);
-  return w;
-}
-
-// ══════════════════════════════════════════════
 //  CONSTANTS
 // ══════════════════════════════════════════════
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -336,17 +323,17 @@ const NAV_ITEMS = [
 
 function Sidebar({ activePage, onNav, pendingCount }) {
   return (
-    <nav style={{width:210,minWidth:210,background:'linear-gradient(180deg,#4caf8e 0%,#5fbf9b 40%,#c5879a 100%)',display:'flex',flexDirection:'column',padding:'20px 12px',position:'relative',zIndex:20,boxShadow:'4px 0 24px rgba(0,0,0,.08)',overflow:'hidden'}}>
+    <nav style={{width:230,minWidth:230,background:'linear-gradient(180deg,#4caf8e 0%,#5fbf9b 40%,#c5879a 100%)',display:'flex',flexDirection:'column',padding:'24px 14px',position:'relative',zIndex:20,boxShadow:'4px 0 24px rgba(0,0,0,.08)',overflow:'hidden'}}>
       <div style={{position:'absolute',top:-60,right:-60,width:180,height:180,borderRadius:'50%',background:'rgba(255,255,255,.07)'}}/>
       <div style={{position:'absolute',bottom:-40,left:-40,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,.05)'}}/>
-      <div style={{textAlign:'center',marginBottom:22,position:'relative',zIndex:1}}>
-        <div style={{width:50,height:50,background:'white',borderRadius:'50%',margin:'0 auto 8px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,boxShadow:'0 4px 16px rgba(0,0,0,.15)'}}>🐾</div>
-        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:19,color:'white',letterSpacing:.5}}>Paupet</h1>
+      <div style={{textAlign:'center',marginBottom:32,position:'relative',zIndex:1}}>
+        <div style={{width:54,height:54,background:'white',borderRadius:'50%',margin:'0 auto 8px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,boxShadow:'0 4px 16px rgba(0,0,0,.15)'}}>🐾</div>
+        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:20,color:'white',letterSpacing:.5}}>Paupet</h1>
         <span style={{fontSize:10,color:'rgba(255,255,255,.7)',fontWeight:300,letterSpacing:1,textTransform:'uppercase'}}>Peluquería Canina</span>
       </div>
-      <div style={{flex:1,display:'flex',flexDirection:'column',gap:2,position:'relative',zIndex:1}}>
+      <div style={{flex:1,display:'flex',flexDirection:'column',gap:3,position:'relative',zIndex:1}}>
         {NAV_ITEMS.map(item => (
-          <div key={item.page} onClick={() => onNav(item.page)} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:10,cursor:'pointer',fontSize:13,fontWeight:activePage===item.page?500:400,background:activePage===item.page?'white':'transparent',color:activePage===item.page?'#2e2828':'rgba(255,255,255,.8)',boxShadow:activePage===item.page?'0 4px 20px rgba(0,0,0,.08)':'none',transition:'all .2s'}}>
+          <div key={item.page} onClick={() => onNav(item.page)} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 13px',borderRadius:10,cursor:'pointer',fontSize:13,fontWeight:activePage===item.page?500:400,background:activePage===item.page?'white':'transparent',color:activePage===item.page?'#2e2828':'rgba(255,255,255,.8)',boxShadow:activePage===item.page?'0 4px 20px rgba(0,0,0,.08)':'none',transition:'all .2s'}}>
             <span style={{fontSize:16,width:20,textAlign:'center',flexShrink:0}}>{item.icon}</span>
             <span>{item.label}</span>
             {item.badge && pendingCount > 0 && (
@@ -360,31 +347,6 @@ function Sidebar({ activePage, onNav, pendingCount }) {
 }
 
 // ══════════════════════════════════════════════
-//  MOBILE BOTTOM NAV
-// ══════════════════════════════════════════════
-const MOB_ITEMS = [
-  {page:'dashboard',  icon:'🏠', label:'Inicio'},
-  {page:'clientes',   icon:'🐶', label:'Clientes'},
-  {page:'calendario', icon:'📅', label:'Turnos', badge:true},
-  {page:'historial',  icon:'📋', label:'Historial'},
-  {page:'notas',      icon:'📝', label:'Notas'},
-];
-function MobileNav({ activePage, onNav, pendingCount }) {
-  return (
-    <div style={{position:'fixed',bottom:0,left:0,right:0,zIndex:100,background:'white',borderTop:'1px solid #ede8e8',display:'flex',boxShadow:'0 -4px 16px rgba(0,0,0,.07)',paddingBottom:'env(safe-area-inset-bottom,0px)'}}>
-      {MOB_ITEMS.map(item=>(
-        <button key={item.page} onClick={()=>onNav(item.page)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:2,padding:'7px 4px 5px',border:'none',background:'transparent',cursor:'pointer',color:activePage===item.page?'#4caf8e':'#9a9090',fontFamily:"'Outfit',sans-serif",position:'relative',transition:'color .15s'}}>
-          {item.badge && pendingCount>0 && <span style={{position:'absolute',top:4,right:'25%',background:'#e8809a',color:'white',fontSize:9,fontWeight:700,borderRadius:20,padding:'1px 4px',lineHeight:1.4}}>{pendingCount}</span>}
-          <span style={{fontSize:19}}>{item.icon}</span>
-          <span style={{fontSize:9,fontWeight:activePage===item.page?600:400}}>{item.label}</span>
-          {activePage===item.page && <span style={{position:'absolute',bottom:0,left:'50%',transform:'translateX(-50%)',width:18,height:2,background:'#4caf8e',borderRadius:2}}/>}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-// ══════════════════════════════════════════════
 //  DASHBOARD
 // ══════════════════════════════════════════════
 function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino }) {
@@ -393,10 +355,8 @@ function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino }) {
   const hoyTurnos = turnos.filter(t => t.fecha === hoyISO && t.estado !== 'completed');
   const pending = turnos.filter(t => t.estado === 'pending');
   const mes = hoy.getMonth(), yr = hoy.getFullYear();
-  const ing = turnos.filter(t => t.estado==='completed' && new Date(t.fecha+'T12:00:00').getMonth()===mes && new Date(t.fecha+'T12:00:00').getFullYear()===yr).reduce((s,t) => s+(t.precio||0), 0);
+  const ing = turnos.filter(t => t.estado==='completed' && new Date(t.fecha).getMonth()===mes && new Date(t.fecha).getFullYear()===yr).reduce((s,t) => s+(t.precio||0), 0);
   const conInasistencias = clientes.filter(c => c.inasistencias > 0).sort((a,b) => b.inasistencias-a.inasistencias);
-  const w = useWindowWidth();
-  const isMob = w < 640;
 
   const stats = [
     {label:'Clientes Activos', val:clientes.length, sub:'mascotas registradas', emoji:'🐶'},
@@ -406,59 +366,59 @@ function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino }) {
   ];
 
   return (
-    <section style={{width:'100%'}}>
-      <div style={{marginBottom:16,display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
+    <section>
+      <div style={{marginBottom:24,display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
         <div>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:isMob?22:28,fontWeight:600,lineHeight:1.1}}>Panel de Control 🌸</h2>
-          <p style={{color:'#9a9090',fontSize:12,marginTop:2}}>{DIAS_ES[hoy.getDay()]}, {hoy.getDate()} de {MESES[hoy.getMonth()]} {hoy.getFullYear()}</p>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:30,fontWeight:600,lineHeight:1.1}}>Panel de Control 🌸</h2>
+          <p style={{color:'#9a9090',fontSize:13,marginTop:3}}>{DIAS_ES[hoy.getDay()]}, {hoy.getDate()} de {MESES[hoy.getMonth()]} de {hoy.getFullYear()}</p>
         </div>
         <Btn onClick={() => onNav('calendario')}>+ Nuevo turno</Btn>
       </div>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10,marginBottom:16}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:22}}>
         {stats.map(s => (
-          <div key={s.label} style={{background:'white',borderRadius:14,padding:'14px 16px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',position:'relative',overflow:'hidden'}}>
-            <div style={{position:'absolute',right:-8,top:-4,fontSize:44,opacity:.08}}>{s.emoji}</div>
-            <div style={{fontSize:10,color:'#9a9090',textTransform:'uppercase',letterSpacing:.5}}>{s.label}</div>
-            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:isMob?24:30,fontWeight:600,lineHeight:1,margin:'3px 0'}}>{s.val}</div>
-            <div style={{fontSize:10,color:'#9a9090'}}>{s.sub}</div>
+          <div key={s.label} style={{background:'white',borderRadius:18,padding:'18px 20px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',position:'relative',overflow:'hidden'}}>
+            <div style={{position:'absolute',right:-8,top:-4,fontSize:52,opacity:.1}}>{s.emoji}</div>
+            <div style={{fontSize:11,color:'#9a9090',textTransform:'uppercase',letterSpacing:.5}}>{s.label}</div>
+            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:34,fontWeight:600,lineHeight:1,margin:'4px 0'}}>{s.val}</div>
+            <div style={{fontSize:11,color:'#9a9090'}}>{s.sub}</div>
           </div>
         ))}
       </div>
-      <div style={{display:'grid',gridTemplateColumns:isMob?'1fr':'1.4fr 1fr',gap:14}}>
-        <div style={{background:'white',borderRadius:14,padding:'16px 18px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
-          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:600,marginBottom:12}}>Turnos de hoy</div>
-          {!hoyTurnos.length ? <p style={{fontSize:13,color:'#9a9090',textAlign:'center',padding:12}}>Sin turnos para hoy</p>
+      <div style={{display:'grid',gridTemplateColumns:'1.4fr 1fr',gap:18}}>
+        <div style={{background:'white',borderRadius:18,padding:'20px 22px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,fontWeight:600,marginBottom:14}}>Turnos de hoy</div>
+          {!hoyTurnos.length ? <p style={{fontSize:13,color:'#9a9090',textAlign:'center',padding:16}}>Sin turnos para hoy</p>
             : hoyTurnos.map(t => {
               const c = clientes.find(x => x.id===t.clientId)||{};
               return (
-                <div key={t.id} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid #dff5ec'}}>
-                  <div style={{width:32,height:32,borderRadius:'50%',background:'#fde8ed',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,flexShrink:0,overflow:'hidden'}}>
+                <div key={t.id} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 0',borderBottom:'1px solid #dff5ec'}}>
+                  <div style={{width:36,height:36,borderRadius:'50%',background:'#fde8ed',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,flexShrink:0,overflow:'hidden'}}>
                     {c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" /> : animalIcon(c.raza)}
                   </div>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:13,fontWeight:500}}>{t.dogName||c.dog} <Badge variant={t.estado==='confirmed'?'green':'orange'}>{t.estado==='confirmed'?'Confirmado':'Pendiente'}</Badge></div>
                     <div style={{fontSize:11,color:'#9a9090'}}>{t.servicio} · {t.hora}</div>
                   </div>
-                  <div style={{display:'flex',gap:5,flexShrink:0}}>
-                    <Btn size="xs" onClick={() => onCompletar(t.id)}>✓</Btn>
-                    <Btn size="xs" variant="pink" onClick={() => onNoVino(t.id)}>✕</Btn>
+                  <div style={{display:'flex',gap:6}}>
+                    <Btn size="xs" onClick={() => onCompletar(t.id)}>✓ Completar</Btn>
+                    <Btn size="xs" variant="pink" onClick={() => onNoVino(t.id)}>✕ No vino</Btn>
                   </div>
                 </div>
               );
             })
           }
         </div>
-        <div style={{background:'white',borderRadius:14,padding:'16px 18px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
-          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:600,marginBottom:12}}>Clientes con inasistencias</div>
-          {!conInasistencias.length ? <p style={{fontSize:13,color:'#9a9090',textAlign:'center',padding:12}}>Excelente, todos vinieron 👍</p>
+        <div style={{background:'white',borderRadius:18,padding:'20px 22px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,fontWeight:600,marginBottom:14}}>Clientes con inasistencias</div>
+          {!conInasistencias.length ? <p style={{fontSize:13,color:'#9a9090',textAlign:'center',padding:16}}>Excelente, todos vinieron 👍</p>
             : conInasistencias.map(c => (
-              <div key={c.id} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 0',borderBottom:'1px solid #dff5ec'}}>
-                <div style={{width:32,height:32,borderRadius:'50%',background:'#fde8ed',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,flexShrink:0}}>
+              <div key={c.id} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 0',borderBottom:'1px solid #dff5ec'}}>
+                <div style={{width:36,height:36,borderRadius:'50%',background:'#fde8ed',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,flexShrink:0}}>
                   {c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" /> : animalIcon(c.raza)}
                 </div>
                 <div style={{flex:1}}>
                   <div style={{fontSize:13,fontWeight:500}}>{c.dog}</div>
-                  <div style={{fontSize:11,color:'#9a9090'}}>{c.owner}</div>
+                  <div style={{fontSize:11,color:'#9a9090'}}>{c.owner} · {c.tel}</div>
                 </div>
                 <Badge variant="orange">{c.inasistencias} inasist.</Badge>
               </div>
@@ -475,28 +435,24 @@ function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino }) {
 // ══════════════════════════════════════════════
 function ClientesPage({ clientes, onOpenClient, onNuevo }) {
   const [q, setQ] = useState('');
-  const w = useWindowWidth();
-  const isMob = w < 640;
-  const isMid = w < 960;
-  const cols = isMob ? 2 : isMid ? 3 : w < 1300 ? 4 : 5;
   const filtered = clientes.filter(c => c.dog.toLowerCase().includes(q.toLowerCase()) || c.owner.toLowerCase().includes(q.toLowerCase()));
   return (
-    <section style={{width:'100%'}}>
-      <div style={{marginBottom:16,display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
+    <section>
+      <div style={{marginBottom:24,display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
         <div>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:isMob?22:28,fontWeight:600}}>Gestión de Clientes</h2>
-          <p style={{color:'#9a9090',fontSize:12,marginTop:2}}>Base de datos de mascotas y dueños</p>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:30,fontWeight:600}}>Gestión de Clientes</h2>
+          <p style={{color:'#9a9090',fontSize:13,marginTop:3}}>Base de datos de mascotas y dueños</p>
         </div>
         <Btn onClick={onNuevo}>+ Nuevo cliente</Btn>
       </div>
-      <div style={{marginBottom:14,display:'flex',gap:10,alignItems:'center'}}>
-        <div style={{flex:1,display:'flex',alignItems:'center',gap:8,background:'white',border:'1.5px solid #ede8e8',borderRadius:50,padding:'8px 14px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
+      <div style={{marginBottom:16,display:'flex',gap:12,alignItems:'center'}}>
+        <div style={{flex:1,maxWidth:340,display:'flex',alignItems:'center',gap:8,background:'white',border:'1.5px solid #ede8e8',borderRadius:50,padding:'9px 16px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
           <span>🔍</span>
           <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Buscar perrito o dueño..." style={{border:'none',outline:'none',fontFamily:"'Outfit',sans-serif",fontSize:13,width:'100%',background:'transparent'}} />
         </div>
-        <span style={{fontSize:12,color:'#9a9090',whiteSpace:'nowrap'}}>{filtered.length} clientes</span>
+        <span style={{fontSize:13,color:'#9a9090'}}>{filtered.length} cliente{filtered.length!==1?'s':''}</span>
       </div>
-      <div style={{display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:isMob?10:14,width:'100%'}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(210px,1fr))',gap:16}}>
         {!filtered.length ? <p style={{color:'#9a9090',fontSize:14,padding:'24px 0'}}>Sin clientes. ¡Agregá el primero!</p>
           : filtered.map(c => {
             const ultima = c.visitas?.length ? c.visitas[c.visitas.length-1] : null;
@@ -504,17 +460,17 @@ function ClientesPage({ clientes, onOpenClient, onNuevo }) {
             const bv = dias===null?'gray':dias>30?'pink':'green';
             const bt = dias===null?'Sin visitas':dias===0?'Hoy':`Hace ${dias}d`;
             return (
-              <div key={c.id} onClick={() => onOpenClient(c.id)} style={{background:'white',borderRadius:14,overflow:'hidden',boxShadow:'0 2px 8px rgba(0,0,0,.06)',cursor:'pointer',transition:'transform .15s'}}>
-                <div style={{height:isMob?80:110,background:'linear-gradient(135deg,#dff5ec,#fde8ed)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:isMob?36:44,overflow:'hidden'}}>
+              <div key={c.id} onClick={() => onOpenClient(c.id)} style={{background:'white',borderRadius:18,overflow:'hidden',boxShadow:'0 2px 8px rgba(0,0,0,.06)',cursor:'pointer',transition:'all .22s'}}>
+                <div style={{height:130,background:'linear-gradient(135deg,#dff5ec,#fde8ed)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:50,overflow:'hidden'}}>
                   {c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={c.dog} /> : <span>{animalIcon(c.raza)}</span>}
                 </div>
-                <div style={{padding:isMob?'8px 10px':'11px 13px'}}>
-                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:isMob?15:17,fontWeight:600,marginBottom:3}}>{c.dog}</div>
-                  <div style={{fontSize:10,color:'#9a9090',marginBottom:isMob?0:4}}>👤 {c.owner}</div>
-                  {!isMob && c.raza && <div style={{fontSize:10,color:'#9a9090',marginBottom:4}}>🐾 {c.raza}{c.size?' · '+c.size:''}</div>}
-                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:5}}>
+                <div style={{padding:'13px 15px'}}>
+                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,fontWeight:600}}>{c.dog}</div>
+                  <div style={{fontSize:11,color:'#9a9090',marginBottom:8}}>👤 {c.owner}{c.tel?` · 📱 ${c.tel}`:''}</div>
+                  {c.raza && <div style={{fontSize:11,color:'#9a9090',marginBottom:8}}>🐾 {c.raza}{c.size?' · '+c.size:''}</div>}
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                     <Badge variant={bv}>{bt}</Badge>
-                    {!isMob && <span style={{fontSize:10,color:'#9a9090'}}>{(c.visitas||[]).length} vis.</span>}
+                    <span style={{fontSize:11,color:'#9a9090'}}>{(c.visitas||[]).length} visita{(c.visitas||[]).length!==1?'s':''}</span>
                   </div>
                 </div>
               </div>
@@ -655,13 +611,11 @@ function ModalClienteForm({ open, onClose, onSave, initial }) {
 // ══════════════════════════════════════════════
 //  CALENDARIO
 // ══════════════════════════════════════════════
-function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, onDelete, onConfirmar }) {
+function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, onDelete, onConfirmar, onEditTurno }) {
   const hoy = new Date();
   const [year, setYear] = useState(hoy.getFullYear());
   const [month, setMonth] = useState(hoy.getMonth());
   const [selectedDay, setSelectedDay] = useState(null);
-  const w = useWindowWidth();
-  const isMob = w < 700;
 
   const changeMonth = dir => {
     let m = month+dir, y = year;
@@ -675,56 +629,56 @@ function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, o
   const dayTurnos = selectedDay ? turnos.filter(t => t.fecha===selectedDay) : [];
 
   return (
-    <section style={{width:'100%'}}>
-      <div style={{marginBottom:16,display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:10}}>
+    <section>
+      <div style={{marginBottom:24,display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
         <div>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:isMob?22:28,fontWeight:600}}>Calendario de Turnos</h2>
-          <p style={{color:'#9a9090',fontSize:12,marginTop:2}}>Agenda y gestión de citas</p>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:30,fontWeight:600}}>Calendario de Turnos</h2>
+          <p style={{color:'#9a9090',fontSize:13,marginTop:3}}>Agenda y gestión de citas</p>
         </div>
         <Btn onClick={() => onAddTurno(selectedDay)}>+ Agregar turno</Btn>
       </div>
-      <div style={{display:'grid',gridTemplateColumns:isMob?'1fr':'1fr 280px',gap:14}}>
-        <div style={{background:'white',borderRadius:14,padding:'14px 12px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
-            <div style={{display:'flex',gap:6,alignItems:'center'}}>
-              <button onClick={()=>changeMonth(-1)} style={{background:'white',border:'1.5px solid #ede8e8',borderRadius:'50%',width:30,height:30,cursor:'pointer',fontSize:14,display:'flex',alignItems:'center',justifyContent:'center'}}>‹</button>
-              <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:isMob?17:20,fontWeight:600,minWidth:isMob?130:160,textAlign:'center'}}>{MESES[month].charAt(0).toUpperCase()+MESES[month].slice(1)} {year}</span>
-              <button onClick={()=>changeMonth(1)} style={{background:'white',border:'1.5px solid #ede8e8',borderRadius:'50%',width:30,height:30,cursor:'pointer',fontSize:14,display:'flex',alignItems:'center',justifyContent:'center'}}>›</button>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 320px',gap:18}}>
+        <div style={{background:'white',borderRadius:18,padding:'18px 16px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+            <div style={{display:'flex',gap:8,alignItems:'center'}}>
+              <button onClick={()=>changeMonth(-1)} style={{background:'white',border:'1.5px solid #ede8e8',borderRadius:'50%',width:32,height:32,cursor:'pointer',fontSize:14,display:'flex',alignItems:'center',justifyContent:'center'}}>‹</button>
+              <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:22,fontWeight:600,minWidth:180,textAlign:'center'}}>{MESES[month].charAt(0).toUpperCase()+MESES[month].slice(1)} {year}</span>
+              <button onClick={()=>changeMonth(1)} style={{background:'white',border:'1.5px solid #ede8e8',borderRadius:'50%',width:32,height:32,cursor:'pointer',fontSize:14,display:'flex',alignItems:'center',justifyContent:'center'}}>›</button>
             </div>
-            <div style={{display:'flex',gap:8,fontSize:10,color:'#9a9090',alignItems:'center'}}>
-              <span><span style={{display:'inline-block',width:7,height:7,borderRadius:'50%',background:'#5fbf9b',marginRight:2,verticalAlign:'middle'}}/>Conf.</span>
-              <span><span style={{display:'inline-block',width:7,height:7,borderRadius:'50%',background:'#e8809a',marginRight:2,verticalAlign:'middle'}}/>Pend.</span>
+            <div style={{display:'flex',gap:10,fontSize:11,color:'#9a9090',alignItems:'center'}}>
+              <span><span style={{display:'inline-block',width:8,height:8,borderRadius:'50%',background:'#5fbf9b',marginRight:3,verticalAlign:'middle'}}/>Confirmado</span>
+              <span><span style={{display:'inline-block',width:8,height:8,borderRadius:'50%',background:'#e8809a',marginRight:3,verticalAlign:'middle'}}/>Pendiente</span>
             </div>
           </div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:isMob?2:4}}>
-            {CAL_DAYS.map(d=><div key={d} style={{textAlign:'center',fontSize:10,fontWeight:500,color:'#9a9090',padding:'6px 0',textTransform:'uppercase',letterSpacing:.3}}>{d}</div>)}
-            {Array(first).fill(null).map((_,i)=><div key={'e'+i} style={{minHeight:isMob?44:60,borderRadius:8,background:'#f5f3f0',opacity:.4}}/>)}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:4}}>
+            {CAL_DAYS.map(d=><div key={d} style={{textAlign:'center',fontSize:11,fontWeight:500,color:'#9a9090',padding:'8px 0',textTransform:'uppercase',letterSpacing:.5}}>{d}</div>)}
+            {Array(first).fill(null).map((_,i)=><div key={'e'+i} style={{minHeight:70,borderRadius:10,background:'#f5f3f0',opacity:.5}}/>)}
             {Array.from({length:days},(_,i)=>i+1).map(d => {
               const iso = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
               const dayT = turnos.filter(t=>t.fecha===iso);
               const isToday=iso===todISO, isSel=iso===selectedDay, hasApt=dayT.length>0;
               return (
-                <div key={d} onClick={()=>setSelectedDay(iso===selectedDay?null:iso)} style={{minHeight:isMob?44:60,borderRadius:8,padding:'5px 5px',background:isSel||isToday?'#dff5ec':'white',border:`1.5px solid ${isSel?'#3a9b7b':isToday?'#5fbf9b':hasApt?'#f7bfcb':'transparent'}`,cursor:'pointer',transition:'all .2s'}}>
-                  <div style={{fontSize:11,fontWeight:500,marginBottom:3,...(isToday?{background:'#5fbf9b',color:'white',width:18,height:18,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center'}:{})}}>{d}</div>
+                <div key={d} onClick={()=>setSelectedDay(iso)} style={{minHeight:70,borderRadius:10,padding:'6px 7px',background:isSel||isToday?'#dff5ec':'white',border:`1.5px solid ${isSel?'#3a9b7b':isToday?'#5fbf9b':hasApt?'#f7bfcb':'transparent'}`,cursor:'pointer',transition:'all .2s'}}>
+                  <div style={{fontSize:12,fontWeight:500,marginBottom:4,...(isToday?{background:'#5fbf9b',color:'white',width:20,height:20,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center'}:{})}}>{d}</div>
                   <div style={{display:'flex',gap:2,flexWrap:'wrap'}}>
-                    {dayT.slice(0,3).map((t,i)=><div key={i} style={{width:5,height:5,borderRadius:'50%',background:t.estado==='confirmed'?'#5fbf9b':t.estado==='pending'?'#e8809a':'#9a9090'}}/>)}
+                    {dayT.slice(0,4).map((t,i)=><div key={i} style={{width:6,height:6,borderRadius:'50%',background:t.estado==='confirmed'?'#5fbf9b':t.estado==='pending'?'#e8809a':'#9a9090'}}/>)}
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
-        <div style={{background:'white',borderRadius:14,padding:'16px 18px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
-          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:600,marginBottom:12}}>
+        <div style={{background:'white',borderRadius:18,padding:'20px 22px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,fontWeight:600,marginBottom:14}}>
             {selectedDay ? `${DIAS_ES[new Date(selectedDay+'T12:00:00').getDay()]} ${new Date(selectedDay+'T12:00:00').getDate()} de ${MESES[new Date(selectedDay+'T12:00:00').getMonth()]}` : 'Seleccioná un día'}
           </div>
-          {!selectedDay ? <p style={{fontSize:13,color:'#9a9090'}}>Tocá un día del calendario</p>
+          {!selectedDay ? <p style={{fontSize:13,color:'#9a9090'}}>Hacé click en un día del calendario</p>
             : !dayTurnos.length ? <p style={{fontSize:13,color:'#9a9090'}}>Sin turnos para este día</p>
             : dayTurnos.map(t => {
               const c = clientes.find(x=>x.id===t.clientId)||{};
               return (
-                <div key={t.id} style={{background:'#faf8f5',borderRadius:10,padding:'10px 12px',marginBottom:8,borderLeft:`3px solid ${t.estado==='pending'?'#e8809a':t.estado==='completed'?'#9a9090':'#5fbf9b'}`,opacity:t.estado==='completed'?.75:1}}>
-                  <div style={{fontSize:10,color:'#9a9090',fontWeight:600,textTransform:'uppercase'}}>{t.hora}</div>
+                <div key={t.id} style={{background:'#faf8f5',borderRadius:10,padding:'11px 13px',marginBottom:8,borderLeft:`3px solid ${t.estado==='pending'?'#e8809a':t.estado==='completed'?'#9a9090':'#5fbf9b'}`,opacity:t.estado==='completed'?.75:1}}>
+                  <div style={{fontSize:11,color:'#9a9090',fontWeight:600,textTransform:'uppercase'}}>{t.hora}</div>
                   <div style={{fontSize:14,fontWeight:500}}>{t.dogName||c.dog}</div>
                   <div style={{fontSize:12,color:'#9a9090'}}>{t.servicio} · {fmtPeso(t.precio)}</div>
                   {t.estado!=='completed' && (
@@ -732,6 +686,7 @@ function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, o
                       {t.estado==='pending' && <Btn size="xs" onClick={()=>onConfirmar(t.id)}>✓ Confirmar</Btn>}
                       <Btn size="xs" onClick={()=>onCompletar(t.id,selectedDay)}>✓ Completar</Btn>
                       <Btn size="xs" variant="pink" onClick={()=>onNoVino(t.id,selectedDay)}>✕ No vino</Btn>
+                      <Btn size="xs" variant="ghost" onClick={()=>onEditTurno(t)}>✏️ Editar</Btn>
                       <Btn size="xs" variant="ghost" onClick={()=>onDelete(t.id)}>🗑</Btn>
                     </div>
                   )}
@@ -746,32 +701,88 @@ function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, o
 }
 
 // ══════════════════════════════════════════════
-//  MODAL NUEVO TURNO
+//  MODAL NUEVO / EDITAR TURNO
 // ══════════════════════════════════════════════
-function ModalNuevoTurno({ open, onClose, onSave, clientes, defaultFecha }) {
+function ModalNuevoTurno({ open, onClose, onSave, onUpdate, clientes, defaultFecha, turnoEdit }) {
+  const isEdit = !!turnoEdit;
   const [mode, setMode] = useState('exist');
   const [form, setForm] = useState({clientId:'',dog:'',owner:'',raza:'',tel:'',svc:'',fecha:defaultFecha||todayStr(),hora:'10:00',precio:'',estado:'confirmed'});
-  useEffect(() => { if (open) { setForm(f=>({...f,fecha:defaultFecha||todayStr(),clientId:'',dog:'',owner:'',raza:'',tel:'',svc:'',hora:'10:00',precio:'',estado:'confirmed'})); setMode('exist'); } }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (isEdit) {
+      // Pre-cargar datos del turno a editar
+      setForm({
+        clientId: String(turnoEdit.clientId || ''),
+        dog: '', owner: '', raza: '', tel: '',
+        svc:    turnoEdit.servicio || '',
+        fecha:  turnoEdit.fecha    || todayStr(),
+        hora:   turnoEdit.hora     || '10:00',
+        precio: String(turnoEdit.precio || ''),
+        estado: turnoEdit.estado   || 'confirmed',
+      });
+      setMode('exist');
+    } else {
+      setForm(f => ({...f, fecha:defaultFecha||todayStr(), clientId:'', dog:'', owner:'', raza:'', tel:'', svc:'', hora:'10:00', precio:'', estado:'confirmed'}));
+      setMode('exist');
+    }
+  }, [open, isEdit, turnoEdit, defaultFecha]);
+
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
+
+  const handleGuardar = () => {
+    if (isEdit) {
+      onUpdate(turnoEdit.id, {
+        servicio: form.svc,
+        fecha:    form.fecha,
+        hora:     form.hora,
+        precio:   parseFloat(form.precio) || 0,
+        estado:   form.estado,
+      });
+    } else {
+      onSave(mode, form);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose} width={480}>
-      <ModalHead title="Agregar Turno" onClose={onClose} />
+      <ModalHead title={isEdit ? `✏️ Editar Turno` : 'Agregar Turno'} subtitle={isEdit ? `${turnoEdit?.dogName || ''} — ${fmtFecha(turnoEdit?.fecha)}` : ''} onClose={onClose} />
       <div style={{padding:'20px 26px'}}>
-        <div style={{marginBottom:16,padding:14,background:'#dff5ec',borderRadius:10}}>
-          <div style={{fontSize:12,fontWeight:600,color:'#3a9b7b',marginBottom:10,textTransform:'uppercase'}}>¿Cliente nuevo o existente?</div>
-          <div style={{display:'flex',gap:10}}>
-            <Btn size="sm" variant={mode==='exist'?'primary':'ghost'} onClick={()=>setMode('exist')} style={{flex:1,justifyContent:'center'}}>Existente</Btn>
-            <Btn size="sm" variant={mode==='new'?'primary':'ghost'} onClick={()=>setMode('new')} style={{flex:1,justifyContent:'center'}}>Crear nuevo</Btn>
+
+        {/* Modo nuevo: selector cliente / crear */}
+        {!isEdit && (
+          <div style={{marginBottom:16,padding:14,background:'#dff5ec',borderRadius:10}}>
+            <div style={{fontSize:12,fontWeight:600,color:'#3a9b7b',marginBottom:10,textTransform:'uppercase'}}>¿Cliente nuevo o existente?</div>
+            <div style={{display:'flex',gap:10}}>
+              <Btn size="sm" variant={mode==='exist'?'primary':'ghost'} onClick={()=>setMode('exist')} style={{flex:1,justifyContent:'center'}}>Existente</Btn>
+              <Btn size="sm" variant={mode==='new'?'primary':'ghost'} onClick={()=>setMode('new')} style={{flex:1,justifyContent:'center'}}>Crear nuevo</Btn>
+            </div>
           </div>
-        </div>
-        {mode==='exist' ? (
+        )}
+
+        {/* En edición: mostrar cliente (read-only) */}
+        {isEdit && (
+          <div style={{marginBottom:14,padding:'10px 14px',background:'#dff5ec',borderRadius:10,display:'flex',alignItems:'center',gap:10}}>
+            <span style={{fontSize:22}}>{animalIcon('')}</span>
+            <div>
+              <div style={{fontSize:13,fontWeight:600}}>{turnoEdit?.dogName || '—'}</div>
+              <div style={{fontSize:11,color:'#9a9090'}}>Cliente · no editable en este paso</div>
+            </div>
+          </div>
+        )}
+
+        {/* En modo nuevo existente: selector */}
+        {!isEdit && mode==='exist' && (
           <FormGroup label="Seleccionar cliente">
             <select value={form.clientId} onChange={e=>set('clientId',e.target.value)} style={{...inputStyle,marginBottom:14}}>
               <option value="">— Seleccionar —</option>
               {clientes.map(c=><option key={c.id} value={c.id}>{c.dog} ({c.owner})</option>)}
             </select>
           </FormGroup>
-        ) : (
+        )}
+
+        {/* En modo nuevo crear */}
+        {!isEdit && mode==='new' && (
           <>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:12}}>
               <FormGroup label="Nombre del perro"><input value={form.dog} onChange={e=>set('dog',e.target.value)} placeholder="Ej: Coco" style={inputStyle} /></FormGroup>
@@ -783,20 +794,26 @@ function ModalNuevoTurno({ open, onClose, onSave, clientes, defaultFecha }) {
             </div>
           </>
         )}
+
+        {/* Campos editables siempre */}
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:12}}>
           <FormGroup label="Servicio"><input value={form.svc} onChange={e=>set('svc',e.target.value)} placeholder="Baño y corte" style={inputStyle} /></FormGroup>
           <FormGroup label="Fecha"><input type="date" value={form.fecha} onChange={e=>set('fecha',e.target.value)} style={inputStyle} /></FormGroup>
         </div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:12}}>
           <FormGroup label="Hora"><input type="time" value={form.hora} onChange={e=>set('hora',e.target.value)} style={inputStyle} /></FormGroup>
-          <FormGroup label="Precio"><input type="number" value={form.precio} onChange={e=>set('precio',e.target.value)} placeholder="0" style={inputStyle} /></FormGroup>
+          <FormGroup label="Precio ($)"><input type="number" value={form.precio} onChange={e=>set('precio',e.target.value)} placeholder="0" style={inputStyle} /></FormGroup>
         </div>
         <FormGroup label="Estado">
           <select value={form.estado} onChange={e=>set('estado',e.target.value)} style={{...inputStyle,marginBottom:16}}>
-            <option value="confirmed">Confirmado</option><option value="pending">Pendiente</option>
+            <option value="confirmed">Confirmado</option>
+            <option value="pending">Pendiente</option>
           </select>
         </FormGroup>
-        <Btn onClick={()=>onSave(mode,form)} style={{width:'100%',justifyContent:'center',marginTop:4}}>✓ Guardar turno</Btn>
+
+        <Btn onClick={handleGuardar} style={{width:'100%',justifyContent:'center',marginTop:4,background:isEdit?'#5fbf9b':undefined}}>
+          {isEdit ? '✓ Guardar cambios' : '✓ Guardar turno'}
+        </Btn>
       </div>
     </Modal>
   );
@@ -1042,7 +1059,7 @@ export default function App() {
   // Modals
   const [modalCliente,     setModalCliente]     = useState({open:false,id:null});
   const [modalNuevoCliente,setModalNuevoCliente] = useState({open:false,initial:null});
-  const [modalTurno,       setModalTurno]       = useState({open:false,fecha:null});
+  const [modalTurno,       setModalTurno]       = useState({open:false,fecha:null,turnoEdit:null});
   const [modalNota,        setModalNota]        = useState({open:false,tipo:'compra'});
 
   const toast = useCallback((msg, error=false) => {
@@ -1144,6 +1161,19 @@ export default function App() {
     } catch(e) { toast(e.message, true); }
   };
 
+  const handleEditTurno = (turno) => {
+    setModalTurno({open:true, fecha:turno.fecha, turnoEdit:turno});
+  };
+
+  const handleUpdateTurno = async (id, fields) => {
+    try {
+      await db.updateTurno(id, fields);
+      setModalTurno({open:false, fecha:null, turnoEdit:null});
+      await loadAll();
+      toast('Turno actualizado ✅');
+    } catch(e) { toast(e.message, true); }
+  };
+
   const handleDeleteTurno = async id => {
     if (!confirm('¿Eliminar este turno?')) return;
     try {
@@ -1211,8 +1241,6 @@ export default function App() {
 
   const pendingCount = turnos.filter(t=>t.estado==='pending').length;
   const activeCliente = clientes.find(c=>c.id===modalCliente.id);
-  const w = useWindowWidth();
-  const isMob = w < 640;
 
   return (
     <>
@@ -1227,26 +1255,14 @@ export default function App() {
       `}</style>
 
       <div style={{display:'flex',height:'100vh',overflow:'hidden'}}>
-        {/* Sidebar — solo en pantallas grandes */}
-        {!isMob && <Sidebar activePage={page} onNav={setPage} pendingCount={pendingCount} />}
+        <Sidebar activePage={page} onNav={setPage} pendingCount={pendingCount} />
 
-        <main style={{flex:1,overflowY:'auto',padding:isMob?'16px 14px 80px':'22px 26px',minWidth:0,width:'100%'}}>
-          {/* Mini header mobile */}
-          {isMob && (
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14,paddingBottom:12,borderBottom:'1px solid #ede8e8'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8}}>
-                <div style={{width:30,height:30,borderRadius:8,background:'linear-gradient(135deg,#dff5ec,#fde8ed)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:15,color:'#4caf8e',fontFamily:"'Cormorant Garamond',serif",fontWeight:700}}>Pp</div>
-                <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,fontWeight:600}}>Paupet</span>
-              </div>
-              <span style={{fontSize:11,color:'#9a9090'}}>{NAV_ITEMS.find(n=>n.page===page)?.label}</span>
-            </div>
-          )}
-
+        <main style={{flex:1,overflowY:'auto',padding:'28px 32px',minWidth:0}}>
           {loading ? <Spinner /> : (
             <>
               {page==='dashboard'  && <Dashboard clientes={clientes} turnos={turnos} onNav={setPage} onCompletar={handleCompletar} onNoVino={handleNoVino}/>}
               {page==='clientes'   && <ClientesPage clientes={clientes} onOpenClient={handleOpenClient} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>}
-              {page==='calendario' && <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={fecha=>setModalTurno({open:true,fecha})} onCompletar={handleCompletar} onNoVino={handleNoVino} onDelete={handleDeleteTurno} onConfirmar={handleConfirmar}/>}
+              {page==='calendario' && <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={fecha=>setModalTurno({open:true,fecha,turnoEdit:null})} onCompletar={handleCompletar} onNoVino={handleNoVino} onDelete={handleDeleteTurno} onConfirmar={handleConfirmar} onEditTurno={handleEditTurno}/>}
               {page==='historial'  && <HistorialPage clientes={clientes} turnos={turnos}/>}
               {page==='notas'      && <NotasPage notas={notas} onToggleCompra={handleToggleCompra} onDeleteNota={handleDeleteNota} onAgregar={tipo=>setModalNota({open:true,tipo})}/>}
               {page==='config'     && <ConfigPage config={config} onSave={handleSaveConfig}/>}
@@ -1255,12 +1271,9 @@ export default function App() {
         </main>
       </div>
 
-      {/* Mobile bottom nav */}
-      {isMob && <MobileNav activePage={page} onNav={setPage} pendingCount={pendingCount} />}
-
       <ModalCliente open={modalCliente.open} cliente={activeCliente} onClose={()=>setModalCliente({open:false,id:null})} onSaveVisit={handleSaveVisit} onDelete={handleDeleteClient} onEdit={c=>{setModalCliente({open:false,id:null});setModalNuevoCliente({open:true,initial:c});}} onDecrementarInasistencia={handleDecrementarInasistencia}/>
       <ModalClienteForm open={modalNuevoCliente.open} initial={modalNuevoCliente.initial} onClose={()=>setModalNuevoCliente({open:false,initial:null})} onSave={handleSaveNewClient}/>
-      <ModalNuevoTurno open={modalTurno.open} onClose={()=>setModalTurno({open:false,fecha:null})} onSave={handleSaveNewTurno} clientes={clientes} defaultFecha={modalTurno.fecha}/>
+      <ModalNuevoTurno open={modalTurno.open} onClose={()=>setModalTurno({open:false,fecha:null,turnoEdit:null})} onSave={handleSaveNewTurno} onUpdate={handleUpdateTurno} clientes={clientes} defaultFecha={modalTurno.fecha} turnoEdit={modalTurno.turnoEdit}/>
       <ModalNota open={modalNota.open} defaultTipo={modalNota.tipo} onClose={()=>setModalNota({open:false,tipo:'compra'})} onSave={handleSaveNota}/>
       <ToastContainer toasts={toasts}/>
     </>
