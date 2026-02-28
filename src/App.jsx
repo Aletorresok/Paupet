@@ -44,6 +44,27 @@ const fmtFecha = f => {
   return `${d.getDate()} de ${MESES[d.getMonth()]} ${d.getFullYear()}`;
 };
 const fmtPeso = n => '$' + (n || 0).toLocaleString('es-AR');
+
+// Abre WhatsApp con mensaje predefinido
+const abrirWhatsApp = (tel, dogName, ownerName, turno = null) => {
+  if (!tel) return;
+  // Limpiar teléfono: sacar espacios, guiones, paréntesis; agregar 549 si es ARG
+  let num = tel.replace(/[\s\-()]/g, '');
+  if (!num.startsWith('+') && !num.startsWith('549')) {
+    // Asumir Argentina, sacar el 0 inicial si existe
+    num = num.replace(/^0/, '');
+    num = '549' + num;
+  } else {
+    num = num.replace('+', '');
+  }
+  let msg;
+  if (turno) {
+    msg = `¡Hola ${ownerName}! 🐾 Te recordamos el turno de *${dogName}* para el *${fmtFecha(turno.fecha)}* a las *${turno.hora}hs*. ¡Te esperamos! ✂️`;
+  } else {
+    msg = `¡Hola ${ownerName}! Te contactamos desde Paupet Peluquería Canina 🐾`;
+  }
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+};
 const animalIcon = (raza = '') => {
   const r = raza.toLowerCase();
   if (r.includes('caniche') || r.includes('poodle')) return '🐩';
@@ -61,8 +82,23 @@ const durLabel = min => {
 
 // ══════════════════════════════════════════════
 //  SUPABASE DATA LAYER
+//  ⚠️  RLS: En Supabase → Authentication → Policies,
+//  activar RLS en cada tabla y agregar policy:
+//  "Enable read/write for authenticated users only"
+//  o usar anon key con policies permisivas si es uso personal.
 // ══════════════════════════════════════════════
 const db = {
+  // FOTOS — Supabase Storage
+  // Requiere crear bucket "fotos" en Supabase → Storage → New bucket (público)
+  async uploadFoto(file, clienteId) {
+    const ext = file.name.split('.').pop();
+    const path = `clientes/${clienteId}_${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('fotos').upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data } = supabase.storage.from('fotos').getPublicUrl(path);
+    return data.publicUrl;
+  },
+
   // CLIENTES
   async getClientes() {
     const { data, error } = await supabase
@@ -400,6 +436,12 @@ function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino }) {
                     <div style={{fontSize:11,color:'#9a9090'}}>{t.servicio} · {t.hora}</div>
                   </div>
                   <div style={{display:'flex',gap:6}}>
+                    {c.tel && (
+                      <Btn size="xs" onClick={() => abrirWhatsApp(c.tel, t.dogName||c.dog, c.owner, t)}
+                        style={{background:'#25d366',color:'white',border:'none'}}>
+                        💬
+                      </Btn>
+                    )}
                     <Btn size="xs" onClick={() => onCompletar(t.id)}>✓ Completar</Btn>
                     <Btn size="xs" variant="pink" onClick={() => onNoVino(t.id)}>✕ No vino</Btn>
                   </div>
@@ -535,6 +577,12 @@ function ModalCliente({ open, cliente, onClose, onSaveVisit, onDelete, onEdit, o
         }
         <div style={{display:'flex',gap:8,marginTop:16,flexWrap:'wrap'}}>
           <Btn size="sm" onClick={() => setShowForm(!showForm)}>+ Registrar visita</Btn>
+          {c.tel && (
+            <Btn size="sm" variant="ghost" onClick={() => abrirWhatsApp(c.tel, c.dog, c.owner)}
+              style={{background:'#25d366',color:'white',border:'none'}}>
+              💬 WhatsApp
+            </Btn>
+          )}
           <Btn size="sm" variant="ghost" onClick={() => onEdit(c)}>✏️ Editar</Btn>
           <Btn size="sm" variant="ghost" onClick={() => onDelete(c.id)}>🗑 Eliminar</Btn>
         </div>
@@ -558,13 +606,22 @@ function ModalCliente({ open, cliente, onClose, onSaveVisit, onDelete, onEdit, o
 // ══════════════════════════════════════════════
 function ModalClienteForm({ open, onClose, onSave, initial }) {
   const [form, setForm] = useState({dog:'',raza:'',size:'',pelaje:'',owner:'',tel:'',notes:'',foto:null});
-  useEffect(() => { if (open) setForm(initial || {dog:'',raza:'',size:'',pelaje:'',owner:'',tel:'',notes:'',foto:null}); }, [open, initial]);
+  const [saving, setSaving] = useState(false);
+  const [fotoFile, setFotoFile] = useState(null); // archivo real para Storage
+  useEffect(() => { if (open) { setForm(initial || {dog:'',raza:'',size:'',pelaje:'',owner:'',tel:'',notes:'',foto:null}); setSaving(false); setFotoFile(null); } }, [open, initial]);
   const set = (k,v) => setForm(f => ({...f,[k]:v}));
   const handleFoto = e => {
     const f = e.target.files[0]; if (!f) return;
+    setFotoFile(f); // guardar archivo para subir a Storage
     const r = new FileReader();
-    r.onload = ev => set('foto', ev.target.result);
+    r.onload = ev => set('foto', ev.target.result); // preview local
     r.readAsDataURL(f);
+  };
+  const handleSave = async () => {
+    if (saving) return;
+    setSaving(true);
+    await onSave(form, fotoFile); // pasar archivo junto al form
+    setSaving(false);
   };
   return (
     <Modal open={open} onClose={onClose}>
@@ -600,7 +657,9 @@ function ModalClienteForm({ open, onClose, onSave, initial }) {
           <textarea value={form.notes} onChange={e=>set('notes',e.target.value)} placeholder="Alergias, comportamiento, cuidados especiales..." style={{...inputStyle,resize:'vertical',minHeight:72}} />
         </FormGroup>
         <div style={{display:'flex',gap:10,marginTop:16}}>
-          <Btn onClick={() => onSave(form)} style={{flex:1,justifyContent:'center'}}>✓ {initial?'Guardar cambios':'Guardar cliente'}</Btn>
+          <Btn onClick={handleSave} disabled={saving} style={{flex:1,justifyContent:'center'}}>
+            {saving ? '⏳ Guardando...' : `✓ ${initial?'Guardar cambios':'Guardar cliente'}`}
+          </Btn>
           {!initial && <Btn variant="ghost" onClick={() => setForm({dog:'',raza:'',size:'',pelaje:'',owner:'',tel:'',notes:'',foto:null})}>Limpiar</Btn>}
         </div>
       </div>
@@ -686,6 +745,7 @@ function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, o
                       {t.estado==='pending' && <Btn size="xs" onClick={()=>onConfirmar(t.id)}>✓ Confirmar</Btn>}
                       <Btn size="xs" onClick={()=>onCompletar(t.id,selectedDay)}>✓ Completar</Btn>
                       <Btn size="xs" variant="pink" onClick={()=>onNoVino(t.id,selectedDay)}>✕ No vino</Btn>
+                      {c.tel && <Btn size="xs" onClick={()=>abrirWhatsApp(c.tel,t.dogName||c.dog,c.owner,t)} style={{background:'#25d366',color:'white',border:'none'}}>💬</Btn>}
                       <Btn size="xs" variant="ghost" onClick={()=>onEditTurno(t)}>✏️ Editar</Btn>
                       <Btn size="xs" variant="ghost" onClick={()=>onDelete(t.id)}>🗑</Btn>
                     </div>
@@ -706,10 +766,12 @@ function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, o
 function ModalNuevoTurno({ open, onClose, onSave, onUpdate, clientes, defaultFecha, turnoEdit }) {
   const isEdit = !!turnoEdit;
   const [mode, setMode] = useState('exist');
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({clientId:'',dog:'',owner:'',raza:'',tel:'',svc:'',fecha:defaultFecha||todayStr(),hora:'10:00',precio:'',estado:'confirmed'});
 
   useEffect(() => {
     if (!open) return;
+    setSaving(false);
     if (isEdit) {
       // Pre-cargar datos del turno a editar
       setForm({
@@ -730,9 +792,11 @@ function ModalNuevoTurno({ open, onClose, onSave, onUpdate, clientes, defaultFec
 
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
 
-  const handleGuardar = () => {
+  const handleGuardar = async () => {
+    if (saving) return;
+    setSaving(true);
     if (isEdit) {
-      onUpdate(turnoEdit.id, {
+      await onUpdate(turnoEdit.id, {
         servicio: form.svc,
         fecha:    form.fecha,
         hora:     form.hora,
@@ -740,8 +804,9 @@ function ModalNuevoTurno({ open, onClose, onSave, onUpdate, clientes, defaultFec
         estado:   form.estado,
       });
     } else {
-      onSave(mode, form);
+      await onSave(mode, form);
     }
+    setSaving(false);
   };
 
   return (
@@ -811,8 +876,8 @@ function ModalNuevoTurno({ open, onClose, onSave, onUpdate, clientes, defaultFec
           </select>
         </FormGroup>
 
-        <Btn onClick={handleGuardar} style={{width:'100%',justifyContent:'center',marginTop:4,background:isEdit?'#5fbf9b':undefined}}>
-          {isEdit ? '✓ Guardar cambios' : '✓ Guardar turno'}
+        <Btn onClick={handleGuardar} disabled={saving} style={{width:'100%',justifyContent:'center',marginTop:4,background:isEdit?'#5fbf9b':undefined}}>
+          {saving ? '⏳ Guardando...' : isEdit ? '✓ Guardar cambios' : '✓ Guardar turno'}
         </Btn>
       </div>
     </Modal>
@@ -938,9 +1003,11 @@ function NotasPage({ notas, onToggleCompra, onDeleteNota, onAgregar }) {
 // ══════════════════════════════════════════════
 function ModalNota({ open, onClose, onSave, defaultTipo='compra' }) {
   const [tipo, setTipo] = useState(defaultTipo);
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({item:'',cantidad:1,precio:'',notas:'',concepto:'',categoria:'arriendo',monto:'',fecha:todayStr()});
-  useEffect(() => { if(open){setTipo(defaultTipo);setForm({item:'',cantidad:1,precio:'',notas:'',concepto:'',categoria:'arriendo',monto:'',fecha:todayStr()});} },[open]);
+  useEffect(() => { if(open){setTipo(defaultTipo);setSaving(false);setForm({item:'',cantidad:1,precio:'',notas:'',concepto:'',categoria:'arriendo',monto:'',fecha:todayStr()});} },[open]);
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const handleSave = async () => { if(saving) return; setSaving(true); await onSave(tipo,form); setSaving(false); };
   return (
     <Modal open={open} onClose={onClose} width={480}>
       <ModalHead title="Agregar Nota" onClose={onClose} />
@@ -961,7 +1028,9 @@ function ModalNota({ open, onClose, onSave, defaultTipo='compra' }) {
           </div>
           <FormGroup label="Fecha"><input type="date" value={form.fecha} onChange={e=>set('fecha',e.target.value)} style={{...inputStyle,marginBottom:14}}/></FormGroup>
         </>)}
-        <Btn onClick={()=>onSave(tipo,form)} style={{width:'100%',justifyContent:'center'}}>✓ Guardar</Btn>
+        <Btn onClick={handleSave} disabled={saving} style={{width:'100%',justifyContent:'center'}}>
+          {saving ? '⏳ Guardando...' : '✓ Guardar'}
+        </Btn>
       </div>
     </Modal>
   );
@@ -1104,14 +1173,21 @@ export default function App() {
     } catch(e) { toast(e.message, true); }
   };
 
-  const handleSaveNewClient = async form => {
+  const handleSaveNewClient = async (form, fotoFile) => {
     if (!form.dog || !form.owner) { toast('Completá nombre del perro y dueño', true); return; }
     const isEdit = !!modalNuevoCliente.initial;
     try {
+      let fotoUrl = form.foto; // puede ser URL de Storage ya existente o base64 viejo
+      if (fotoFile) {
+        // Si hay archivo nuevo, subir a Storage
+        const tempId = modalNuevoCliente.initial?.id || 'new_' + Date.now();
+        fotoUrl = await db.uploadFoto(fotoFile, tempId);
+      }
+      const formConFoto = { ...form, foto: fotoUrl };
       if (isEdit) {
-        await db.updateCliente(modalNuevoCliente.initial.id, form);
+        await db.updateCliente(modalNuevoCliente.initial.id, formConFoto);
       } else {
-        await db.insertCliente(form);
+        await db.insertCliente(formConFoto);
       }
       setModalNuevoCliente({open:false,initial:null});
       await loadAll();
