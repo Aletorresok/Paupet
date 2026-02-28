@@ -2,6 +2,19 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "./supabase";
 
 // ══════════════════════════════════════════════
+//  RESPONSIVE HOOK
+// ══════════════════════════════════════════════
+function useWindowWidth() {
+  const [w, setW] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  useEffect(() => {
+    const fn = () => setW(window.innerWidth);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  return w;
+}
+
+// ══════════════════════════════════════════════
 //  CONSTANTS
 // ══════════════════════════════════════════════
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -357,19 +370,48 @@ const NAV_ITEMS = [
   {page:'config',    icon:'⚙️', label:'Configuración'},
 ];
 
-function Sidebar({ activePage, onNav, pendingCount }) {
-  return (
-    <nav style={{width:230,minWidth:230,background:'linear-gradient(180deg,#4caf8e 0%,#5fbf9b 40%,#c5879a 100%)',display:'flex',flexDirection:'column',padding:'24px 14px',position:'relative',zIndex:20,boxShadow:'4px 0 24px rgba(0,0,0,.08)',overflow:'hidden'}}>
+function Sidebar({ activePage, onNav, pendingCount, mobileOpen, onMobileClose }) {
+  const w = useWindowWidth();
+  const isMob = w < 768;
+
+  const handleNav = (p) => { onNav(p); if (isMob) onMobileClose(); };
+
+  const inner = (
+    <nav style={{
+      width:230, minWidth:230, height:'100%',
+      background:'linear-gradient(180deg,#4caf8e 0%,#5fbf9b 40%,#c5879a 100%)',
+      display:'flex', flexDirection:'column', padding:'24px 14px',
+      position:'relative', zIndex:20, boxShadow:'4px 0 24px rgba(0,0,0,.08)', overflow:'hidden',
+    }}>
       <div style={{position:'absolute',top:-60,right:-60,width:180,height:180,borderRadius:'50%',background:'rgba(255,255,255,.07)'}}/>
       <div style={{position:'absolute',bottom:-40,left:-40,width:120,height:120,borderRadius:'50%',background:'rgba(255,255,255,.05)'}}/>
+
+      {/* Botón cerrar — solo mobile */}
+      {isMob && (
+        <button onClick={onMobileClose} style={{
+          position:'absolute',top:14,right:14,zIndex:10,width:28,height:28,
+          background:'rgba(255,255,255,.25)',border:'none',borderRadius:'50%',
+          color:'white',fontSize:14,cursor:'pointer',
+          display:'flex',alignItems:'center',justifyContent:'center',
+        }}>✕</button>
+      )}
+
       <div style={{textAlign:'center',marginBottom:32,position:'relative',zIndex:1}}>
         <div style={{width:54,height:54,background:'white',borderRadius:'50%',margin:'0 auto 8px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,boxShadow:'0 4px 16px rgba(0,0,0,.15)'}}>🐾</div>
         <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:20,color:'white',letterSpacing:.5}}>Paupet</h1>
         <span style={{fontSize:10,color:'rgba(255,255,255,.7)',fontWeight:300,letterSpacing:1,textTransform:'uppercase'}}>Peluquería Canina</span>
       </div>
+
       <div style={{flex:1,display:'flex',flexDirection:'column',gap:3,position:'relative',zIndex:1}}>
         {NAV_ITEMS.map(item => (
-          <div key={item.page} onClick={() => onNav(item.page)} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 13px',borderRadius:10,cursor:'pointer',fontSize:13,fontWeight:activePage===item.page?500:400,background:activePage===item.page?'white':'transparent',color:activePage===item.page?'#2e2828':'rgba(255,255,255,.8)',boxShadow:activePage===item.page?'0 4px 20px rgba(0,0,0,.08)':'none',transition:'all .2s'}}>
+          <div key={item.page} onClick={() => handleNav(item.page)} style={{
+            display:'flex',alignItems:'center',gap:10,padding:'11px 13px',borderRadius:10,cursor:'pointer',
+            fontSize:13,fontWeight:activePage===item.page?500:400,
+            background:activePage===item.page?'white':'transparent',
+            color:activePage===item.page?'#2e2828':'rgba(255,255,255,.8)',
+            boxShadow:activePage===item.page?'0 4px 20px rgba(0,0,0,.08)':'none',
+            transition:'all .2s',
+          }}>
             <span style={{fontSize:16,width:20,textAlign:'center',flexShrink:0}}>{item.icon}</span>
             <span>{item.label}</span>
             {item.badge && pendingCount > 0 && (
@@ -379,6 +421,28 @@ function Sidebar({ activePage, onNav, pendingCount }) {
         ))}
       </div>
     </nav>
+  );
+
+  // Desktop: sidebar fijo normal
+  if (!isMob) return inner;
+
+  // Mobile: drawer deslizable desde la izquierda
+  return (
+    <>
+      {mobileOpen && (
+        <div onClick={onMobileClose} style={{
+          position:'fixed',inset:0,zIndex:997,
+          background:'rgba(0,0,0,.5)',backdropFilter:'blur(2px)',
+        }}/>
+      )}
+      <div style={{
+        position:'fixed',top:0,left:0,bottom:0,zIndex:998,
+        transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transition:'transform .28s cubic-bezier(.4,0,.2,1)',
+      }}>
+        {inner}
+      </div>
+    </>
   );
 }
 
@@ -1317,6 +1381,9 @@ export default function App() {
 
   const pendingCount = turnos.filter(t=>t.estado==='pending').length;
   const activeCliente = clientes.find(c=>c.id===modalCliente.id);
+  const w = useWindowWidth();
+  const isMob = w < 768;
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
@@ -1331,20 +1398,50 @@ export default function App() {
       `}</style>
 
       <div style={{display:'flex',height:'100vh',overflow:'hidden'}}>
-        <Sidebar activePage={page} onNav={setPage} pendingCount={pendingCount} />
+        <Sidebar
+          activePage={page} onNav={setPage} pendingCount={pendingCount}
+          mobileOpen={menuOpen} onMobileClose={() => setMenuOpen(false)}
+        />
 
-        <main style={{flex:1,overflowY:'auto',padding:'28px 32px',minWidth:0}}>
-          {loading ? <Spinner /> : (
-            <>
-              {page==='dashboard'  && <Dashboard clientes={clientes} turnos={turnos} onNav={setPage} onCompletar={handleCompletar} onNoVino={handleNoVino}/>}
-              {page==='clientes'   && <ClientesPage clientes={clientes} onOpenClient={handleOpenClient} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>}
-              {page==='calendario' && <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={fecha=>setModalTurno({open:true,fecha,turnoEdit:null})} onCompletar={handleCompletar} onNoVino={handleNoVino} onDelete={handleDeleteTurno} onConfirmar={handleConfirmar} onEditTurno={handleEditTurno}/>}
-              {page==='historial'  && <HistorialPage clientes={clientes} turnos={turnos}/>}
-              {page==='notas'      && <NotasPage notas={notas} onToggleCompra={handleToggleCompra} onDeleteNota={handleDeleteNota} onAgregar={tipo=>setModalNota({open:true,tipo})}/>}
-              {page==='config'     && <ConfigPage config={config} onSave={handleSaveConfig}/>}
-            </>
+        <div style={{flex:1,display:'flex',flexDirection:'column',minWidth:0,overflow:'hidden'}}>
+
+          {/* Top bar mobile con hamburguesa */}
+          {isMob && (
+            <div style={{
+              display:'flex',alignItems:'center',justifyContent:'space-between',
+              padding:'12px 16px',
+              background:'white',borderBottom:'1px solid #ede8e8',
+              boxShadow:'0 2px 8px rgba(0,0,0,.05)',flexShrink:0,
+            }}>
+              <button onClick={() => setMenuOpen(true)} style={{
+                background:'none',border:'none',cursor:'pointer',padding:6,borderRadius:8,
+                display:'flex',flexDirection:'column',gap:5,
+              }}>
+                <span style={{display:'block',width:22,height:2,background:'#4caf8e',borderRadius:2}}/>
+                <span style={{display:'block',width:16,height:2,background:'#4caf8e',borderRadius:2}}/>
+                <span style={{display:'block',width:22,height:2,background:'#4caf8e',borderRadius:2}}/>
+              </button>
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <span style={{fontSize:18}}>🐾</span>
+                <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:600}}>Paupet</span>
+              </div>
+              <div style={{width:34}}/>{/* spacer para centrar el logo */}
+            </div>
           )}
-        </main>
+
+          <main style={{flex:1,overflowY:'auto',padding:isMob?'20px 16px':'28px 32px',minWidth:0}}>
+            {loading ? <Spinner /> : (
+              <>
+                {page==='dashboard'  && <Dashboard clientes={clientes} turnos={turnos} onNav={setPage} onCompletar={handleCompletar} onNoVino={handleNoVino}/>}
+                {page==='clientes'   && <ClientesPage clientes={clientes} onOpenClient={handleOpenClient} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>}
+                {page==='calendario' && <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={fecha=>setModalTurno({open:true,fecha,turnoEdit:null})} onCompletar={handleCompletar} onNoVino={handleNoVino} onDelete={handleDeleteTurno} onConfirmar={handleConfirmar} onEditTurno={handleEditTurno}/>}
+                {page==='historial'  && <HistorialPage clientes={clientes} turnos={turnos}/>}
+                {page==='notas'      && <NotasPage notas={notas} onToggleCompra={handleToggleCompra} onDeleteNota={handleDeleteNota} onAgregar={tipo=>setModalNota({open:true,tipo})}/>}
+                {page==='config'     && <ConfigPage config={config} onSave={handleSaveConfig}/>}
+              </>
+            )}
+          </main>
+        </div>
       </div>
 
       <ModalCliente open={modalCliente.open} cliente={activeCliente} onClose={()=>setModalCliente({open:false,id:null})} onSaveVisit={handleSaveVisit} onDelete={handleDeleteClient} onEdit={c=>{setModalCliente({open:false,id:null});setModalNuevoCliente({open:true,initial:c});}} onDecrementarInasistencia={handleDecrementarInasistencia}/>
