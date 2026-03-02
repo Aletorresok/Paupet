@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "./supabase";
 
 // ══════════════════════════════════════════════
@@ -367,6 +367,7 @@ const NAV_ITEMS = [
   {page:'calendario',icon:'📅', label:'Calendario de Turnos', badge:true},
   {page:'historial', icon:'📋', label:'Historial de Visitas'},
   {page:'notas',     icon:'📝', label:'Notas & Stock'},
+  {page:'horarios',  icon:'📸', label:'Horarios Semanales'},
   {page:'config',    icon:'⚙️', label:'Configuración'},
 ];
 
@@ -1100,6 +1101,215 @@ function ModalNota({ open, onClose, onSave, defaultTipo='compra' }) {
   );
 }
 
+
+// ══════════════════════════════════════════════
+//  HORARIOS SEMANALES — Generador de imagen
+// ══════════════════════════════════════════════
+const DIAS_SEMANA_HOD = ['martes','miercoles','jueves','viernes','sabado'];
+const DIAS_HOD_LABELS = {martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado'};
+
+// Carga html2canvas dinámicamente
+function loadHtml2Canvas() {
+  return new Promise((resolve, reject) => {
+    if (window.html2canvas) { resolve(window.html2canvas); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = () => resolve(window.html2canvas);
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+function HorariosPage() {
+  const hoy = new Date();
+  const proximoLunes = () => {
+    const d = new Date(hoy);
+    const dia = d.getDay(); // 0=dom, 1=lun...
+    const diff = dia === 1 ? 7 : ((8 - dia) % 7 || 7);
+    d.setDate(d.getDate() + diff);
+    d.setHours(0,0,0,0);
+    return d;
+  };
+  const [semanaInicio, setSemanaInicio] = useState(proximoLunes);
+  const [slots, setSlots] = useState({martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]});
+  const [nuevoSlot, setNuevoSlot] = useState({});
+  const [generando, setGenerando] = useState(false);
+  const previewRef = useRef(null);
+
+  const getDiaDate = (dia) => {
+    const offsetMap = {martes:1,miercoles:2,jueves:3,viernes:4,sabado:5};
+    const d = new Date(semanaInicio);
+    d.setDate(d.getDate() + (offsetMap[dia]||0));
+    return d;
+  };
+
+  const agregarSlot = (dia) => {
+    const hora = nuevoSlot[dia]||'';
+    if (!hora) return;
+    setSlots(s => ({...s, [dia]: [...new Set([...(s[dia]||[]), hora])].sort()}));
+    setNuevoSlot(n => ({...n, [dia]:''}));
+  };
+
+  const quitarSlot = (dia, hora) => setSlots(s => ({...s, [dia]: s[dia].filter(h=>h!==hora)}));
+
+  const cambiarSemana = (dir) => setSemanaInicio(s => { const d = new Date(s); d.setDate(d.getDate() + dir*7); return d; });
+
+  const semanaLabel = () => {
+    const fin = new Date(semanaInicio);
+    fin.setDate(fin.getDate() + 5);
+    return `${semanaInicio.getDate()} de ${MESES[semanaInicio.getMonth()]} → ${fin.getDate()} de ${MESES[fin.getMonth()]}`;
+  };
+
+  const descargarImagen = async () => {
+    setGenerando(true);
+    try {
+      const h2c = await loadHtml2Canvas();
+      const canvas = await h2c(previewRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#7ec8a0',
+        logging: false,
+      });
+      const link = document.createElement('a');
+      link.download = `horarios_paupet_${semanaInicio.getDate()}_${MESES[semanaInicio.getMonth()]}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch(e) {
+      alert('Error al generar imagen: ' + e.message);
+    } finally {
+      setGenerando(false);
+    }
+  };
+
+  return (
+    <section style={{width:'100%'}}>
+      {/* Controles */}
+      <div style={{marginBottom:20,display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
+        <div>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:600}}>📸 Horarios para publicar</h2>
+          <p style={{color:'#9a9090',fontSize:13,marginTop:3}}>Cargá los turnos disponibles de la semana y descargá la imagen para WhatsApp</p>
+        </div>
+        <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+          <button onClick={()=>setSlots({martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]})} style={{background:'none',border:'1.5px solid #ede8e8',borderRadius:50,padding:'8px 16px',fontSize:12,cursor:'pointer',color:'#9a9090',fontFamily:"'Outfit',sans-serif"}}>🗑 Limpiar</button>
+          <Btn onClick={descargarImagen} disabled={generando} style={{background:'#25d366',border:'none'}}>
+            {generando ? '⏳ Generando...' : '📥 Descargar imagen'}
+          </Btn>
+        </div>
+      </div>
+
+      {/* Selector semana */}
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20,background:'white',borderRadius:14,padding:'12px 18px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',width:'fit-content'}}>
+        <button onClick={()=>cambiarSemana(-1)} style={{background:'#f0faf5',border:'1.5px solid #dff5ec',borderRadius:'50%',width:32,height:32,cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center'}}>‹</button>
+        <div style={{textAlign:'center',minWidth:200}}>
+          <div style={{fontSize:10,color:'#9a9090',textTransform:'uppercase',letterSpacing:.5,marginBottom:1}}>Semana a publicar</div>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:17,fontWeight:600}}>{semanaLabel()}</div>
+        </div>
+        <button onClick={()=>cambiarSemana(1)} style={{background:'#f0faf5',border:'1.5px solid #dff5ec',borderRadius:'50%',width:32,height:32,cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center'}}>›</button>
+      </div>
+
+      {/* Grid editor de slots */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:12,marginBottom:24}}>
+        {DIAS_SEMANA_HOD.map(dia => {
+          const diaDate = getDiaDate(dia);
+          const horasDelDia = slots[dia] || [];
+          return (
+            <div key={dia} style={{background:'white',borderRadius:14,padding:'14px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
+              <div style={{background:'linear-gradient(135deg,#dff5ec,#c8eed9)',borderRadius:9,padding:'7px 11px',marginBottom:10,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <span style={{fontWeight:700,fontSize:13}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
+                <span style={{fontSize:10,color:'#4caf8e',fontWeight:600,background:'white',borderRadius:20,padding:'2px 7px'}}>{horasDelDia.length} hs</span>
+              </div>
+              <div style={{minHeight:50,marginBottom:8}}>
+                {horasDelDia.length === 0
+                  ? <p style={{fontSize:11,color:'#c0b8b8',textAlign:'center',padding:'6px 0'}}>Sin horarios</p>
+                  : horasDelDia.map(h => (
+                    <div key={h} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'4px 8px',marginBottom:3,background:'#f8fffe',borderRadius:7,border:'1px solid #e8f8f0'}}>
+                      <span style={{fontSize:12,fontWeight:600}}>🕐 {h} hs</span>
+                      <button onClick={()=>quitarSlot(dia,h)} style={{background:'none',border:'none',color:'#e8809a',cursor:'pointer',fontSize:13,lineHeight:1,padding:0}}>✕</button>
+                    </div>
+                  ))
+                }
+              </div>
+              <div style={{display:'flex',gap:5}}>
+                <input type="time" value={nuevoSlot[dia]||''} onChange={e=>setNuevoSlot(n=>({...n,[dia]:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&agregarSlot(dia)}
+                  style={{flex:1,border:'1.5px solid #ede8e8',borderRadius:7,padding:'5px 8px',fontSize:12,fontFamily:"'Outfit',sans-serif",outline:'none'}}
+                />
+                <button onClick={()=>agregarSlot(dia)} style={{background:'#4caf8e',border:'none',borderRadius:7,color:'white',width:30,cursor:'pointer',fontWeight:700,fontSize:15,display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ═══ PREVIEW DESCARGABLE ═══ */}
+      <div style={{marginBottom:8,display:'flex',alignItems:'center',gap:8}}>
+        <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:600}}>Vista previa</div>
+        <span style={{fontSize:11,color:'#9a9090'}}>← esto es lo que se descarga</span>
+      </div>
+      <div ref={previewRef} style={{
+        width:900, minHeight:580,
+        background:'#7ec8a0',
+        borderRadius:16,
+        padding:'28px 24px 24px',
+        position:'relative',
+        overflow:'hidden',
+        boxShadow:'0 4px 24px rgba(0,0,0,.15)',
+        fontFamily:'Arial, sans-serif',
+      }}>
+        {/* Huellas decorativas de fondo */}
+        {[{t:40,l:20,r:0,op:.12},{t:200,l:800,r:0,op:.1},{t:480,l:60,r:0,op:.1},{t:350,l:680,r:0,op:.12}].map((h,i)=>(
+          <div key={i} style={{position:'absolute',top:h.t,left:h.l,fontSize:60,opacity:h.op,transform:'rotate(15deg)',pointerEvents:'none',userSelect:'none'}}>🐾</div>
+        ))}
+
+        {/* Título */}
+        <div style={{textAlign:'center',marginBottom:22}}>
+          <div style={{fontSize:38,fontWeight:900,letterSpacing:10,color:'#1a1a1a',textTransform:'uppercase'}}>H O R A R I O S</div>
+        </div>
+
+        {/* Grid 3 columnas */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14,marginBottom:14}}>
+          {['martes','miercoles','jueves'].map(dia=>{
+            const diaDate = getDiaDate(dia);
+            const horasDelDia = slots[dia]||[];
+            return (
+              <div key={dia} style={{background:'rgba(255,255,255,0.92)',borderRadius:14,padding:'14px 16px',minHeight:180}}>
+                <div style={{background:'#7ec8a0',borderRadius:8,padding:'6px 10px',marginBottom:10,textAlign:'center'}}>
+                  <span style={{fontWeight:900,fontSize:14,color:'#1a1a1a',letterSpacing:1}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
+                </div>
+                {horasDelDia.map(h=>(
+                  <div key={h} style={{fontSize:14,fontWeight:700,color:'#1a1a1a',padding:'2px 0'}}>• {h} HS</div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Fila inferior: viernes + sábado + foto */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14}}>
+          {['viernes','sabado'].map(dia=>{
+            const diaDate = getDiaDate(dia);
+            const horasDelDia = slots[dia]||[];
+            return (
+              <div key={dia} style={{background:'rgba(255,255,255,0.92)',borderRadius:14,padding:'14px 16px',minHeight:160}}>
+                <div style={{background:'#7ec8a0',borderRadius:8,padding:'6px 10px',marginBottom:10,textAlign:'center'}}>
+                  <span style={{fontWeight:900,fontSize:14,color:'#1a1a1a',letterSpacing:1}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
+                </div>
+                {horasDelDia.map(h=>(
+                  <div key={h} style={{fontSize:14,fontWeight:700,color:'#1a1a1a',padding:'2px 0'}}>• {h} HS</div>
+                ))}
+              </div>
+            );
+          })}
+          {/* Foto esquina inferior derecha */}
+          <div style={{background:'rgba(255,255,255,0.15)',borderRadius:14,display:'flex',alignItems:'flex-end',justifyContent:'center',overflow:'hidden',minHeight:160}}>
+            <div style={{fontSize:70,textAlign:'center',paddingBottom:8}}>🐩</div>
+          </div>
+        </div>
+      </div>
+      <p style={{fontSize:11,color:'#9a9090',marginTop:8}}>💡 Tip: Si querés que aparezca tu foto, subila a la carpeta public del proyecto como <code>peluquera.jpg</code> y te la mostramos acá.</p>
+    </section>
+  );
+}
+
 // ══════════════════════════════════════════════
 //  CONFIG
 // ══════════════════════════════════════════════
@@ -1437,7 +1647,8 @@ export default function App() {
                 {page==='calendario' && <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={fecha=>setModalTurno({open:true,fecha,turnoEdit:null})} onCompletar={handleCompletar} onNoVino={handleNoVino} onDelete={handleDeleteTurno} onConfirmar={handleConfirmar} onEditTurno={handleEditTurno}/>}
                 {page==='historial'  && <HistorialPage clientes={clientes} turnos={turnos}/>}
                 {page==='notas'      && <NotasPage notas={notas} onToggleCompra={handleToggleCompra} onDeleteNota={handleDeleteNota} onAgregar={tipo=>setModalNota({open:true,tipo})}/>}
-                {page==='config'     && <ConfigPage config={config} onSave={handleSaveConfig}/>}
+                {page==='horarios'   && <HorariosPage />}
+              {page==='config'     && <ConfigPage config={config} onSave={handleSaveConfig}/>}
               </>
             )}
           </main>
