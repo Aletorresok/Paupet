@@ -542,7 +542,28 @@ function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino }) {
 // ══════════════════════════════════════════════
 function ClientesPage({ clientes, onOpenClient, onNuevo }) {
   const [q, setQ] = useState('');
-  const filtered = clientes.filter(c => c.dog.toLowerCase().includes(q.toLowerCase()) || c.owner.toLowerCase().includes(q.toLowerCase()));
+  const [orden, setOrden] = useState('reciente'); // reciente | alfa | sinVisita | inasistencias
+
+  const filtered = clientes
+    .filter(c => c.dog.toLowerCase().includes(q.toLowerCase()) || c.owner.toLowerCase().includes(q.toLowerCase()))
+    .sort((a, b) => {
+      if (orden === 'alfa') return a.dog.localeCompare(b.dog);
+      if (orden === 'sinVisita') {
+        const diasA = a.visitas?.length ? Math.floor((Date.now()-new Date(a.visitas[a.visitas.length-1].fecha))/86400000) : 9999;
+        const diasB = b.visitas?.length ? Math.floor((Date.now()-new Date(b.visitas[b.visitas.length-1].fecha))/86400000) : 9999;
+        return diasB - diasA; // más días sin visita primero
+      }
+      if (orden === 'inasistencias') return (b.inasistencias||0) - (a.inasistencias||0);
+      return 0; // reciente: orden original de Supabase (created_at)
+    });
+
+  const ORDEN_OPTS = [
+    {val:'reciente',   label:'Más recientes'},
+    {val:'alfa',       label:'A → Z'},
+    {val:'sinVisita',  label:'Sin visita hace más tiempo'},
+    {val:'inasistencias', label:'Más inasistencias'},
+  ];
+
   return (
     <section>
       <div style={{marginBottom:24,display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
@@ -552,11 +573,14 @@ function ClientesPage({ clientes, onOpenClient, onNuevo }) {
         </div>
         <Btn onClick={onNuevo}>+ Nuevo cliente</Btn>
       </div>
-      <div style={{marginBottom:16,display:'flex',gap:12,alignItems:'center'}}>
+      <div style={{marginBottom:16,display:'flex',gap:10,alignItems:'center',flexWrap:'wrap'}}>
         <div style={{flex:1,maxWidth:340,display:'flex',alignItems:'center',gap:8,background:'white',border:'1.5px solid #ede8e8',borderRadius:50,padding:'9px 16px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
           <span>🔍</span>
           <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Buscar perrito o dueño..." style={{border:'none',outline:'none',fontFamily:"'Outfit',sans-serif",fontSize:13,width:'100%',background:'transparent'}} />
         </div>
+        <select value={orden} onChange={e=>setOrden(e.target.value)} style={{border:'1.5px solid #ede8e8',borderRadius:50,padding:'9px 14px',fontFamily:"'Outfit',sans-serif",fontSize:13,outline:'none',background:'white',cursor:'pointer',color:'#2e2828'}}>
+          {ORDEN_OPTS.map(o => <option key={o.val} value={o.val}>{o.label}</option>)}
+        </select>
         <span style={{fontSize:13,color:'#9a9090'}}>{filtered.length} cliente{filtered.length!==1?'s':''}</span>
       </div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(210px,1fr))',gap:16}}>
@@ -672,21 +696,27 @@ function ModalCliente({ open, cliente, onClose, onSaveVisit, onDelete, onEdit, o
 function ModalClienteForm({ open, onClose, onSave, initial }) {
   const [form, setForm] = useState({dog:'',raza:'',size:'',pelaje:'',owner:'',tel:'',notes:'',foto:null});
   const [saving, setSaving] = useState(false);
-  const [fotoFile, setFotoFile] = useState(null); // archivo real para Storage
-  useEffect(() => { if (open) { setForm(initial || {dog:'',raza:'',size:'',pelaje:'',owner:'',tel:'',notes:'',foto:null}); setSaving(false); setFotoFile(null); } }, [open, initial]);
+  const [fotoFile, setFotoFile] = useState(null);
+  const savingRef = React.useRef(false); // guard contra doble click
+  useEffect(() => { if (open) { setForm(initial || {dog:'',raza:'',size:'',pelaje:'',owner:'',tel:'',notes:'',foto:null}); setSaving(false); setFotoFile(null); savingRef.current = false; } }, [open, initial]);
   const set = (k,v) => setForm(f => ({...f,[k]:v}));
   const handleFoto = e => {
     const f = e.target.files[0]; if (!f) return;
-    setFotoFile(f); // guardar archivo para subir a Storage
+    setFotoFile(f);
     const r = new FileReader();
-    r.onload = ev => set('foto', ev.target.result); // preview local
+    r.onload = ev => set('foto', ev.target.result);
     r.readAsDataURL(f);
   };
   const handleSave = async () => {
-    if (saving) return;
+    if (savingRef.current) return; // bloqueo doble click
+    savingRef.current = true;
     setSaving(true);
-    await onSave(form, fotoFile); // pasar archivo junto al form
-    setSaving(false);
+    try {
+      await onSave(form, fotoFile);
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
+    }
   };
   return (
     <Modal open={open} onClose={onClose}>
@@ -805,15 +835,16 @@ function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, o
                   <div style={{fontSize:11,color:'#9a9090',fontWeight:600,textTransform:'uppercase'}}>{t.hora}</div>
                   <div style={{fontSize:14,fontWeight:500}}>{t.dogName||c.dog}</div>
                   <div style={{fontSize:12,color:'#9a9090'}}>{t.servicio} · {fmtPeso(t.precio)}</div>
-                  <div style={{display:'flex',gap:5,marginTop:7,flexWrap:'wrap'}}>
-                    {t.estado==='pending' && <Btn size="xs" onClick={()=>onConfirmar(t.id)}>✓ Confirmar</Btn>}
-                    {t.estado!=='completed' && <Btn size="xs" onClick={()=>onCompletar(t.id,selectedDay)}>✓ Completar</Btn>}
-                    {t.estado!=='completed' && <Btn size="xs" variant="pink" onClick={()=>onNoVino(t.id,selectedDay)}>✕ No vino</Btn>}
-                    {t.estado==='completed' && <span style={{fontSize:10,color:'#5fbf9b',padding:'3px 8px',background:'#dff5ec',borderRadius:20,fontWeight:600}}>✓ Completado</span>}
-                    {c.tel && <Btn size="xs" onClick={()=>abrirWhatsApp(c.tel,t.dogName||c.dog,c.owner,t)} style={{background:'#25d366',color:'white',border:'none'}}>💬</Btn>}
-                    <Btn size="xs" variant="ghost" onClick={()=>onEditTurno(t)}>✏️</Btn>
-                    <Btn size="xs" variant="ghost" onClick={()=>onDelete(t.id)}>🗑</Btn>
-                  </div>
+                  {t.estado!=='completed' && (
+                    <div style={{display:'flex',gap:5,marginTop:7,flexWrap:'wrap'}}>
+                      {t.estado==='pending' && <Btn size="xs" onClick={()=>onConfirmar(t.id)}>✓ Confirmar</Btn>}
+                      <Btn size="xs" onClick={()=>onCompletar(t.id,selectedDay)}>✓ Completar</Btn>
+                      <Btn size="xs" variant="pink" onClick={()=>onNoVino(t.id,selectedDay)}>✕ No vino</Btn>
+                      {c.tel && <Btn size="xs" onClick={()=>abrirWhatsApp(c.tel,t.dogName||c.dog,c.owner,t)} style={{background:'#25d366',color:'white',border:'none'}}>💬</Btn>}
+                      <Btn size="xs" variant="ghost" onClick={()=>onEditTurno(t)}>✏️ Editar</Btn>
+                      <Btn size="xs" variant="ghost" onClick={()=>onDelete(t.id)}>🗑</Btn>
+                    </div>
+                  )}
                 </div>
               );
             })
@@ -831,13 +862,14 @@ function ModalNuevoTurno({ open, onClose, onSave, onUpdate, clientes, defaultFec
   const isEdit = !!turnoEdit;
   const [mode, setMode] = useState('exist');
   const [saving, setSaving] = useState(false);
+  const savingRef = React.useRef(false);
   const [form, setForm] = useState({clientId:'',dog:'',owner:'',raza:'',tel:'',svc:'',fecha:defaultFecha||todayStr(),hora:'10:00',precio:'',estado:'confirmed'});
 
   useEffect(() => {
     if (!open) return;
     setSaving(false);
+    savingRef.current = false;
     if (isEdit) {
-      // Pre-cargar datos del turno a editar
       setForm({
         clientId: String(turnoEdit.clientId || ''),
         dog: '', owner: '', raza: '', tel: '',
@@ -857,20 +889,25 @@ function ModalNuevoTurno({ open, onClose, onSave, onUpdate, clientes, defaultFec
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
 
   const handleGuardar = async () => {
-    if (saving) return;
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
-    if (isEdit) {
-      await onUpdate(turnoEdit.id, {
-        servicio: form.svc,
-        fecha:    form.fecha,
-        hora:     form.hora,
-        precio:   parseFloat(form.precio) || 0,
-        estado:   form.estado,
-      });
-    } else {
-      await onSave(mode, form);
+    try {
+      if (isEdit) {
+        await onUpdate(turnoEdit.id, {
+          servicio: form.svc,
+          fecha:    form.fecha,
+          hora:     form.hora,
+          precio:   parseFloat(form.precio) || 0,
+          estado:   form.estado,
+        });
+      } else {
+        await onSave(mode, form);
+      }
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   return (
@@ -1104,8 +1141,8 @@ function ModalNota({ open, onClose, onSave, defaultTipo='compra' }) {
 // ══════════════════════════════════════════════
 //  HORARIOS SEMANALES — Generador de imagen
 // ══════════════════════════════════════════════
-const DIAS_SEMANA_HOD = ['lunes','martes','miercoles','jueves','viernes','sabado'];
-const DIAS_HOD_LABELS = {lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado'};
+const DIAS_SEMANA_HOD = ['martes','miercoles','jueves','viernes','sabado'];
+const DIAS_HOD_LABELS = {martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado'};
 
 // Carga html2canvas dinámicamente
 function loadHtml2Canvas() {
@@ -1130,21 +1167,13 @@ function HorariosPage() {
     return d;
   };
   const [semanaInicio, setSemanaInicio] = useState(proximoLunes);
-  const [slots, setSlots] = useState({lunes:[],martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]});
-  const [diasActivos, setDiasActivos] = useState(['lunes','martes','miercoles','jueves','viernes','sabado']);
+  const [slots, setSlots] = useState({martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]});
   const [nuevoSlot, setNuevoSlot] = useState({});
   const [generando, setGenerando] = useState(false);
   const previewRef = useRef(null);
 
-  const toggleDia = (dia) => {
-    setDiasActivos(ds => ds.includes(dia)
-      ? ds.filter(d => d !== dia)
-      : DIAS_SEMANA_HOD.filter(d => [...ds, dia].includes(d))
-    );
-  };
-
   const getDiaDate = (dia) => {
-    const offsetMap = {lunes:0,martes:1,miercoles:2,jueves:3,viernes:4,sabado:5};
+    const offsetMap = {martes:1,miercoles:2,jueves:3,viernes:4,sabado:5};
     const d = new Date(semanaInicio);
     d.setDate(d.getDate() + (offsetMap[dia]||0));
     return d;
@@ -1197,7 +1226,7 @@ function HorariosPage() {
           <p style={{color:'#9a9090',fontSize:13,marginTop:3}}>Cargá los turnos disponibles de la semana y descargá la imagen para WhatsApp</p>
         </div>
         <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-          <button onClick={()=>{setSlots({lunes:[],martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]});setDiasActivos(['lunes','martes','miercoles','jueves','viernes','sabado']);}} style={{background:'none',border:'1.5px solid #ede8e8',borderRadius:50,padding:'8px 16px',fontSize:12,cursor:'pointer',color:'#9a9090',fontFamily:"'Outfit',sans-serif"}}>🗑 Limpiar</button>
+          <button onClick={()=>setSlots({martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]})} style={{background:'none',border:'1.5px solid #ede8e8',borderRadius:50,padding:'8px 16px',fontSize:12,cursor:'pointer',color:'#9a9090',fontFamily:"'Outfit',sans-serif"}}>🗑 Limpiar</button>
           <Btn onClick={descargarImagen} disabled={generando} style={{background:'#25d366',border:'none'}}>
             {generando ? '⏳ Generando...' : '📥 Descargar imagen'}
           </Btn>
@@ -1219,42 +1248,29 @@ function HorariosPage() {
         {DIAS_SEMANA_HOD.map(dia => {
           const diaDate = getDiaDate(dia);
           const horasDelDia = slots[dia] || [];
-          const activo = diasActivos.includes(dia);
           return (
-            <div key={dia} style={{background:'white',borderRadius:14,padding:'14px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',opacity: activo ? 1 : 0.45, transition:'opacity .2s'}}>
-              <div style={{background: activo ? 'linear-gradient(135deg,#dff5ec,#c8eed9)' : '#f0f0f0',borderRadius:9,padding:'7px 11px',marginBottom:10,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                <span style={{fontWeight:700,fontSize:13,color: activo ? '#1a1a1a' : '#9a9090'}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
-                <button
-                  onClick={()=>toggleDia(dia)}
-                  title={activo ? 'Ocultar este día' : 'Incluir este día'}
-                  style={{background: activo ? 'rgba(255,255,255,0.7)' : '#e8809a',border:'none',borderRadius:20,padding:'2px 8px',fontSize:10,fontWeight:600,cursor:'pointer',color: activo ? '#4caf8e' : 'white'}}>
-                  {activo ? `${horasDelDia.length} hs ✓` : 'No trabajo'}
-                </button>
+            <div key={dia} style={{background:'white',borderRadius:14,padding:'14px',boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
+              <div style={{background:'linear-gradient(135deg,#dff5ec,#c8eed9)',borderRadius:9,padding:'7px 11px',marginBottom:10,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <span style={{fontWeight:700,fontSize:13}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
+                <span style={{fontSize:10,color:'#4caf8e',fontWeight:600,background:'white',borderRadius:20,padding:'2px 7px'}}>{horasDelDia.length} hs</span>
               </div>
-              {activo && (
-                <>
-                  <div style={{minHeight:50,marginBottom:8}}>
-                    {horasDelDia.length === 0
-                      ? <p style={{fontSize:11,color:'#c0b8b8',textAlign:'center',padding:'6px 0'}}>Sin horarios</p>
-                      : horasDelDia.map(h => (
-                        <div key={h} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'4px 8px',marginBottom:3,background:'#f8fffe',borderRadius:7,border:'1px solid #e8f8f0'}}>
-                          <span style={{fontSize:12,fontWeight:600}}>🕐 {h} hs</span>
-                          <button onClick={()=>quitarSlot(dia,h)} style={{background:'none',border:'none',color:'#e8809a',cursor:'pointer',fontSize:13,lineHeight:1,padding:0}}>✕</button>
-                        </div>
-                      ))
-                    }
-                  </div>
-                  <div style={{display:'flex',gap:5}}>
-                    <input type="time" value={nuevoSlot[dia]||''} onChange={e=>setNuevoSlot(n=>({...n,[dia]:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&agregarSlot(dia)}
-                      style={{flex:1,border:'1.5px solid #ede8e8',borderRadius:7,padding:'5px 8px',fontSize:12,fontFamily:"'Outfit',sans-serif",outline:'none'}}
-                    />
-                    <button onClick={()=>agregarSlot(dia)} style={{background:'#4caf8e',border:'none',borderRadius:7,color:'white',width:30,cursor:'pointer',fontWeight:700,fontSize:15,display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
-                  </div>
-                </>
-              )}
-              {!activo && (
-                <p style={{fontSize:12,color:'#c0b8b8',textAlign:'center',padding:'8px 0'}}>No trabajo este día</p>
-              )}
+              <div style={{minHeight:50,marginBottom:8}}>
+                {horasDelDia.length === 0
+                  ? <p style={{fontSize:11,color:'#c0b8b8',textAlign:'center',padding:'6px 0'}}>Sin horarios</p>
+                  : horasDelDia.map(h => (
+                    <div key={h} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'4px 8px',marginBottom:3,background:'#f8fffe',borderRadius:7,border:'1px solid #e8f8f0'}}>
+                      <span style={{fontSize:12,fontWeight:600}}>🕐 {h} hs</span>
+                      <button onClick={()=>quitarSlot(dia,h)} style={{background:'none',border:'none',color:'#e8809a',cursor:'pointer',fontSize:13,lineHeight:1,padding:0}}>✕</button>
+                    </div>
+                  ))
+                }
+              </div>
+              <div style={{display:'flex',gap:5}}>
+                <input type="time" value={nuevoSlot[dia]||''} onChange={e=>setNuevoSlot(n=>({...n,[dia]:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&agregarSlot(dia)}
+                  style={{flex:1,border:'1.5px solid #ede8e8',borderRadius:7,padding:'5px 8px',fontSize:12,fontFamily:"'Outfit',sans-serif",outline:'none'}}
+                />
+                <button onClick={()=>agregarSlot(dia)} style={{background:'#4caf8e',border:'none',borderRadius:7,color:'white',width:30,cursor:'pointer',fontWeight:700,fontSize:15,display:'flex',alignItems:'center',justifyContent:'center'}}>+</button>
+              </div>
             </div>
           );
         })}
@@ -1285,41 +1301,45 @@ function HorariosPage() {
           <div style={{fontSize:38,fontWeight:900,letterSpacing:10,color:'#1a1a1a',textTransform:'uppercase'}}>H O R A R I O S</div>
         </div>
 
-        {/* Grid dinámico según días activos */}
-        {(() => {
-          const filas = [];
-          const activos = DIAS_SEMANA_HOD.filter(d => diasActivos.includes(d));
-          // Dividir en filas de 3
-          for (let i = 0; i < activos.length; i += 3) {
-            const fila = activos.slice(i, i + 3);
-            const esUltima = i + 3 >= activos.length;
-            filas.push(
-              <div key={i} style={{display:'grid',gridTemplateColumns:`repeat(${fila.length},1fr)`,gap:14,marginBottom:14}}>
-                {fila.map(dia => {
-                  const diaDate = getDiaDate(dia);
-                  const horasDelDia = slots[dia]||[];
-                  return (
-                    <div key={dia} style={{background:'rgba(255,255,255,0.92)',borderRadius:14,padding:'14px 16px',minHeight:160}}>
-                      <div style={{background:'#7ec8a0',borderRadius:8,padding:'6px 10px',marginBottom:10,textAlign:'center'}}>
-                        <span style={{fontWeight:900,fontSize:14,color:'#1a1a1a',letterSpacing:1}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
-                      </div>
-                      {horasDelDia.map(h=>(
-                        <div key={h} style={{fontSize:14,fontWeight:700,color:'#1a1a1a',padding:'2px 0'}}>• {h} HS</div>
-                      ))}
-                    </div>
-                  );
-                })}
-                {/* Foto en última fila si sobra espacio */}
-                {esUltima && fila.length < 3 && (
-                  <div style={{background:'rgba(255,255,255,0.15)',borderRadius:14,display:'flex',alignItems:'flex-end',justifyContent:'center',overflow:'hidden',minHeight:160}}>
-                    <div style={{fontSize:70,textAlign:'center',paddingBottom:8}}>🐩</div>
-                  </div>
-                )}
+        {/* Grid 3 columnas */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14,marginBottom:14}}>
+          {['martes','miercoles','jueves'].map(dia=>{
+            const diaDate = getDiaDate(dia);
+            const horasDelDia = slots[dia]||[];
+            return (
+              <div key={dia} style={{background:'rgba(255,255,255,0.92)',borderRadius:14,padding:'14px 16px',minHeight:180}}>
+                <div style={{background:'#7ec8a0',borderRadius:8,padding:'6px 10px',marginBottom:10,textAlign:'center'}}>
+                  <span style={{fontWeight:900,fontSize:14,color:'#1a1a1a',letterSpacing:1}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
+                </div>
+                {horasDelDia.map(h=>(
+                  <div key={h} style={{fontSize:14,fontWeight:700,color:'#1a1a1a',padding:'2px 0'}}>• {h} HS</div>
+                ))}
               </div>
             );
-          }
-          return filas;
-        })()}
+          })}
+        </div>
+
+        {/* Fila inferior: viernes + sábado + foto */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14}}>
+          {['viernes','sabado'].map(dia=>{
+            const diaDate = getDiaDate(dia);
+            const horasDelDia = slots[dia]||[];
+            return (
+              <div key={dia} style={{background:'rgba(255,255,255,0.92)',borderRadius:14,padding:'14px 16px',minHeight:160}}>
+                <div style={{background:'#7ec8a0',borderRadius:8,padding:'6px 10px',marginBottom:10,textAlign:'center'}}>
+                  <span style={{fontWeight:900,fontSize:14,color:'#1a1a1a',letterSpacing:1}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
+                </div>
+                {horasDelDia.map(h=>(
+                  <div key={h} style={{fontSize:14,fontWeight:700,color:'#1a1a1a',padding:'2px 0'}}>• {h} HS</div>
+                ))}
+              </div>
+            );
+          })}
+          {/* Foto esquina inferior derecha */}
+          <div style={{background:'rgba(255,255,255,0.15)',borderRadius:14,display:'flex',alignItems:'flex-end',justifyContent:'center',overflow:'hidden',minHeight:160}}>
+            <div style={{fontSize:70,textAlign:'center',paddingBottom:8}}>🐩</div>
+          </div>
+        </div>
       </div>
       <p style={{fontSize:11,color:'#9a9090',marginTop:8}}>💡 Tip: Si querés que aparezca tu foto, subila a la carpeta public del proyecto como <code>peluquera.jpg</code> y te la mostramos acá.</p>
     </section>
