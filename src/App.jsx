@@ -1310,26 +1310,31 @@ function HorariosPage() {
         <span style={{fontSize:11,color:'#9a9090'}}>← esto es lo que se descarga</span>
       </div>
       <div ref={previewRef} style={{
-        width:600, minHeight:600,
+        width:700, minHeight:600,
         background:'#7ec8a0',
         borderRadius:16,
-        padding:'36px 28px 28px',
+        padding:'32px 28px 20px',
         position:'relative',
         overflow:'hidden',
         boxShadow:'0 4px 24px rgba(0,0,0,.15)',
-        fontFamily:'Arial Black, Arial, sans-serif',
+        fontFamily:"'Trebuchet MS', 'Segoe UI', sans-serif",
       }}>
         {/* Huellas decorativas de fondo */}
-        {[{t:30,l:10,op:.12},{t:180,l:520,op:.1},{t:460,l:40,op:.1},{t:320,l:460,op:.12}].map((h,i)=>(
+        {[{t:30,l:10,op:.12},{t:180,l:620,op:.1},{t:460,l:40,op:.1},{t:320,l:560,op:.12}].map((h,i)=>(
           <div key={i} style={{position:'absolute',top:h.t,left:h.l,fontSize:50,opacity:h.op,transform:'rotate(15deg)',pointerEvents:'none',userSelect:'none'}}>🐾</div>
         ))}
 
-        {/* Título */}
-        <div style={{textAlign:'center',marginBottom:24}}>
-          <div style={{fontSize:48,fontWeight:900,letterSpacing:12,color:'#1a1a1a',textTransform:'uppercase',fontFamily:'Arial Black, Arial, sans-serif'}}>H O R A R I O S</div>
+        {/* Título — una sola línea, letra espaciada */}
+        <div style={{textAlign:'center',marginBottom:24,whiteSpace:'nowrap'}}>
+          <span style={{
+            fontSize:42,fontWeight:900,letterSpacing:14,
+            color:'#1a1a1a',textTransform:'uppercase',
+            fontFamily:"'Trebuchet MS', Impact, sans-serif",
+            display:'inline-block',
+          }}>HORARIOS</span>
         </div>
 
-        {/* Grid dinámico: 3 columnas fijas, horarios en 2-3 cols dentro de cada card */}
+        {/* Grid dinámico */}
         {(() => {
           const activos = DIAS_SEMANA_HOD.filter(d => diasActivos.includes(d));
           const filas = [];
@@ -1344,15 +1349,29 @@ function HorariosPage() {
                   const horasDia = slots[dia]||[];
                   const tomadosDia = tomados[dia]||[];
                   return (
-                    <div key={dia} style={{background:'rgba(255,255,255,0.92)',borderRadius:12,padding:'12px 14px',minHeight:130}}>
-                      <div style={{background:'#7ec8a0',borderRadius:7,padding:'7px 8px',marginBottom:10,textAlign:'center'}}>
-                        <span style={{fontWeight:900,fontSize:16,color:'#1a1a1a',letterSpacing:1,fontFamily:'Arial Black, Arial, sans-serif'}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
+                    <div key={dia} style={{background:'rgba(255,255,255,0.93)',borderRadius:12,padding:'11px 13px',minHeight:120}}>
+                      <div style={{background:'#5aba8f',borderRadius:7,padding:'6px 8px',marginBottom:9,textAlign:'center'}}>
+                        <span style={{
+                          fontWeight:900,fontSize:15,color:'#fff',letterSpacing:1.5,
+                          fontFamily:"'Trebuchet MS', sans-serif",whiteSpace:'nowrap',
+                        }}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
                       </div>
-                      <div style={{display:'grid',gridTemplateColumns:horasDia.length > 4 ? 'repeat(3,1fr)' : 'repeat(2,1fr)',gap:'3px 4px'}}>
+                      {/* Horarios: cada uno en su propio div, sin cortes, en grilla */}
+                      <div style={{
+                        display:'grid',
+                        gridTemplateColumns: horasDia.length > 4 ? 'repeat(3,1fr)' : 'repeat(2,1fr)',
+                        gap:'4px 6px',
+                      }}>
                         {horasDia.map(h=>{
                           const esTomado = tomadosDia.includes(h);
                           return (
-                            <div key={h} style={{fontSize:15,fontWeight:700,color:esTomado?'#b0b8b0':'#1a1a1a',padding:'2px 0',textDecoration:esTomado?'line-through':'none',fontFamily:'Arial, sans-serif'}}>• {h} HS</div>
+                            <div key={h} style={{
+                              fontSize:14,fontWeight:700,
+                              color:esTomado?'#b0b8b0':'#1a1a1a',
+                              textDecoration:esTomado?'line-through':'none',
+                              fontFamily:"'Trebuchet MS', sans-serif",
+                              whiteSpace:'nowrap',
+                            }}>• {h} hs</div>
                           );
                         })}
                       </div>
@@ -1361,8 +1380,8 @@ function HorariosPage() {
                 })}
                 {/* Espacio con imagen de la peluquera */}
                 {espacioLibre && (
-                  <div style={{display:'flex',alignItems:'flex-end',justifyContent:'center',minHeight:130,gridColumn: fila.length === 1 ? 'span 2' : 'auto'}}>
-                    <img src={PELUQUERA_IMG} style={{height:190,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
+                  <div style={{display:'flex',alignItems:'flex-end',justifyContent:'center',minHeight:120,gridColumn: fila.length === 1 ? 'span 2' : 'auto'}}>
+                    <img src={PELUQUERA_IMG} style={{height:185,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
                   </div>
                 )}
               </div>
@@ -1372,7 +1391,7 @@ function HorariosPage() {
           if (activos.length % 3 === 0) {
             filas.push(
               <div key="img-row" style={{display:'flex',justifyContent:'flex-end',marginTop:-4}}>
-                <img src={PELUQUERA_IMG} style={{height:180,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
+                <img src={PELUQUERA_IMG} style={{height:175,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
               </div>
             );
           }
