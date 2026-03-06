@@ -1895,13 +1895,13 @@ function HorariosPage() {
       {/* ═══ PREVIEW DESCARGABLE ═══ */}
       <div style={{marginBottom:8,display:'flex',alignItems:'center',gap:8}}>
         <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:600}}>Vista previa</div>
-        <span style={{fontSize:11,color:'#9a9090'}}>← 1080×1920px · optimizada para estado de WhatsApp e historia de Instagram</span>
+        <span style={{fontSize:11,color:'#9a9090'}}>← 1080×1920px · WhatsApp Stories e Instagram Stories</span>
       </div>
       <div ref={previewRef} style={{
         width:540, height:960,
         background:'#7ec8a0',
         borderRadius:16,
-        padding:'48px 28px 36px',
+        padding:'40px 24px 24px',
         position:'relative',
         overflow:'hidden',
         boxShadow:'0 4px 24px rgba(0,0,0,.15)',
@@ -1909,82 +1909,126 @@ function HorariosPage() {
         flexShrink:0,
         display:'flex',
         flexDirection:'column',
+        gap:0,
       }}>
-        {/* Huellas decorativas de fondo */}
-        {[{t:16,l:6,op:.12},{t:120,l:460,op:.1},{t:500,l:16,op:.1},{t:700,l:440,op:.12},{t:860,l:200,op:.08}].map((h,i)=>(
-          <div key={i} style={{position:'absolute',top:h.t,left:h.l,fontSize:56,opacity:h.op,transform:'rotate(15deg)',pointerEvents:'none',userSelect:'none'}}>🐾</div>
-        ))}
+        {/* Huellas decorativas — esquinas */}
+        <div style={{position:'absolute',top:14,left:10,opacity:.15,pointerEvents:'none',userSelect:'none',lineHeight:1}}>
+          <div style={{fontSize:28}}>🐾</div><div style={{fontSize:20,marginTop:2,marginLeft:8}}>🐾</div>
+        </div>
+        <div style={{position:'absolute',bottom:14,right:10,opacity:.15,pointerEvents:'none',userSelect:'none',lineHeight:1,textAlign:'right'}}>
+          <div style={{fontSize:20}}>🐾</div><div style={{fontSize:28,marginTop:2}}>🐾</div>
+        </div>
 
         {/* Título */}
-        <div style={{textAlign:'center',marginBottom:32,whiteSpace:'nowrap',flexShrink:0}}>
+        <div style={{textAlign:'center',marginBottom:28,flexShrink:0}}>
           <span style={{
-            fontSize:52,fontWeight:900,letterSpacing:14,
+            fontSize:50,fontWeight:900,letterSpacing:16,
             color:'#1a1a1a',textTransform:'uppercase',
             fontFamily:"'Trebuchet MS', Impact, sans-serif",
-            display:'inline-block',
+            display:'inline-block',letterSpacing:12,
           }}>HORARIOS</span>
         </div>
 
-        {/* Grid 2 columnas — ocupa el resto del espacio */}
-        <div style={{flex:1,display:'flex',flexDirection:'column',gap:14}}>
+        {/* Grid 2 columnas — cards estiran para llenar todo el alto */}
         {(() => {
           const activos = DIAS_SEMANA_HOD.filter(d => diasActivos.includes(d));
+          const numFilas = Math.ceil(activos.length / 2);
+          // Altura disponible para el grid (960 - padding top/bot - título - gaps entre filas)
+          const gridHeight = 960 - 40 - 24 - 28 - 50 - (numFilas - 1) * 14;
+          const cardHeight = Math.floor(gridHeight / numFilas);
+
           const filas = [];
           for (let i = 0; i < activos.length; i += 2) {
             const fila = activos.slice(i, i + 2);
             const esUltima = i + 2 >= activos.length;
+            const soloUno = fila.length === 1;
             filas.push(
-              <div key={i} style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:14,flex:1}}>
+              <div key={i} style={{
+                display:'grid',
+                gridTemplateColumns:'1fr 1fr',
+                gap:14,
+                height:cardHeight,
+                marginBottom: i + 2 < activos.length ? 14 : 0,
+                flexShrink:0,
+              }}>
                 {fila.map(dia => {
                   const diaDate = getDiaDate(dia);
                   const horasDia = slots[dia]||[];
                   const tomadosDia = tomados[dia]||[];
                   return (
-                    <div key={dia} style={{background:'rgba(255,255,255,0.95)',borderRadius:16,padding:'14px 16px',display:'flex',flexDirection:'column'}}>
-                      <div style={{background:'#5aba8f',borderRadius:9,padding:'9px 10px',marginBottom:12,textAlign:'center',flexShrink:0}}>
+                    <div key={dia} style={{
+                      background:'rgba(255,255,255,0.95)',
+                      borderRadius:18,
+                      padding:'16px 18px',
+                      display:'flex',
+                      flexDirection:'column',
+                      boxShadow:'0 2px 12px rgba(0,0,0,0.08)',
+                      overflow:'hidden',
+                    }}>
+                      {/* Header del día */}
+                      <div style={{
+                        background:'#5aba8f',
+                        borderRadius:10,
+                        padding:'10px 8px',
+                        marginBottom:14,
+                        textAlign:'center',
+                        flexShrink:0,
+                      }}>
                         <span style={{
-                          fontWeight:900,fontSize:18,color:'#fff',letterSpacing:1.5,
-                          fontFamily:"'Trebuchet MS', sans-serif",whiteSpace:'nowrap',
-                        }}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
+                          fontWeight:900,fontSize:19,color:'#fff',letterSpacing:1.5,
+                          fontFamily:"'Trebuchet MS', sans-serif",
+                          display:'block',lineHeight:1,
+                        }}>{DIAS_HOD_LABELS[dia].toUpperCase()}</span>
+                        <span style={{
+                          fontWeight:700,fontSize:15,color:'rgba(255,255,255,0.85)',
+                          fontFamily:"'Trebuchet MS', sans-serif",letterSpacing:1,
+                        }}>{diaDate.getDate()}</span>
                       </div>
-                      <div style={{display:'flex',flexDirection:'column',gap:5,flex:1,alignContent:'start'}}>
-                        {horasDia.map(h=>{
+                      {/* Horarios — distribuidos verticalmente */}
+                      <div style={{
+                        flex:1,
+                        display:'flex',
+                        flexDirection:'column',
+                        justifyContent:'space-evenly',
+                      }}>
+                        {horasDia.map(h => {
                           const esTomado = tomadosDia.includes(h);
                           return (
                             <div key={h} style={{
-                              fontSize:17,fontWeight:700,
-                              color:esTomado?'#b0b8b0':'#1a1a1a',
-                              textDecoration:esTomado?'line-through':'none',
+                              fontSize:16,fontWeight:700,
+                              color: esTomado ? '#c0b8b8' : '#1a1a1a',
+                              textDecoration: esTomado ? 'line-through' : 'none',
                               fontFamily:"'Trebuchet MS', sans-serif",
-                              whiteSpace:'nowrap',
-                              lineHeight:1.3,
-                            }}>• {h} hs</div>
+                              display:'flex', alignItems:'center', gap:6,
+                            }}>
+                              <span style={{color:'#5aba8f',fontSize:18,lineHeight:1}}>•</span>
+                              {h} hs
+                            </div>
                           );
                         })}
                       </div>
                     </div>
                   );
                 })}
-                {/* Si la última fila tiene 1 solo día, la imagen ocupa la columna libre */}
-                {esUltima && fila.length === 1 && (
+                {/* Última fila con 1 día: imagen en columna libre */}
+                {esUltima && soloUno && (
                   <div style={{display:'flex',alignItems:'flex-end',justifyContent:'center'}}>
-                    <img src={PELUQUERA_IMG} style={{height:200,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
+                    <img src={PELUQUERA_IMG} style={{height:cardHeight - 10,maxHeight:220,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
                   </div>
                 )}
               </div>
             );
           }
-          // Si todos los días llenaron filas completas, imagen como fila final centrada
-          if (activos.length % 2 === 0) {
+          // Número par de días: imagen pegada abajo a la derecha como fila extra
+          if (activos.length > 0 && activos.length % 2 === 0) {
             filas.push(
-              <div key="img-row" style={{display:'flex',justifyContent:'center',flexShrink:0}}>
-                <img src={PELUQUERA_IMG} style={{height:190,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
+              <div key="img-row" style={{display:'flex',justifyContent:'flex-end',marginTop:6,flexShrink:0}}>
+                <img src={PELUQUERA_IMG} style={{height:160,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
               </div>
             );
           }
           return filas;
         })()}
-        </div>
       </div>
     </section>
   );
