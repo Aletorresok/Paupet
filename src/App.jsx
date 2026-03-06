@@ -1209,10 +1209,11 @@ function HorariosPage() {
     try {
       const h2c = await loadHtml2Canvas();
       const canvas = await h2c(previewRef.current, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         backgroundColor: '#7ec8a0',
         logging: false,
+        allowTaint: true,
       });
       const link = document.createElement('a');
       link.download = `horarios_paupet_${semanaInicio.getDate()}_${MESES[semanaInicio.getMonth()]}.png`;
@@ -1309,73 +1310,69 @@ function HorariosPage() {
         <span style={{fontSize:11,color:'#9a9090'}}>← esto es lo que se descarga</span>
       </div>
       <div ref={previewRef} style={{
-        width:900, minHeight:580,
+        width:600, minHeight:600,
         background:'#7ec8a0',
         borderRadius:16,
-        padding:'28px 24px 24px',
+        padding:'36px 28px 28px',
         position:'relative',
         overflow:'hidden',
         boxShadow:'0 4px 24px rgba(0,0,0,.15)',
-        fontFamily:'Arial, sans-serif',
+        fontFamily:'Arial Black, Arial, sans-serif',
       }}>
         {/* Huellas decorativas de fondo */}
-        {[{t:40,l:20,op:.12},{t:200,l:800,op:.1},{t:480,l:60,op:.1},{t:350,l:680,op:.12}].map((h,i)=>(
-          <div key={i} style={{position:'absolute',top:h.t,left:h.l,fontSize:60,opacity:h.op,transform:'rotate(15deg)',pointerEvents:'none',userSelect:'none'}}>🐾</div>
+        {[{t:30,l:10,op:.12},{t:180,l:520,op:.1},{t:460,l:40,op:.1},{t:320,l:460,op:.12}].map((h,i)=>(
+          <div key={i} style={{position:'absolute',top:h.t,left:h.l,fontSize:50,opacity:h.op,transform:'rotate(15deg)',pointerEvents:'none',userSelect:'none'}}>🐾</div>
         ))}
 
         {/* Título */}
-        <div style={{textAlign:'center',marginBottom:22}}>
-          <div style={{fontSize:38,fontWeight:900,letterSpacing:10,color:'#1a1a1a',textTransform:'uppercase'}}>H O R A R I O S</div>
+        <div style={{textAlign:'center',marginBottom:24}}>
+          <div style={{fontSize:48,fontWeight:900,letterSpacing:12,color:'#1a1a1a',textTransform:'uppercase',fontFamily:'Arial Black, Arial, sans-serif'}}>H O R A R I O S</div>
         </div>
 
         {/* Grid dinámico: 3 columnas fijas, horarios en 2-3 cols dentro de cada card */}
         {(() => {
           const activos = DIAS_SEMANA_HOD.filter(d => diasActivos.includes(d));
           const filas = [];
-          const totalFilas = Math.ceil(activos.length / 3);
           for (let i = 0; i < activos.length; i += 3) {
             const fila = activos.slice(i, i + 3);
             const esUltima = i + 3 >= activos.length;
             const espacioLibre = esUltima && fila.length < 3;
             filas.push(
-              <div key={i} style={{display:'grid',gridTemplateColumns:`repeat(3,1fr)`,gap:14,marginBottom:14}}>
+              <div key={i} style={{display:'grid',gridTemplateColumns:`repeat(3,1fr)`,gap:12,marginBottom:12}}>
                 {fila.map(dia => {
                   const diaDate = getDiaDate(dia);
                   const horasDia = slots[dia]||[];
                   const tomadosDia = tomados[dia]||[];
-                  // Distribuir horarios en 2 o 3 columnas según cantidad
-                  const usarDosCols = horasDia.length <= 6;
                   return (
-                    <div key={dia} style={{background:'rgba(255,255,255,0.92)',borderRadius:14,padding:'14px 16px',minHeight:140}}>
-                      <div style={{background:'#7ec8a0',borderRadius:8,padding:'6px 10px',marginBottom:10,textAlign:'center'}}>
-                        <span style={{fontWeight:900,fontSize:14,color:'#1a1a1a',letterSpacing:1}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
+                    <div key={dia} style={{background:'rgba(255,255,255,0.92)',borderRadius:12,padding:'12px 14px',minHeight:130}}>
+                      <div style={{background:'#7ec8a0',borderRadius:7,padding:'7px 8px',marginBottom:10,textAlign:'center'}}>
+                        <span style={{fontWeight:900,fontSize:16,color:'#1a1a1a',letterSpacing:1,fontFamily:'Arial Black, Arial, sans-serif'}}>{DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}</span>
                       </div>
-                      <div style={{display:'grid',gridTemplateColumns:horasDia.length > 4 ? 'repeat(3,1fr)' : 'repeat(2,1fr)',gap:'2px 6px'}}>
+                      <div style={{display:'grid',gridTemplateColumns:horasDia.length > 4 ? 'repeat(3,1fr)' : 'repeat(2,1fr)',gap:'3px 4px'}}>
                         {horasDia.map(h=>{
                           const esTomado = tomadosDia.includes(h);
                           return (
-                            <div key={h} style={{fontSize:13,fontWeight:700,color:esTomado?'#b0b8b0':'#1a1a1a',padding:'2px 0',textDecoration:esTomado?'line-through':'none'}}>• {h} HS</div>
+                            <div key={h} style={{fontSize:15,fontWeight:700,color:esTomado?'#b0b8b0':'#1a1a1a',padding:'2px 0',textDecoration:esTomado?'line-through':'none',fontFamily:'Arial, sans-serif'}}>• {h} HS</div>
                           );
                         })}
                       </div>
                     </div>
                   );
                 })}
-                {/* Espacio con imagen de la peluquera o perrito */}
+                {/* Espacio con imagen de la peluquera */}
                 {espacioLibre && (
-                  <div style={{display:'flex',alignItems:'flex-end',justifyContent:'center',minHeight:140,gridColumn: fila.length === 1 ? 'span 2' : 'auto'}}>
-                    <img src={PELUQUERA_IMG} style={{height:200,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
+                  <div style={{display:'flex',alignItems:'flex-end',justifyContent:'center',minHeight:130,gridColumn: fila.length === 1 ? 'span 2' : 'auto'}}>
+                    <img src={PELUQUERA_IMG} style={{height:190,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
                   </div>
                 )}
-                {/* Si todos los días activos llenan exactamente 3 cols en la última fila, imagen extra aparte no aplica */}
               </div>
             );
           }
-          // Si todos los días llenaron filas completas, poner imagen flotante abajo a la derecha
+          // Si todos los días llenaron filas completas, imagen abajo a la derecha
           if (activos.length % 3 === 0) {
             filas.push(
-              <div key="img-row" style={{display:'flex',justifyContent:'flex-end',marginTop:-8}}>
-                <img src={PELUQUERA_IMG} style={{height:190,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
+              <div key="img-row" style={{display:'flex',justifyContent:'flex-end',marginTop:-4}}>
+                <img src={PELUQUERA_IMG} style={{height:180,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
               </div>
             );
           }
