@@ -1362,30 +1362,40 @@ function HorariosPage() {
           const botPad = 16;
           const cardGap = 8;
           const availableForCards = 960 - topArea - botPad - IMG_H - cardGap;
-          const cardH = Math.max(60, Math.floor((availableForCards - cardGap * (total - 1)) / total));
 
-          // Cabecera fija ~32px, resto disponible para slots
-          const HEADER_H = 32;
-          const slotAreaH = cardH - HEADER_H - 14; // 14 = padding top+bot
-
-          // Columnas óptimas según cantidad de slots
+          // Columnas según cantidad de slots
           const getSlotCols = (count) => {
             if (count <= 2) return 2;
             if (count <= 4) return 4;
-            if (count <= 8) return 4;
             return 4;
           };
 
-          // Font size que quepa bien en el área disponible
-          const getSlotFontSize = (count, cols) => {
-            const rows = Math.ceil(count / cols);
-            const rowH = rows > 0 ? Math.floor(slotAreaH / rows) : slotAreaH;
-            const fs = Math.floor(rowH * 0.55);
-            return Math.max(11, Math.min(20, fs));
-          };
+          // Altura de cabecera fija
+          const HEADER_H = 30;
+          const SLOT_PAD = 14; // padding top+bot del área de slots
 
-          // Header escala con cardH pero acotado
-          const headerFontSize = Math.max(12, Math.min(18, Math.round(cardH * 0.12)));
+          // Calcular cardH mínimo para que todos los slots quepan visible
+          // Usamos la card con más slots para definir la altura uniforme
+          const maxSlots = activos.reduce((mx, d) => Math.max(mx, (slots[d]||[]).length), 0);
+          const maxCols = getSlotCols(maxSlots);
+          const maxRows = Math.ceil(maxSlots / maxCols);
+
+          // Font size objetivo: grande pero que quepan todas las filas
+          // Altura disponible para slots = cardH - HEADER_H - SLOT_PAD
+          // Cada fila ocupa lineH = fontSize * 1.3 + gap(3px)
+          // Despejamos: cardH = HEADER_H + SLOT_PAD + maxRows * (fs*1.4)
+          // Queremos fs entre 14 y 22, calculamos el cardH resultante
+          const TARGET_FS = 18;
+          const lineH = TARGET_FS * 1.4;
+          const minCardHForSlots = HEADER_H + SLOT_PAD + maxRows * lineH;
+          const baseCardH = Math.max(60, Math.floor((availableForCards - cardGap * (total - 1)) / total));
+          const cardH = Math.max(baseCardH, minCardHForSlots);
+
+          // Font size real: ajusta si la card calculada da más espacio
+          const slotAreaH = cardH - HEADER_H - SLOT_PAD;
+          const rowH = maxRows > 0 ? slotAreaH / maxRows : slotAreaH;
+          const fontSize = Math.max(13, Math.min(22, Math.floor(rowH / 1.4)));
+          const headerFontSize = Math.max(12, Math.min(17, Math.floor(cardH * 0.115)));
 
           return activos.map((dia, idx) => {
             const diaDate = getDiaDate(dia);
@@ -1393,7 +1403,8 @@ function HorariosPage() {
             const tomadosDia = tomados[dia] || [];
             const disponibles = horasDia.filter(h => !tomadosDia.includes(h));
             const slotCols = getSlotCols(horasDia.length);
-            const slotFontSize = getSlotFontSize(horasDia.length, slotCols);
+            const rows = Math.ceil(horasDia.length / slotCols);
+            const rowHpx = Math.floor((cardH - HEADER_H - SLOT_PAD) / Math.max(rows, 1));
 
             return (
               <div key={dia} style={{
@@ -1410,7 +1421,7 @@ function HorariosPage() {
                 {/* Cabecera verde */}
                 <div style={{
                   background:'#5aba8f',
-                  padding:'7px 16px 6px',
+                  padding:'6px 16px 5px',
                   textAlign:'center',
                   flexShrink:0,
                 }}>
@@ -1425,27 +1436,27 @@ function HorariosPage() {
                 {/* Slots en columnas */}
                 <div style={{
                   flex:1,
-                  padding:'8px 16px 6px',
+                  padding:'6px 12px 8px',
                   display:'grid',
                   gridTemplateColumns:`repeat(${slotCols}, 1fr)`,
-                  gridAutoRows:'1fr',
-                  alignContent:'start',
-                  gap:'2px 8px',
+                  gridTemplateRows:`repeat(${rows}, ${rowHpx}px)`,
+                  gap:'0px 4px',
                   overflow:'hidden',
                 }}>
                   {horasDia.map(h => {
                     const esTomado = tomadosDia.includes(h);
                     return (
                       <div key={h} style={{
-                        fontSize:slotFontSize, fontWeight:700,
+                        fontSize:fontSize, fontWeight:700,
                         color: esTomado ? '#b8b8b8' : '#1a1a1a',
                         textDecoration: esTomado ? 'line-through' : 'none',
                         fontFamily:"'Trebuchet MS', sans-serif",
-                        display:'flex', alignItems:'center', gap:4,
-                        lineHeight:1.2,
+                        display:'flex', alignItems:'center', gap:3,
+                        lineHeight:1,
                         whiteSpace:'nowrap',
+                        overflow:'hidden',
                       }}>
-                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:slotFontSize+2}}>•</span>
+                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:fontSize+2, flexShrink:0}}>•</span>
                         {h} hs
                       </div>
                     );
