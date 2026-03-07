@@ -1364,6 +1364,11 @@ function HorariosPage() {
           const availableForCards = 960 - topArea - botPad - IMG_H - cardGap;
           const cardH = Math.max(60, Math.floor((availableForCards - cardGap * (total - 1)) / total));
 
+          // Font sizes que escalan con la altura de la card
+          const headerFontSize = Math.max(13, Math.min(22, Math.round(cardH * 0.18)));
+          const slotFontSize   = Math.max(13, Math.min(28, Math.round(cardH * 0.22)));
+          const bulletSize     = Math.max(14, Math.min(30, Math.round(cardH * 0.24)));
+
           // Columnas de slots: calcular cuántas columnas según cantidad
           const getSlotCols = (count) => {
             if (count <= 3) return 1;
@@ -1398,7 +1403,7 @@ function HorariosPage() {
                   flexShrink:0,
                 }}>
                   <span style={{
-                    fontWeight:900, fontSize:15, color:'white',
+                    fontWeight:900, fontSize:headerFontSize, color:'white',
                     letterSpacing:2, textTransform:'uppercase',
                     fontFamily:"'Trebuchet MS', sans-serif",
                   }}>
@@ -1420,7 +1425,7 @@ function HorariosPage() {
                     const esTomado = tomadosDia.includes(h);
                     return (
                       <div key={h} style={{
-                        fontSize:14, fontWeight:700,
+                        fontSize:slotFontSize, fontWeight:700,
                         color: esTomado ? '#b8b8b8' : '#1a1a1a',
                         textDecoration: esTomado ? 'line-through' : 'none',
                         fontFamily:"'Trebuchet MS', sans-serif",
@@ -1428,7 +1433,7 @@ function HorariosPage() {
                         lineHeight:1.3,
                         whiteSpace:'nowrap',
                       }}>
-                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:16}}>•</span>
+                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:bulletSize}}>•</span>
                         {h} hs
                       </div>
                     );
