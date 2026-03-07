@@ -44,15 +44,7 @@ const DEFAULT_CONFIG = {
     sabado:   {open:true,  desde:'09:00',hasta:'13:00'},
     domingo:  {open:false, desde:'09:00',hasta:'13:00'},
   },
-  slots: {
-    lunes:    [{hora:'09:00',duracion:90},{hora:'10:30',duracion:90},{hora:'12:00',duracion:90},{hora:'13:30',duracion:90},{hora:'15:00',duracion:90},{hora:'16:30',duracion:90}],
-    martes:   [{hora:'09:00',duracion:90},{hora:'10:30',duracion:90},{hora:'12:00',duracion:90},{hora:'13:30',duracion:90},{hora:'15:00',duracion:90},{hora:'16:30',duracion:90}],
-    miercoles:[{hora:'09:00',duracion:90},{hora:'10:30',duracion:90},{hora:'12:00',duracion:90},{hora:'13:30',duracion:90},{hora:'15:00',duracion:90},{hora:'16:30',duracion:90}],
-    jueves:   [{hora:'09:00',duracion:90},{hora:'10:30',duracion:90},{hora:'12:00',duracion:90},{hora:'13:30',duracion:90},{hora:'15:00',duracion:90},{hora:'16:30',duracion:90}],
-    viernes:  [{hora:'09:00',duracion:90},{hora:'10:30',duracion:90},{hora:'12:00',duracion:90},{hora:'13:30',duracion:90},{hora:'15:00',duracion:90},{hora:'16:30',duracion:90}],
-    sabado:   [{hora:'09:00',duracion:90},{hora:'10:30',duracion:90},{hora:'12:00',duracion:90},{hora:'13:30',duracion:90},{hora:'15:00',duracion:90},{hora:'16:30',duracion:90}],
-    domingo:  [],
-  }
+  slots: {}
 };
 
 // ══════════════════════════════════════════════
@@ -244,7 +236,16 @@ const db = {
       msg: data.msg,
       anticip: data.anticip,
       horarios: data.horarios || DEFAULT_CONFIG.horarios,
-      slots: data.slots || {},
+      slots: (() => {
+        const saved = data.slots || {};
+        const merged = {};
+        Object.keys(DEFAULT_CONFIG.slots).forEach(dia => {
+          // Si el día tiene slots guardados (aunque sea array vacío explícito), usa los guardados
+          // Si no existe la key en saved, usa el default
+          merged[dia] = dia in saved ? saved[dia] : DEFAULT_CONFIG.slots[dia];
+        });
+        return merged;
+      })(),
     };
   },
   async saveConfig(cfg) {
