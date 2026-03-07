@@ -1901,7 +1901,7 @@ function HorariosPage() {
         width:540, height:960,
         background:'#7ec8a0',
         borderRadius:16,
-        padding:'36px 20px 20px',
+        padding:'28px 20px 16px',
         position:'relative',
         overflow:'hidden',
         boxShadow:'0 4px 24px rgba(0,0,0,.15)',
@@ -1911,148 +1911,131 @@ function HorariosPage() {
         flexDirection:'column',
       }}>
         {/* Huellas decorativas — esquinas */}
-        <div style={{position:'absolute',top:10,left:8,opacity:.15,pointerEvents:'none',userSelect:'none',lineHeight:1}}>
-          <div style={{fontSize:24,transform:'rotate(-15deg)'}}>🐾</div>
-          <div style={{fontSize:18,marginTop:3,marginLeft:10,transform:'rotate(-5deg)'}}>🐾</div>
+        <div style={{position:'absolute',top:10,left:8,opacity:.18,pointerEvents:'none',userSelect:'none',lineHeight:1}}>
+          <div style={{fontSize:26,transform:'rotate(-15deg)'}}>🐾</div>
+          <div style={{fontSize:18,marginTop:2,marginLeft:12,transform:'rotate(-5deg)'}}>🐾</div>
         </div>
-        <div style={{position:'absolute',bottom:10,right:8,opacity:.15,pointerEvents:'none',userSelect:'none',lineHeight:1,textAlign:'right'}}>
+        <div style={{position:'absolute',top:10,right:8,opacity:.18,pointerEvents:'none',userSelect:'none',lineHeight:1,textAlign:'right'}}>
           <div style={{fontSize:18,transform:'rotate(5deg)'}}>🐾</div>
-          <div style={{fontSize:24,marginTop:3,transform:'rotate(15deg)'}}>🐾</div>
+          <div style={{fontSize:26,marginTop:2,marginRight:4,transform:'rotate(15deg)'}}>🐾</div>
+        </div>
+        <div style={{position:'absolute',bottom:140,left:8,opacity:.12,pointerEvents:'none',userSelect:'none',lineHeight:1}}>
+          <div style={{fontSize:20,transform:'rotate(-10deg)'}}>🐾</div>
+        </div>
+        <div style={{position:'absolute',bottom:140,right:12,opacity:.10,pointerEvents:'none',userSelect:'none'}}>
+          <div style={{fontSize:18,transform:'rotate(8deg)'}}>✦</div>
         </div>
 
         {/* Título */}
-        <div style={{textAlign:'center',marginBottom:24,flexShrink:0}}>
+        <div style={{textAlign:'center',marginBottom:16,flexShrink:0}}>
           <span style={{
-            fontSize:46,fontWeight:900,letterSpacing:12,
+            fontSize:50,fontWeight:900,letterSpacing:14,
             color:'#1a1a1a',textTransform:'uppercase',
             fontFamily:"'Trebuchet MS', Impact, sans-serif",
             display:'inline-block',
           }}>HORARIOS</span>
         </div>
 
-        {/* Cards — layout dinámico */}
+        {/* Cards — una por día, ancho completo */}
         {(() => {
           const activos = DIAS_SEMANA_HOD.filter(d => diasActivos.includes(d));
           const total = activos.length;
+          if (total === 0) return null;
 
-          // Altura disponible para las cards
-          const topPad = 36, botPad = 20, titleH = 46 + 24, rowGap = 14;
-          const available = 960 - topPad - botPad - titleH;
+          // Espacio disponible para cards + imagen
+          const IMG_H = 140;
+          const topArea = 28 + 50 + 16; // padding + título + marginBottom
+          const botPad = 16;
+          const cardGap = 8;
+          const availableForCards = 960 - topArea - botPad - IMG_H - cardGap;
+          const cardH = Math.max(60, Math.floor((availableForCards - cardGap * (total - 1)) / total));
 
-          // Decidir filas: hasta 3 por fila
-          const filas = [];
-          for (let i = 0; i < total; i += 3) {
-            filas.push(activos.slice(i, i + 3));
-          }
-          const numFilas = filas.length;
-          const cardH = Math.floor((available - rowGap * (numFilas - 1)) / numFilas);
+          // Columnas de slots: calcular cuántas columnas según cantidad
+          const getSlotCols = (count) => {
+            if (count <= 3) return 1;
+            if (count <= 6) return 2;
+            return 3;
+          };
 
-          // Si la última fila tiene espacio, la imagen va ahí
-          const ultimaFila = filas[filas.length - 1];
-          const tieneEspacio = ultimaFila.length < 3;
+          return activos.map((dia, idx) => {
+            const diaDate = getDiaDate(dia);
+            const horasDia = slots[dia] || [];
+            const tomadosDia = tomados[dia] || [];
+            const disponibles = horasDia.filter(h => !tomadosDia.includes(h));
+            const slotCols = getSlotCols(horasDia.length);
 
-          return filas.map((fila, fi) => {
-            const esUltima = fi === filas.length - 1;
-            const cols = tieneEspacio && esUltima ? 3 : fila.length;
             return (
-              <div key={fi} style={{
-                display:'grid',
-                gridTemplateColumns:`repeat(3, 1fr)`,
-                gap:12,
+              <div key={dia} style={{
+                background:'rgba(255,255,255,0.95)',
+                borderRadius:14,
+                overflow:'hidden',
+                display:'flex',
+                flexDirection:'column',
+                boxShadow:'0 2px 8px rgba(0,0,0,0.10)',
                 height:cardH,
-                marginBottom: fi < filas.length - 1 ? rowGap : 0,
                 flexShrink:0,
+                marginBottom: idx < total - 1 ? cardGap : 0,
               }}>
-                {fila.map(dia => {
-                  const diaDate = getDiaDate(dia);
-                  const horasDia = slots[dia] || [];
-                  const tomadosDia = tomados[dia] || [];
-                  return (
-                    <div key={dia} style={{
-                      background:'rgba(255,255,255,0.95)',
-                      borderRadius:16,
-                      overflow:'hidden',
-                      display:'flex',
-                      flexDirection:'column',
-                      boxShadow:'0 3px 10px rgba(0,0,0,0.1)',
-                    }}>
-                      {/* Cabecera verde */}
-                      <div style={{
-                        background:'#5aba8f',
-                        padding:'10px 8px 8px',
-                        textAlign:'center',
-                        flexShrink:0,
-                      }}>
-                        <div style={{
-                          fontWeight:900, fontSize:14, color:'white',
-                          letterSpacing:1.5, textTransform:'uppercase',
-                          fontFamily:"'Trebuchet MS', sans-serif",
-                          lineHeight:1.1,
-                        }}>{DIAS_HOD_LABELS[dia].toUpperCase()}</div>
-                        <div style={{
-                          fontWeight:700, fontSize:18, color:'rgba(255,255,255,0.9)',
-                          fontFamily:"'Trebuchet MS', sans-serif",
-                          lineHeight:1.1,
-                        }}>{diaDate.getDate()}</div>
-                      </div>
-                      {/* Horarios */}
-                      <div style={{
-                        flex:1,
-                        padding:'10px 10px',
-                        display:'flex',
-                        flexDirection:'column',
-                        justifyContent:'space-evenly',
-                      }}>
-                        {horasDia.map(h => {
-                          const esTomado = tomadosDia.includes(h);
-                          return (
-                            <div key={h} style={{
-                              fontSize:13, fontWeight:700,
-                              color: esTomado ? '#c0b8b8' : '#1a1a1a',
-                              textDecoration: esTomado ? 'line-through' : 'none',
-                              fontFamily:"'Trebuchet MS', sans-serif",
-                              display:'flex', alignItems:'center', gap:4,
-                              lineHeight:1.2,
-                            }}>
-                              <span style={{color:'#5aba8f', fontWeight:900}}>•</span>
-                              {h} hs
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-                {/* Columna de imagen si hay espacio en la última fila */}
-                {tieneEspacio && esUltima && ultimaFila.length < 3 && (
-                  <div style={{
-                    gridColumn: ultimaFila.length === 1 ? 'span 2' : 'auto',
-                    display:'flex', alignItems:'flex-end', justifyContent:'center',
+                {/* Cabecera verde */}
+                <div style={{
+                  background:'#5aba8f',
+                  padding:'7px 16px 6px',
+                  textAlign:'center',
+                  flexShrink:0,
+                }}>
+                  <span style={{
+                    fontWeight:900, fontSize:15, color:'white',
+                    letterSpacing:2, textTransform:'uppercase',
+                    fontFamily:"'Trebuchet MS', sans-serif",
                   }}>
-                    <img
-                      src={PELUQUERA_IMG}
-                      style={{height: cardH, maxHeight: cardH, objectFit:'contain', objectPosition:'bottom'}}
-                      alt="" crossOrigin="anonymous"
-                    />
-                  </div>
-                )}
+                    {DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}
+                  </span>
+                </div>
+                {/* Slots en columnas */}
+                <div style={{
+                  flex:1,
+                  padding:'8px 16px 6px',
+                  display:'grid',
+                  gridTemplateColumns:`repeat(${slotCols}, 1fr)`,
+                  gridAutoRows:'1fr',
+                  alignContent:'start',
+                  gap:'2px 8px',
+                  overflow:'hidden',
+                }}>
+                  {horasDia.map(h => {
+                    const esTomado = tomadosDia.includes(h);
+                    return (
+                      <div key={h} style={{
+                        fontSize:14, fontWeight:700,
+                        color: esTomado ? '#b8b8b8' : '#1a1a1a',
+                        textDecoration: esTomado ? 'line-through' : 'none',
+                        fontFamily:"'Trebuchet MS', sans-serif",
+                        display:'flex', alignItems:'center', gap:4,
+                        lineHeight:1.3,
+                        whiteSpace:'nowrap',
+                      }}>
+                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:16}}>•</span>
+                        {h} hs
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             );
           });
         })()}
 
-        {/* Si todos los días llenaron filas completas → imagen abajo centrada */}
-        {(() => {
-          const activos = DIAS_SEMANA_HOD.filter(d => diasActivos.includes(d));
-          if (activos.length > 0 && activos.length % 3 === 0) {
-            return (
-              <div key="img-row" style={{display:'flex',justifyContent:'flex-end',marginTop:10,flexShrink:0}}>
-                <img src={PELUQUERA_IMG} style={{height:130,objectFit:'contain',objectPosition:'bottom'}} alt="" crossOrigin="anonymous" />
-              </div>
-            );
-          }
-          return null;
-        })()}
+        {/* Imagen peluquera centrada abajo */}
+        <div style={{
+          display:'flex', justifyContent:'center', alignItems:'flex-end',
+          flexShrink:0, marginTop:8, height:140,
+        }}>
+          <img
+            src={PELUQUERA_IMG}
+            style={{height:140, objectFit:'contain', objectPosition:'bottom'}}
+            alt="" crossOrigin="anonymous"
+          />
+        </div>
       </div>
     </section>
   );
