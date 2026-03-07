@@ -236,16 +236,7 @@ const db = {
       msg: data.msg,
       anticip: data.anticip,
       horarios: data.horarios || DEFAULT_CONFIG.horarios,
-      slots: (() => {
-        const saved = data.slots || {};
-        const merged = {};
-        Object.keys(DEFAULT_CONFIG.slots).forEach(dia => {
-          // Si el día tiene slots guardados (aunque sea array vacío explícito), usa los guardados
-          // Si no existe la key en saved, usa el default
-          merged[dia] = dia in saved ? saved[dia] : DEFAULT_CONFIG.slots[dia];
-        });
-        return merged;
-      })(),
+      slots: data.slots || {},
     };
   },
   async saveConfig(cfg) {
@@ -1156,7 +1147,13 @@ function HorariosPage() {
     if (saved?.semanaInicio) return new Date(saved.semanaInicio);
     return proximoLunes();
   });
-  const [slots, setSlots] = useState(saved?.slots || {lunes:[],martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]});
+  const [slots, setSlots] = useState(() => {
+    const saved_slots = saved?.slots || {};
+    const def = {lunes:['09:00','10:30','12:00','13:30','15:00','16:30'],martes:['09:00','10:30','12:00','13:30','15:00','16:30'],miercoles:['09:00','10:30','12:00','13:30','15:00','16:30'],jueves:['09:00','10:30','12:00','13:30','15:00','16:30'],viernes:['09:00','10:30','12:00','13:30','15:00','16:30'],sabado:['09:00','10:30','12:00','13:30','15:00','16:30']};
+    const merged = {};
+    Object.keys(def).forEach(dia => { merged[dia] = (dia in saved_slots && saved_slots[dia].length > 0) ? saved_slots[dia] : def[dia]; });
+    return merged;
+  });
   const [diasActivos, setDiasActivos] = useState(saved?.diasActivos || ['lunes','martes','miercoles','jueves','viernes','sabado']);
   const [tomados, setTomados] = useState(saved?.tomados || {}); // {dia: [hora, ...]}
   const [nuevoSlot, setNuevoSlot] = useState({});
@@ -1246,7 +1243,7 @@ function HorariosPage() {
           <p style={{color:'#9a9090',fontSize:13,marginTop:3}}>Cargá los turnos disponibles de la semana y descargá la imagen para WhatsApp</p>
         </div>
         <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-          <button onClick={()=>{setSlots({lunes:[],martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]});setDiasActivos(['lunes','martes','miercoles','jueves','viernes','sabado']);setTomados({});}} style={{background:'none',border:'1.5px solid #ede8e8',borderRadius:50,padding:'8px 16px',fontSize:12,cursor:'pointer',color:'#9a9090',fontFamily:"'Outfit',sans-serif"}}>🗑 Limpiar</button>
+          <button onClick={()=>{setSlots({lunes:['09:00','10:30','12:00','13:30','15:00','16:30'],martes:['09:00','10:30','12:00','13:30','15:00','16:30'],miercoles:['09:00','10:30','12:00','13:30','15:00','16:30'],jueves:['09:00','10:30','12:00','13:30','15:00','16:30'],viernes:['09:00','10:30','12:00','13:30','15:00','16:30'],sabado:['09:00','10:30','12:00','13:30','15:00','16:30']});setDiasActivos(['lunes','martes','miercoles','jueves','viernes','sabado']);setTomados({});}} style={{background:'none',border:'1.5px solid #ede8e8',borderRadius:50,padding:'8px 16px',fontSize:12,cursor:'pointer',color:'#9a9090',fontFamily:"'Outfit',sans-serif"}}>🗑 Limpiar</button>
           <Btn onClick={descargarImagen} disabled={generando} style={{background:'#25d366',border:'none'}}>
             {generando ? '⏳ Generando...' : '📥 Descargar imagen'}
           </Btn>
