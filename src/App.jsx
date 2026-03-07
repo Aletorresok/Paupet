@@ -1207,13 +1207,13 @@ function HorariosPage() {
     const hora = nuevoSlot[dia]||'';
     if (!hora) return;
     const k = toKey(getDiaDate(dia));
-    setSlots(s => ({...s, [k]: [...new Set([...(s[k]||[]), hora])].sort()}));
+    setSlots(s => ({...s, [k]: [...new Set([...getSlotsDelDia(s, k, dia), hora])].sort()}));
     setNuevoSlot(n => ({...n, [dia]:''}));
   };
 
   const quitarSlot = (dia, hora) => {
     const k = toKey(getDiaDate(dia));
-    setSlots(s => ({...s, [k]: (s[k]||[]).filter(h=>h!==hora)}));
+    setSlots(s => ({...s, [k]: getSlotsDelDia(s, k, dia).filter(h=>h!==hora)}));
     setTomados(t => ({...t, [k]: (t[k]||[]).filter(h=>h!==hora)}));
   };
 
