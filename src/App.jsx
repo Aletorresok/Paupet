@@ -1147,13 +1147,7 @@ function HorariosPage() {
     if (saved?.semanaInicio) return new Date(saved.semanaInicio);
     return proximoLunes();
   });
-  const [slots, setSlots] = useState(() => {
-    const saved_slots = saved?.slots || {};
-    const def = {lunes:['09:00','10:30','12:00','13:30','15:00','16:30'],martes:['09:00','10:30','12:00','13:30','15:00','16:30'],miercoles:['09:00','10:30','12:00','13:30','15:00','16:30'],jueves:['09:00','10:30','12:00','13:30','15:00','16:30'],viernes:['09:00','10:30','12:00','13:30','15:00','16:30'],sabado:['09:00','10:30','12:00','13:30','15:00','16:30']};
-    const merged = {};
-    Object.keys(def).forEach(dia => { merged[dia] = (dia in saved_slots && saved_slots[dia].length > 0) ? saved_slots[dia] : def[dia]; });
-    return merged;
-  });
+  const [slots, setSlots] = useState(saved?.slots || {lunes:[],martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]});
   const [diasActivos, setDiasActivos] = useState(saved?.diasActivos || ['lunes','martes','miercoles','jueves','viernes','sabado']);
   const [tomados, setTomados] = useState(saved?.tomados || {}); // {dia: [hora, ...]}
   const [nuevoSlot, setNuevoSlot] = useState({});
@@ -1243,7 +1237,7 @@ function HorariosPage() {
           <p style={{color:'#9a9090',fontSize:13,marginTop:3}}>Cargá los turnos disponibles de la semana y descargá la imagen para WhatsApp</p>
         </div>
         <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-          <button onClick={()=>{setSlots({lunes:['09:00','10:30','12:00','13:30','15:00','16:30'],martes:['09:00','10:30','12:00','13:30','15:00','16:30'],miercoles:['09:00','10:30','12:00','13:30','15:00','16:30'],jueves:['09:00','10:30','12:00','13:30','15:00','16:30'],viernes:['09:00','10:30','12:00','13:30','15:00','16:30'],sabado:['09:00','10:30','12:00','13:30','15:00','16:30']});setDiasActivos(['lunes','martes','miercoles','jueves','viernes','sabado']);setTomados({});}} style={{background:'none',border:'1.5px solid #ede8e8',borderRadius:50,padding:'8px 16px',fontSize:12,cursor:'pointer',color:'#9a9090',fontFamily:"'Outfit',sans-serif"}}>🗑 Limpiar</button>
+          <button onClick={()=>{setSlots({lunes:[],martes:[],miercoles:[],jueves:[],viernes:[],sabado:[]});setDiasActivos(['lunes','martes','miercoles','jueves','viernes','sabado']);setTomados({});}} style={{background:'none',border:'1.5px solid #ede8e8',borderRadius:50,padding:'8px 16px',fontSize:12,cursor:'pointer',color:'#9a9090',fontFamily:"'Outfit',sans-serif"}}>🗑 Limpiar</button>
           <Btn onClick={descargarImagen} disabled={generando} style={{background:'#25d366',border:'none'}}>
             {generando ? '⏳ Generando...' : '📥 Descargar imagen'}
           </Btn>
@@ -1362,19 +1356,21 @@ function HorariosPage() {
           const total = activos.length;
           if (total === 0) return null;
 
-          // Espacio disponible para cards + imagen
-          const IMG_H = 140;
-          const topArea = 28 + 50 + 16; // padding + título + marginBottom
-          const botPad = 16;
-          const cardGap = 8;
-          const availableForCards = 960 - topArea - botPad - IMG_H - cardGap;
-          const cardH = Math.max(60, Math.floor((availableForCards - cardGap * (total - 1)) / total));
-
           // Columnas de slots: calcular cuántas columnas según cantidad
           const getSlotCols = (count) => {
             if (count <= 3) return 1;
             if (count <= 6) return 2;
             return 3;
+          };
+
+          // Altura por card: basada en sus propios slots (sin altura fija uniforme)
+          const HEADER_H = 34; // cabecera verde
+          const SLOT_ROW_H = 26; // altura por fila de slots
+          const CARD_PAD_V = 14; // padding vertical interno
+          const cardGap = 8;
+          const getCardH = (slotCount, cols) => {
+            const rows = Math.ceil(slotCount / cols);
+            return HEADER_H + CARD_PAD_V + rows * SLOT_ROW_H;
           };
 
           return activos.map((dia, idx) => {
@@ -1383,6 +1379,7 @@ function HorariosPage() {
             const tomadosDia = tomados[dia] || [];
             const disponibles = horasDia.filter(h => !tomadosDia.includes(h));
             const slotCols = getSlotCols(horasDia.length);
+            const cardH = getCardH(horasDia.length, slotCols);
 
             return (
               <div key={dia} style={{
