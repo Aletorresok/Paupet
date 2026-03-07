@@ -1356,37 +1356,45 @@ function HorariosPage() {
           const total = activos.length;
           if (total === 0) return null;
 
+          // Espacio vertical disponible para todas las cards
           const IMG_H = 140;
           const topArea = 28 + 50 + 16;
-          const botPad = 16;
-          const cardGap = 8;
+          const botPad = 8;
+          const cardGap = 5;
+          const HEADER_H = 30;
+          const PAD_X = 8;  // padding horizontal dentro de card
+          const PAD_Y = 4;  // padding vertical dentro de card (top+bottom)
           const availableForCards = 960 - topArea - botPad - IMG_H - cardGap * (total - 1);
-          const cardH = Math.max(60, Math.floor(availableForCards / total));
+          const cardH = Math.max(50, Math.floor(availableForCards / total));
 
-          const getSlotCols = (count) => {
-            if (count <= 3) return 1;
-            if (count <= 6) return 2;
-            return 3;
-          };
+          // Siempre 3 columnas: "09:00 hs" tiene 7 chars, con 3 cols cabe grande
+          // Ancho imagen: 1080 - 2*28 padding contenedor = 1024px
+          // Cada celda ≈ (1024 - 2*PAD_X) / 3 = ~336px → fuente ~28-32px
+          const SLOT_COLS = 3;
 
           return activos.map((dia, idx) => {
             const diaDate = getDiaDate(dia);
             const horasDia = slots[dia] || [];
             const tomadosDia = tomados[dia] || [];
-            const slotCols = getSlotCols(horasDia.length);
-            const HEADER_H = 34;
-            const slotAreaH = cardH - HEADER_H;
-            const rows = Math.ceil(horasDia.length / slotCols);
-            const fontSize = Math.min(18, Math.max(12, Math.floor(slotAreaH / rows * 0.55)));
+            const rows = Math.ceil(horasDia.length / SLOT_COLS);
+
+            // Font size: ocupa ~70% del ancho de celda disponible
+            // "09:00 hs" ≈ 8 chars, factor empírico 0.52 para Trebuchet bold
+            const cellW = (1024 - PAD_X * 2) / SLOT_COLS;
+            const fontByWidth = Math.floor(cellW * 0.52 / 8);
+            // También limitado por la altura disponible de cada fila
+            const slotAreaH = cardH - HEADER_H - PAD_Y;
+            const fontByHeight = Math.floor(slotAreaH / rows * 0.72);
+            const fontSize = Math.min(fontByWidth, fontByHeight, 38);
 
             return (
               <div key={dia} style={{
                 background:'rgba(255,255,255,0.95)',
-                borderRadius:14,
+                borderRadius:12,
                 overflow:'hidden',
                 display:'flex',
                 flexDirection:'column',
-                boxShadow:'0 2px 8px rgba(0,0,0,0.10)',
+                boxShadow:'0 2px 6px rgba(0,0,0,0.10)',
                 height:cardH,
                 flexShrink:0,
                 marginBottom: idx < total - 1 ? cardGap : 0,
@@ -1399,35 +1407,43 @@ function HorariosPage() {
                   flexShrink:0,
                 }}>
                   <span style={{
-                    fontWeight:900, fontSize:15, color:'white',
+                    fontWeight:900, fontSize:13, color:'white',
                     letterSpacing:2, textTransform:'uppercase',
                     fontFamily:"'Trebuchet MS', sans-serif",
                   }}>
                     {DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}
                   </span>
                 </div>
-                {/* Slots: grid que estira filas para llenar todo el espacio */}
+                {/* Slots: grid que estira filas para llenar TODO el espacio sin huecos */}
                 <div style={{
                   flex:1,
-                  padding:'4px 16px',
+                  padding:`${PAD_Y/2}px ${PAD_X}px`,
                   display:'grid',
-                  gridTemplateColumns:`repeat(${slotCols}, 1fr)`,
+                  gridTemplateColumns:`repeat(${SLOT_COLS}, 1fr)`,
                   gridTemplateRows:`repeat(${rows}, 1fr)`,
-                  gap:'0px 8px',
                   overflow:'hidden',
                 }}>
                   {horasDia.map(h => {
                     const esTomado = tomadosDia.includes(h);
                     return (
                       <div key={h} style={{
-                        fontSize, fontWeight:700,
-                        color: esTomado ? '#b8b8b8' : '#1a1a1a',
+                        fontSize,
+                        fontWeight:800,
+                        color: esTomado ? '#c0c0c0' : '#1a1a1a',
                         textDecoration: esTomado ? 'line-through' : 'none',
                         fontFamily:"'Trebuchet MS', sans-serif",
-                        display:'flex', alignItems:'center', gap:4,
+                        display:'flex',
+                        alignItems:'center',
+                        gap: Math.max(2, fontSize * 0.2),
                         whiteSpace:'nowrap',
+                        letterSpacing: -0.5,
                       }}>
-                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:fontSize+2}}>•</span>
+                        <span style={{
+                          color: esTomado ? '#c0c0c0' : '#5aba8f',
+                          fontWeight:900,
+                          fontSize: fontSize * 1.1,
+                          lineHeight:1,
+                        }}>•</span>
                         {h} hs
                       </div>
                     );
