@@ -1356,30 +1356,28 @@ function HorariosPage() {
           const total = activos.length;
           if (total === 0) return null;
 
-          // Columnas de slots: calcular cuántas columnas según cantidad
+          const IMG_H = 140;
+          const topArea = 28 + 50 + 16;
+          const botPad = 16;
+          const cardGap = 8;
+          const availableForCards = 960 - topArea - botPad - IMG_H - cardGap * (total - 1);
+          const cardH = Math.max(60, Math.floor(availableForCards / total));
+
           const getSlotCols = (count) => {
             if (count <= 3) return 1;
             if (count <= 6) return 2;
             return 3;
           };
 
-          // Altura por card: basada en sus propios slots (sin altura fija uniforme)
-          const HEADER_H = 34; // cabecera verde
-          const SLOT_ROW_H = 26; // altura por fila de slots
-          const CARD_PAD_V = 14; // padding vertical interno
-          const cardGap = 8;
-          const getCardH = (slotCount, cols) => {
-            const rows = Math.ceil(slotCount / cols);
-            return HEADER_H + CARD_PAD_V + rows * SLOT_ROW_H;
-          };
-
           return activos.map((dia, idx) => {
             const diaDate = getDiaDate(dia);
             const horasDia = slots[dia] || [];
             const tomadosDia = tomados[dia] || [];
-            const disponibles = horasDia.filter(h => !tomadosDia.includes(h));
             const slotCols = getSlotCols(horasDia.length);
-            const cardH = getCardH(horasDia.length, slotCols);
+            const HEADER_H = 34;
+            const slotAreaH = cardH - HEADER_H;
+            const rows = Math.ceil(horasDia.length / slotCols);
+            const fontSize = Math.min(18, Math.max(12, Math.floor(slotAreaH / rows * 0.55)));
 
             return (
               <div key={dia} style={{
@@ -1396,8 +1394,8 @@ function HorariosPage() {
                 {/* Cabecera verde */}
                 <div style={{
                   background:'#5aba8f',
-                  padding:'7px 16px 6px',
-                  textAlign:'center',
+                  height:HEADER_H,
+                  display:'flex', alignItems:'center', justifyContent:'center',
                   flexShrink:0,
                 }}>
                   <span style={{
@@ -1408,30 +1406,28 @@ function HorariosPage() {
                     {DIAS_HOD_LABELS[dia].toUpperCase()} {diaDate.getDate()}
                   </span>
                 </div>
-                {/* Slots en columnas */}
+                {/* Slots: grid que estira filas para llenar todo el espacio */}
                 <div style={{
                   flex:1,
-                  padding:'8px 16px 6px',
+                  padding:'4px 16px',
                   display:'grid',
                   gridTemplateColumns:`repeat(${slotCols}, 1fr)`,
-                  gridAutoRows:'1fr',
-                  alignContent:'start',
-                  gap:'2px 8px',
+                  gridTemplateRows:`repeat(${rows}, 1fr)`,
+                  gap:'0px 8px',
                   overflow:'hidden',
                 }}>
                   {horasDia.map(h => {
                     const esTomado = tomadosDia.includes(h);
                     return (
                       <div key={h} style={{
-                        fontSize:14, fontWeight:700,
+                        fontSize, fontWeight:700,
                         color: esTomado ? '#b8b8b8' : '#1a1a1a',
                         textDecoration: esTomado ? 'line-through' : 'none',
                         fontFamily:"'Trebuchet MS', sans-serif",
                         display:'flex', alignItems:'center', gap:4,
-                        lineHeight:1.3,
                         whiteSpace:'nowrap',
                       }}>
-                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:16}}>•</span>
+                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:fontSize+2}}>•</span>
                         {h} hs
                       </div>
                     );
