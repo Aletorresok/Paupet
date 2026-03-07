@@ -1107,6 +1107,21 @@ function ModalNota({ open, onClose, onSave, defaultTipo='compra' }) {
 const DIAS_SEMANA_HOD = ['lunes','martes','miercoles','jueves','viernes','sabado'];
 const DIAS_HOD_LABELS = {lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado'};
 
+// Slots por defecto para cada día de semana (fallback cuando no hay datos guardados para esa fecha)
+const DEFAULT_SLOTS_POR_DIA = {
+  lunes:    ["09:00","10:30","12:00","13:30","15:00","16:30"],
+  martes:   ["09:00","10:30","12:00","13:30","15:00","16:30"],
+  miercoles:["09:00","10:30","12:00","13:30","15:00","16:30"],
+  jueves:   ["09:00","10:30","12:00","13:30","15:00","16:30"],
+  viernes:  ["09:00","10:30","12:00","13:30","15:00","16:30"],
+  sabado:   ["09:00","10:30","12:00"],
+};
+
+function getSlotsDelDia(slots, fechaKey, diaNombre) {
+  if (slots[fechaKey] && slots[fechaKey].length > 0) return slots[fechaKey];
+  return DEFAULT_SLOTS_POR_DIA[diaNombre] || [];
+}
+
 // Carga html2canvas dinámicamente
 function loadHtml2Canvas() {
   return new Promise((resolve, reject) => {
@@ -1179,13 +1194,6 @@ function HorariosPage() {
     const d = new Date(semanaInicio);
     d.setDate(d.getDate() + (offsetMap[dia]||0));
     return d;
-  };
-
-  // diasActivos es ahora un array de fechas-clave activas de la semana actual
-  // Inicializar diasActivos para la semana mostrada si no existen aún
-  const getDiasActivosSemana = () => {
-    return DIAS_SEMANA_HOD.map(dia => toKey(getDiaDate(dia)))
-      .filter(k => !diasActivos.includes('NO:'+k));
   };
 
   const isDiaActivo = (dia) => !diasActivos.includes('NO:' + toKey(getDiaDate(dia)));
@@ -1286,7 +1294,7 @@ function HorariosPage() {
         {DIAS_SEMANA_HOD.map(dia => {
           const diaDate = getDiaDate(dia);
           const fechaKey = toKey(diaDate);
-          const horasDelDia = slots[fechaKey] || [];
+          const horasDelDia = getSlotsDelDia(slots, fechaKey, dia);
           const tomadosDia = tomados[fechaKey] || [];
           const activo = isDiaActivo(dia);
           return (
@@ -1399,7 +1407,7 @@ function HorariosPage() {
 
           return activos.map((dia, idx) => {
             const diaDate = getDiaDate(dia);
-            const horasDia = slots[toKey(diaDate)] || [];
+            const horasDia = getSlotsDelDia(slots, toKey(diaDate), dia);
             const tomadosDia = tomados[toKey(diaDate)] || [];
             const slotCols = getSlotCols(horasDia.length);
             const HEADER_H = 34;
