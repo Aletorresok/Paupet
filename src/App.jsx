@@ -1364,17 +1364,28 @@ function HorariosPage() {
           const availableForCards = 960 - topArea - botPad - IMG_H - cardGap;
           const cardH = Math.max(60, Math.floor((availableForCards - cardGap * (total - 1)) / total));
 
-          // Font sizes que escalan con la altura de la card
-          const headerFontSize = Math.max(13, Math.min(22, Math.round(cardH * 0.18)));
-          const slotFontSize   = Math.max(13, Math.min(28, Math.round(cardH * 0.22)));
-          const bulletSize     = Math.max(14, Math.min(30, Math.round(cardH * 0.24)));
+          // Cabecera fija ~32px, resto disponible para slots
+          const HEADER_H = 32;
+          const slotAreaH = cardH - HEADER_H - 14; // 14 = padding top+bot
 
-          // Columnas de slots: calcular cuántas columnas según cantidad
+          // Columnas óptimas según cantidad de slots
           const getSlotCols = (count) => {
-            if (count <= 3) return 1;
-            if (count <= 6) return 2;
-            return 3;
+            if (count <= 2) return 2;
+            if (count <= 4) return 4;
+            if (count <= 8) return 4;
+            return 4;
           };
+
+          // Font size que quepa bien en el área disponible
+          const getSlotFontSize = (count, cols) => {
+            const rows = Math.ceil(count / cols);
+            const rowH = rows > 0 ? Math.floor(slotAreaH / rows) : slotAreaH;
+            const fs = Math.floor(rowH * 0.55);
+            return Math.max(11, Math.min(20, fs));
+          };
+
+          // Header escala con cardH pero acotado
+          const headerFontSize = Math.max(12, Math.min(18, Math.round(cardH * 0.12)));
 
           return activos.map((dia, idx) => {
             const diaDate = getDiaDate(dia);
@@ -1382,6 +1393,7 @@ function HorariosPage() {
             const tomadosDia = tomados[dia] || [];
             const disponibles = horasDia.filter(h => !tomadosDia.includes(h));
             const slotCols = getSlotCols(horasDia.length);
+            const slotFontSize = getSlotFontSize(horasDia.length, slotCols);
 
             return (
               <div key={dia} style={{
@@ -1430,10 +1442,10 @@ function HorariosPage() {
                         textDecoration: esTomado ? 'line-through' : 'none',
                         fontFamily:"'Trebuchet MS', sans-serif",
                         display:'flex', alignItems:'center', gap:4,
-                        lineHeight:1.3,
+                        lineHeight:1.2,
                         whiteSpace:'nowrap',
                       }}>
-                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:bulletSize}}>•</span>
+                        <span style={{color:'#5aba8f', fontWeight:900, fontSize:slotFontSize+2}}>•</span>
                         {h} hs
                       </div>
                     );
