@@ -1794,7 +1794,25 @@ function HorariosPage() {
     setGenerando(true);
     try {
       const h2c = await loadHtml2Canvas();
-      const canvas = await h2c(previewRef.current, {
+      const el = previewRef.current;
+
+      // Clonar el elemento fuera del viewport para que html2canvas lo capture
+      // con su tamaño real sin interferencia del layout del browser
+      const clone = el.cloneNode(true);
+      clone.style.position = 'fixed';
+      clone.style.top = '-9999px';
+      clone.style.left = '-9999px';
+      clone.style.width = '540px';
+      clone.style.height = '960px';
+      clone.style.minWidth = '540px';
+      clone.style.maxWidth = '540px';
+      clone.style.minHeight = '960px';
+      clone.style.maxHeight = '960px';
+      clone.style.transform = 'none';
+      clone.style.zoom = '1';
+      document.body.appendChild(clone);
+
+      const canvas = await h2c(clone, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#7ec8a0',
@@ -1802,7 +1820,11 @@ function HorariosPage() {
         allowTaint: true,
         width: 540,
         height: 960,
+        scrollX: 0,
+        scrollY: 0,
       });
+
+      document.body.removeChild(clone);
       const link = document.createElement('a');
       link.download = `horarios_paupet_${semanaInicio.getDate()}_${MESES[semanaInicio.getMonth()]}.png`;
       link.href = canvas.toDataURL('image/png');
@@ -1898,7 +1920,8 @@ function HorariosPage() {
         <span style={{fontSize:11,color:'#9a9090'}}>← 1080×1920px · WhatsApp Stories e Instagram Stories</span>
       </div>
       <div ref={previewRef} style={{
-        width:540, height:960,
+        width:540, minWidth:540, maxWidth:540,
+        height:960, minHeight:960, maxHeight:960,
         background:'#7ec8a0',
         borderRadius:16,
         padding:'28px 20px 16px',
@@ -1909,6 +1932,7 @@ function HorariosPage() {
         flexShrink:0,
         display:'flex',
         flexDirection:'column',
+        boxSizing:'border-box',
       }}>
         {/* Huellas decorativas — esquinas */}
         <div style={{position:'absolute',top:10,left:8,opacity:.18,pointerEvents:'none',userSelect:'none',lineHeight:1}}>
