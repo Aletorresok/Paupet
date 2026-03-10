@@ -124,7 +124,7 @@ const db = {
     const { data, error } = await supabase
       .from('clientes')
       .select('*, visitas(*)')
-      .order('created_at', { ascending: true });
+      .order('dog', { ascending: true });
     if (error) throw error;
     // Deduplicar por dog+owner
     const seen = new Set();
@@ -414,7 +414,7 @@ function Spinner() {
 function ConfirmDialog({ open, msg, onConfirm, onCancel }) {
   if (!open) return null;
   return (
-    <div style={{position:'fixed',inset:0,zIndex:9000,background:'rgba(0,0,0,.4)',display:'flex',alignItems:'center',justifyContent:'center',padding:16,backdropFilter:'blur(4px)'}}>
+    <div onClick={e => e.target === e.currentTarget && onCancel?.()} style={{position:'fixed',inset:0,zIndex:9000,background:'rgba(0,0,0,.4)',display:'flex',alignItems:'center',justifyContent:'center',padding:16,backdropFilter:'blur(4px)'}}>
       <div style={{background:'white',borderRadius:18,padding:28,maxWidth:340,width:'100%',boxShadow:'0 12px 40px rgba(0,0,0,.15)',textAlign:'center'}}>
         <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
         <p style={{fontSize:14,marginBottom:20,lineHeight:1.6,color:'#2e2828'}}>{msg}</p>
@@ -633,7 +633,7 @@ function ClientesPage({ clientes, onOpenClient, onNuevo }) {
       <div style={{display:'grid',gridTemplateColumns:`repeat(auto-fill,minmax(${isMob?'150px':'200px'},1fr))`,gap:14}}>
         {!filtered.length ? <p style={{color:'#9a9090',fontSize:14,padding:'24px 0'}}>Sin clientes. ¡Agregá el primero!</p>
           : filtered.map(c => {
-            const ultima = c.visitas?.length ? c.visitas[c.visitas.length-1] : null;
+            const ultima = c.visitas?.length ? [...c.visitas].sort((a,b) => b.fecha.localeCompare(a.fecha))[0] : null;
             const dias = ultima ? Math.floor((Date.now()-new Date(ultima.fecha))/86400000) : null;
             const bv = dias===null?'gray':dias>30?'pink':'green';
             const bt = dias===null?'Sin visitas':dias===0?'Hoy':`Hace ${dias}d`;
@@ -1878,9 +1878,10 @@ function AppInner() {
   // ── TURNO ACTIONS ──────────────────
   const handleCompletar = async (id) => {
     const t = turnos.find(x=>x.id===id); if (!t) return;
+    if (t.estado === 'completed') return; // ya estaba completado
     try {
       await db.updateTurno(id, {estado:'completed'});
-      await db.insertVisita(t.clientId, t.servicio, t.precio||0, t.fecha);
+      if (t.clientId) await db.insertVisita(t.clientId, t.servicio, t.precio||0, t.fecha);
       await loadAll();
       toast('Turno completado y guardado en el historial 🎉');
     } catch(e) { toast(e.message, true); }
