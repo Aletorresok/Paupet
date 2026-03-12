@@ -37,7 +37,10 @@ const DIAS_CONFIG = [
 ];
 const DIAS_SEMANA_HOD = ['lunes','martes','miercoles','jueves','viernes','sabado'];
 const DIAS_HOD_LABELS = {lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado'};
-const PELUQUERA_IMG = 'https://i.imgur.com/6QqBwOP.png';
+// ⚠️ Reemplazá esta URL con la imagen subida a tu Supabase Storage
+// Para subir: Supabase Dashboard → Storage → New bucket "assets" → subir imagen
+// Luego reemplazá la URL con la pública de tu imagen
+const PELUQUERA_IMG = 'https://qelrwbavnrxdlxfckehz.supabase.co/storage/v1/object/public/Fotos/WhatsApp_Image_2026-03-06_at_19.29.42-removebg-preview.png';
 const STORAGE_KEY_HOD = 'paupet_horarios_v2';
 
 const DEFAULT_CONFIG = {
@@ -1389,6 +1392,17 @@ function HorariosPage({ horariosData, onSaveHorarios }) {
   const [diasActivos, setDiasActivos] = useState(horariosData?.diasActivos || []);
   const [tomados, setTomados] = useState(horariosData?.tomados || {});
   const [nuevoSlot, setNuevoSlot] = useState({});
+
+  // Sincronizar estado cuando llegan los datos de Supabase
+  // useState ignora cambios en props despues del montaje inicial,
+  // por eso los horarios guardados no se veian al recargar la pagina
+  useEffect(() => {
+    if (!horariosData) return;
+    if (horariosData.semanaInicio) setSemanaInicio(new Date(horariosData.semanaInicio));
+    if (horariosData.slots)       setSlots(horariosData.slots);
+    if (horariosData.diasActivos) setDiasActivos(horariosData.diasActivos);
+    if (horariosData.tomados)     setTomados(horariosData.tomados);
+  }, [horariosData]);
   const [generando, setGenerando] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const previewRef = useRef(null);
@@ -1485,7 +1499,7 @@ function HorariosPage({ horariosData, onSaveHorarios }) {
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch(e) {
-      alert('Error al generar imagen: ' + e.message);
+      toast('Error al generar imagen: ' + e.message, true);
     } finally {
       setGenerando(false);
     }
@@ -2139,9 +2153,9 @@ function LoginPage({ onLogin }) {
     if (!pw.trim()) return;
     setLoading(true); setError('');
     try {
-      const { data, err } = await supabase
+      const { data, error: loginError } = await supabase
         .from('config').select('password_hash').eq('id', 1).single();
-      if (err) throw err;
+      if (loginError) throw loginError;
       const stored = data?.password_hash || '';
       // Soporte formato "pw:CONTRASEÑA" o texto plano directo
       const expected = stored.startsWith('pw:') ? stored.slice(3) : stored;
