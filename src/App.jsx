@@ -200,7 +200,7 @@ const db = {
     }));
   },
   async insertTurno(t) {
-    const { error } = await supabase.from('turnos').insert({
+    const { data, error } = await supabase.from('turnos').insert({
       cliente_id: t.clientId,
       dog_name: t.dogName || '',
       servicio: t.servicio,
@@ -209,8 +209,9 @@ const db = {
       precio: t.precio || 0,
       estado: t.estado || 'pending',
       from_portal: t.fromPortal || false,
-    });
+    }).select('id').single();
     if (error) throw error;
+    return data;
   },
   async updateTurno(id, fields) {
     // Map camelCase clientId → cliente_id if present
@@ -1970,20 +1971,30 @@ function AppInner({ onLogout }) {
           clientId = existe.id; dogName = existe.dog;
           toast(`Cliente existente encontrado: ${existe.dog} 🐶`);
         } else {
-          const newC = await db.insertCliente({dog:form.dog,owner:form.owner,raza:form.raza,tel:form.tel,size:'',pelaje:'',notes:'',foto:null});
+          const newC = await db.insertCliente({dog:form.dog,owner:form.owner,raza:form.raza||'',tel:form.tel||'',size:'',pelaje:'',notes:'',foto:null});
+          if (!newC?.id) throw new Error('No se pudo crear el cliente. Verificá los permisos de la tabla clientes en Supabase.');
           clientId = newC.id; dogName = form.dog;
         }
       } else {
         clientId = parseInt(form.clientId);
-        if (!clientId) { toast('Seleccioná un cliente', true); return; }
+        if (!clientId || isNaN(clientId)) { toast('Seleccioná un cliente', true); return; }
       }
-      if (!form.fecha || !form.svc) { toast('Completá al menos fecha y servicio', true); return; }
-      const c = clientes.find(x=>x.id===clientId)||{};
-      await db.insertTurno({clientId, dogName:dogName||c.dog||'', servicio:form.svc, fecha:form.fecha, hora:form.hora, precio:parseFloat(form.precio)||0, estado:form.estado});
-      setModalTurno({open:false,fecha:null});
+      if (!form.fecha) { toast('Completá la fecha del turno', true); return; }
+      if (!form.svc)   { toast('Completá el servicio del turno', true); return; }
+      const c = clientes.find(x => x.id === clientId) || {};
+      await db.insertTurno({
+        clientId,
+        dogName: dogName || c.dog || '',
+        servicio: form.svc,
+        fecha: form.fecha,
+        hora: form.hora || '',
+        precio: parseFloat(form.precio) || 0,
+        estado: form.estado || 'confirmed',
+      });
+      setModalTurno({open:false, fecha:null, turnoEdit:null});
       await loadAll();
-      toast(mode==='new'?'Cliente y turno agregado 🎉':'Turno agregado 📅');
-    } catch(e) { toast(e.message, true); }
+      toast(mode === 'new' ? 'Cliente y turno agregado 🎉' : 'Turno agregado 📅');
+    } catch(e) { toast('Error: ' + e.message, true); }
   };
 
   // ── NOTAS ACTIONS ──────────────────
