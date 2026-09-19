@@ -524,20 +524,14 @@ function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino, onEditTurno
   const pending = turnos.filter(t => t.estado === 'pending');
   const conInasistencias = clientes.filter(c => c.inasistencias > 0).sort((a,b) => b.inasistencias-a.inasistencias);
 
-  // Filtros de fecha seguros por string (Evita bug del Día 1 de cada mes)
+  // Filtros de fecha seguros basados únicamente en las VISITAS (evita duplicación con turnos completados)
   const anioActual = String(hoy.getFullYear());
   const mesActualStr = `${anioActual}-${String(hoy.getMonth() + 1).padStart(2, '0')}`;
 
   const visitasDelMes = (clientes.flatMap(c => c.visitas || [])).filter(v => v.fecha && v.fecha.startsWith(mesActualStr));
-  const turnosCompletadosDelMes = turnos.filter(t => t.estado === 'completed' && t.fecha && t.fecha.startsWith(mesActualStr));
 
   let totalEfectivo = 0;
   let totalTransferencia = 0;
-
-  turnosCompletadosDelMes.forEach(t => {
-    if (t.forma_pago === 'transferencia') totalTransferencia += (t.precio || 0);
-    else totalEfectivo += (t.precio || 0);
-  });
 
   visitasDelMes.forEach(v => {
     if (v.forma_pago === 'transferencia') totalTransferencia += (v.precio || 0);
@@ -545,12 +539,11 @@ function Dashboard({ clientes, turnos, onNav, onCompletar, onNoVino, onEditTurno
   });
 
   const ingMesTotal = totalEfectivo + totalTransferencia;
-  const serviciosMes = visitasDelMes.length + turnosCompletadosDelMes.length;
+  const serviciosMes = visitasDelMes.length;
 
-  // Contador anual de servicios
+  // Contador anual de servicios basado en visitas
   const visitasDelAnio = (clientes.flatMap(c => c.visitas || [])).filter(v => v.fecha && v.fecha.startsWith(anioActual));
-  const turnosCompletadosDelAnio = turnos.filter(t => t.estado === 'completed' && t.fecha && t.fecha.startsWith(anioActual));
-  const serviciosAnio = visitasDelAnio.length + turnosCompletadosDelAnio.length;
+  const serviciosAnio = visitasDelAnio.length;
 
   const cols = isMob ? 2 : 4;
   const stats = [
@@ -1430,7 +1423,7 @@ function HorariosPage({ horariosData, onSaveHorarios }) {
   useEffect(() => {
     if (!horariosData) return;
     if (horariosData.semanaInicio) setSemanaInicio(new Date(horariosData.semanaInicio));
-    if (horariosData.slots)       setSlots(horariosData.slots);
+    if (horariosData.slots)        setSlots(horariosData.slots);
     if (horariosData.diasActivos) setDiasActivos(horariosData.diasActivos);
     if (horariosData.tomados)     setTomados(horariosData.tomados);
   }, [horariosData]);
@@ -1759,7 +1752,7 @@ function ConfigPage({ config, onSave }) {
           <div key={d.key} style={{background:'white',borderRadius:16,boxShadow:'0 2px 8px rgba(0,0,0,.06)',marginBottom:12,overflow:'hidden'}}>
             <div onClick={()=>setOpenDays(o=>({...o,[d.key]:!isExp}))} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'13px 18px',cursor:'pointer',borderBottom:isExp?'1.5px solid #ede8e8':'1.5px solid transparent'}}>
               <div style={{display:'flex',alignItems:'center',gap:12}}>
-                <span onClick={e=>{e.stopPropagation();toggleDayOpen(d.key,!isOpen);}} style={{position:'relative',display:'inline-block',width:38,height:20,cursor:'pointer'}}>
+                <span style={{position:'relative',display:'inline-block',width:38,height:20,cursor:'pointer'}}>
                   <span style={{position:'absolute',inset:0,background:isOpen?'#5fbf9b':'#d0cece',borderRadius:20,transition:'.3s',display:'block'}}/>
                   <span style={{position:'absolute',height:14,width:14,left:isOpen?21:3,top:3,background:'white',borderRadius:'50%',transition:'.3s',boxShadow:'0 1px 4px rgba(0,0,0,.2)',display:'block'}}/>
                 </span>
