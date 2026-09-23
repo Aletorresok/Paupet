@@ -5,6 +5,7 @@ import HistorialPage from './pages/historial/HistorialPage';
 import NotasPage from './pages/notas/NotasPage';
 import HorariosPage from './pages/horarios/HorariosPage';
 import ConfigPage from './pages/config/ConfigPage';
+import FinanzasPage from './pages/finanzas/FinanzasPage';
 import { todayStr } from './lib/utils';
 
 // Renderiza la página activa.
@@ -19,6 +20,8 @@ export default function AppPages({ page, setPage, data, modals, turnoActions: ta
       return <ClientesPage clientes={clientes} onOpenClient={id=>setModalCliente({open:true,id})} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>;
     case 'calendario':
       return <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={(fecha,hora)=>setModalTurno({open:true,fecha,hora,turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onDelete={ta.handleDeleteTurno} onConfirmar={ta.handleConfirmar} onEditTurno={ta.handleEditTurno}/>;
+    case 'finanzas':
+      return <FinanzasPage clientes={clientes} notas={notas} onNav={setPage} onNuevoGasto={()=>setModalNota({open:true,tipo:'egreso',initial:null})}/>;
     case 'historial':
       return <HistorialPage clientes={clientes} turnos={turnos}/>;
     case 'notas':

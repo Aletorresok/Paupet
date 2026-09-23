@@ -36,6 +36,7 @@ export const NAV_ITEMS = [
   {page:'calendario',icon:'calendar', label:'Agenda',        grupo:'dia', movil:true, badge:true},
   {page:'clientes',  icon:'users',    label:'Clientes',      grupo:'dia', movil:true},
   {page:'horarios',  icon:'camera',   label:'Horarios para Stories', grupo:'dia'},
+  {page:'finanzas',  icon:'chart',    label:'Finanzas',      grupo:'negocio'},
   {page:'historial', icon:'history',  label:'Historial',     grupo:'negocio'},
   {page:'notas',     icon:'notes',    label:'Notas y gastos',grupo:'negocio'},
   {page:'config',    icon:'settings', label:'Configuración', grupo:'negocio'},

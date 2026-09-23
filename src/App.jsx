@@ -8,11 +8,9 @@ export default function App() {
   const session = useSession();
 
   if (session === undefined) return null;
-  if (!session) return <LoginPage />;
-
   return (
     <RespProvider>
-      <AppShell onLogout={() => supabase.auth.signOut()} />
+      {session ? <AppShell onLogout={() => supabase.auth.signOut()} /> : <LoginPage />}
     </RespProvider>
   );
 }

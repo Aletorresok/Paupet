@@ -1,7 +1,9 @@
 // Resumen del mes actual. Los ingresos salen de las VISITAS (cada turno completado crea una),
 // los gastos de las notas de tipo "egreso".
-export function calcResumenMes(clientes, notas, hoy) {
-  const mes = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}`;
+// `mes`: Date (se usa su mes) o "YYYY-MM".
+export function calcResumenMes(clientes, notas, mesODate) {
+  const mes = typeof mesODate === 'string' ? mesODate
+    : `${mesODate.getFullYear()}-${String(mesODate.getMonth() + 1).padStart(2, '0')}`;
   const visitas = clientes.flatMap(c => c.visitas || []).filter(v => v.fecha && v.fecha.startsWith(mes));
   let efectivo = 0, transferencia = 0;
   visitas.forEach(v => {

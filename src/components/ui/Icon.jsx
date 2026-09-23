@@ -20,6 +20,8 @@ const PATHS = {
   left: <path d="m15 6-6 6 6 6"/>,
   right: <path d="m9 6 6 6-6 6"/>,
   paw: <><circle cx="7" cy="9" r="1.8"/><circle cx="12" cy="6.5" r="1.8"/><circle cx="17" cy="9" r="1.8"/><path d="M12 12c-3 0-5.5 3.2-5.5 5.2 0 1.6 1.4 2.3 2.7 2.3 1.1 0 1.8-.6 2.8-.6s1.7.6 2.8.6c1.3 0 2.7-.7 2.7-2.3C17.5 15.2 15 12 12 12z"/></>,
+  chart: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>,
+  download: <path d="M12 4v11m0 0-4-4m4 4 4-4M4 20h16"/>,
   repeat: <><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></>,
 };
 
