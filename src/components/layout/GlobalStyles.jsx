@@ -16,11 +16,11 @@ export default function GlobalStyles() {
       ::-webkit-scrollbar-thumb{background:#d0cece;border-radius:3px}
       button{transition:transform .1s ease-out, background-color .15s, opacity .15s}
       button:active{transform:scale(.97)}
-      @keyframes respirar{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,1.055)}}
-      .respira{animation:respirar 3.2s ease-in-out infinite;transform-origin:50% 100%}
-      @keyframes zzz{0%{opacity:0;transform:translate(0,0) scale(.55) rotate(-8deg)}15%{opacity:1}70%{opacity:.9}100%{opacity:0;transform:translate(1.1em,-2.4em) scale(1.25) rotate(8deg)}}
-      .zzz{position:absolute;font-family:'Fraunces',Georgia,serif;font-weight:600;color:#9C8763;line-height:1;pointer-events:none;animation:zzz 3.6s ease-out infinite}
-      .zzz-1{animation-delay:0s}.zzz-2{animation-delay:1.2s}.zzz-3{animation-delay:2.4s}
+      @keyframes respirar{0%,100%{transform:scale(1,1)}45%{transform:scale(1.03,1.1)}}
+      .respira{animation:respirar 2.8s ease-in-out infinite;transform-origin:50% 100%}
+      @keyframes zzz{0%{opacity:0;transform:translate(0,0) scale(.5) rotate(-10deg)}12%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translate(1em,-1.7em) scale(1.3) rotate(10deg)}}
+      .zzz{position:absolute;font-family:'Fraunces',Georgia,serif;font-weight:600;color:#6F5A3A;line-height:1;pointer-events:none;animation:zzz 3s ease-out infinite}
+      .zzz-1{animation-delay:0s}.zzz-2{animation-delay:1s}.zzz-3{animation-delay:2s}
       @media (prefers-reduced-motion: reduce){
         *,*::before,*::after{animation:none!important;transition:none!important}
         button:active{transform:none}

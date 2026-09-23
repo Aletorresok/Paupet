@@ -10,12 +10,12 @@ const ILUSTRACIONES = { durmiendo, buscando, enviado, banio };
 // El salchicha dormido respira y le salen "z" flotando (se apaga con "reducir movimiento";
 // en ese caso las z quedan quietas y visibles).
 function PerroDurmiendo({ tamanio }) {
-  const fs = Math.round(tamanio * 0.16);
+  const fs = Math.round(tamanio * 0.2);
   return (
-    <div aria-hidden="true" style={{position:'relative',width:tamanio,maxWidth:'70%',paddingTop:Math.round(tamanio*0.32),marginBottom:4}}>
+    <div aria-hidden="true" style={{position:'relative',width:tamanio,maxWidth:'70%',paddingTop:Math.round(tamanio*0.42),marginBottom:4}}>
       <img className="respira" src={durmiendo} alt="" style={{display:'block',width:'100%',height:'auto'}} />
       {[0,1,2].map(i => (
-        <span key={i} className={`zzz zzz-${i+1}`} style={{left:`${24 + i*7}%`,top:`${34 - i*12}%`,fontSize:fs*(0.8 + i*0.25)}}>z</span>
+        <span key={i} className={`zzz zzz-${i+1}`} style={{left:`${22 + i*9}%`,top:`${30 - i*9}%`,fontSize:fs*(0.8 + i*0.2)}}>z</span>
       ))}
     </div>
   );
