@@ -8,15 +8,16 @@ import PagoSelect from '../../components/ui/PagoSelect';
 import { inputStyle } from '../../lib/styles';
 import { fmtFecha, todayStr } from '../../lib/utils';
 import ClienteSelector from './ClienteSelector';
+import { DURACIONES, fmtDuracion } from '../../lib/duracion';
 
 const EMPTY_CLIENTE = {clientId:'',dog:'',owner:'',raza:'',tel:''};
 
-export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, defaultFecha, turnoEdit }) {
+export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, defaultFecha, defaultHora, defaultClientId, turnoEdit }) {
   const { isMob } = useResp();
   const isEdit = !!turnoEdit;
   const [mode, setMode] = useState('exist');
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({...EMPTY_CLIENTE,svc:'',fecha:defaultFecha||todayStr(),hora:'10:00',precio:'',formaPago:'efectivo',estado:'confirmed'});
+  const [form, setForm] = useState({...EMPTY_CLIENTE,svc:'',fecha:defaultFecha||todayStr(),hora:'10:00',precio:'',formaPago:'efectivo',estado:'confirmed',duracion:60});
 
   useEffect(() => {
     if (!open) return;
@@ -31,12 +32,13 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
         precio: String(turnoEdit.precio || ''),
         formaPago: turnoEdit.forma_pago || 'efectivo',
         estado: turnoEdit.estado   || 'confirmed',
+        duracion: turnoEdit.duracion || 60,
       });
     } else {
-      setForm(f => ({...f, ...EMPTY_CLIENTE, fecha:defaultFecha||todayStr(), svc:'', hora:'10:00', precio:'', formaPago:'efectivo', estado:'confirmed'}));
+      setForm(f => ({...f, ...EMPTY_CLIENTE, clientId: defaultClientId ? String(defaultClientId) : '', fecha:defaultFecha||todayStr(), svc:'', hora:defaultHora||'10:00', precio:'', formaPago:'efectivo', estado:'confirmed', duracion:60}));
     }
     setMode('exist');
-  }, [open, isEdit, turnoEdit, defaultFecha]);
+  }, [open, isEdit, turnoEdit, defaultFecha, defaultHora, defaultClientId]);
 
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
 
@@ -52,6 +54,7 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
         precio:   parseFloat(form.precio) || 0,
         forma_pago: form.formaPago,
         estado:   form.estado,
+        duracion: Number(form.duracion) || 60,
         clientId: form.clientId ? parseInt(form.clientId) : turnoEdit.clientId,
         dogName:  clienteSeleccionado ? clienteSeleccionado.dog : turnoEdit.dogName,
       });
@@ -77,8 +80,13 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
           <FormGroup label="Servicio"><input value={form.svc} onChange={e=>set('svc',e.target.value)} placeholder="Baño y corte" style={inputStyle} /></FormGroup>
           <FormGroup label="Fecha"><input type="date" value={form.fecha} onChange={e=>set('fecha',e.target.value)} style={inputStyle} /></FormGroup>
         </div>
-        <div style={grid}>
+        <div style={{...grid,gridTemplateColumns:isMob?'1fr 1fr':'1fr 1fr 1fr'}}>
           <FormGroup label="Hora"><input type="time" value={form.hora} onChange={e=>set('hora',e.target.value)} style={inputStyle} /></FormGroup>
+          <FormGroup label="Duración">
+            <select value={form.duracion} onChange={e=>set('duracion',e.target.value)} style={inputStyle}>
+              {DURACIONES.map(m => <option key={m} value={m}>{fmtDuracion(m)}</option>)}
+            </select>
+          </FormGroup>
           <FormGroup label="Precio ($)"><input type="number" value={form.precio} onChange={e=>set('precio',e.target.value)} placeholder="0" style={inputStyle} /></FormGroup>
         </div>
         <div style={grid}>

@@ -1,21 +1,27 @@
+import Badge from '../../components/ui/Badge';
 import Icon from '../../components/ui/Icon';
+import { C } from '../../lib/styles';
+import { useResp } from '../../context/resp';
 import { fmtFecha, fmtPeso } from '../../lib/utils';
 
-const iconBtn = {background:'none',border:'none',cursor:'pointer',fontSize:13,padding:'2px 4px'};
+const iconBtn = {background:'none',border:'none',cursor:'pointer',padding:6,borderRadius:8,display:'flex'};
 
 export default function VisitaItem({ visita: v, onEdit, onDelete }) {
+  const { isMob } = useResp();
+  const transf = v.forma_pago === 'transferencia';
   return (
-    <div style={{display:'flex',alignItems:'center',gap:10,background:'white',borderRadius:10,padding:'9px 12px',marginBottom:6,boxShadow:'0 2px 8px rgba(0,0,0,.06)'}}>
-      <div style={{width:7,height:7,borderRadius:'50%',background:'#5fbf9b',flexShrink:0}}/>
-      <div style={{flex:1,minWidth:0}}>
-        <div style={{fontSize:13,fontWeight:500}}>{v.servicio} <span style={{fontSize:11,color:'#5B6661'}}>({v.forma_pago || 'efectivo'})</span></div>
-        <div style={{fontSize:11,color:'#5B6661'}}>{fmtFecha(v.fecha)}</div>
-      </div>
-      <div style={{fontSize:13,fontWeight:600,color:'#1F5A45'}}>{fmtPeso(v.precio)}</div>
+    <div style={{display:'flex',alignItems:'center',gap:12,padding:'10px 0',borderTop:'1px solid #F0EBE4'}}>
+      <span style={{width:isMob?58:84,flexShrink:0,fontSize:14,fontWeight:600}}>{fmtFecha(v.fecha).replace(/ de (\d{4})$/, ' $1').replace(/ \d{4}$/, '')}<br/><span style={{fontSize:12,fontWeight:400,color:C.tintaSuave}}>{(v.fecha||'').slice(0,4)}</span></span>
+      <span style={{flex:1,minWidth:0,fontSize:15,display:'flex',flexDirection:'column'}}>
+        {v.servicio}
+        {isMob && <span style={{fontSize:12,color:C.tintaSuave}}>{transf ? 'Transferencia' : 'Efectivo'}</span>}
+      </span>
+      {!isMob && <Badge variant={transf ? 'blue' : 'green'}>{transf ? 'Transferencia' : 'Efectivo'}</Badge>}
+      <span style={{textAlign:'right',fontSize:15,fontWeight:600,whiteSpace:'nowrap'}}>{fmtPeso(v.precio)}</span>
       {v.id && (
-        <div style={{display:'flex',gap:4}}>
-          <button type="button" onClick={onEdit} aria-label="Editar visita" style={{...iconBtn,color:'#5B6661'}}><Icon name="edit" size={16}/></button>
-          <button type="button" onClick={onDelete} aria-label="Eliminar visita" style={{...iconBtn,color:'#B83D62'}}><Icon name="trash" size={16}/></button>
+        <div style={{display:'flex'}}>
+          <button type="button" onClick={onEdit} aria-label="Editar visita" style={{...iconBtn,color:C.tintaSuave}}><Icon name="edit" size={16}/></button>
+          <button type="button" onClick={onDelete} aria-label="Eliminar visita" style={{...iconBtn,color:C.rosa}}><Icon name="trash" size={16}/></button>
         </div>
       )}
     </div>

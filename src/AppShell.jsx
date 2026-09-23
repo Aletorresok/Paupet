@@ -67,7 +67,7 @@ export default function AppShell({ onLogout }) {
       )}
 
       <AppModals
-        modals={modals} clientes={data.clientes} turnos={data.turnos}
+        modals={modals} clientes={data.clientes} turnos={data.turnos} caps={data.caps} toast={toast}
         clienteActions={clienteActions} turnoActions={turnoActions} notaActions={notaActions}
         confirm={confirm} closeConfirm={closeConfirm}
       />

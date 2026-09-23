@@ -24,7 +24,7 @@ export default function VisitaForm({ values, onChange, isEdit, onSave, onCancel 
       </div>
       <div style={{display:'flex',gap:8}}>
         <Btn size="sm" onClick={onSave}>💾 Guardar</Btn>
-        {isEdit && <Btn size="sm" variant="ghost" onClick={onCancel}>Cancelar</Btn>}
+        <Btn size="sm" variant="ghost" onClick={onCancel}>Cancelar</Btn>
       </div>
     </div>
   );

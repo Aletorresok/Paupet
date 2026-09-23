@@ -149,8 +149,16 @@ Reglas del refactor:
       próximo turno destacado, agenda de hoy, "Ya les toca volver", recordatorios de mañana por WhatsApp, inasistencias
 - [x] Ventana "Completar y cobrar": qué se hizo, monto a mano, efectivo/transferencia, aviso de frecuencia.
       Guarda turno + visita con lo cobrado (columnas existentes: compatible con la versión anterior)
-- [ ] Agenda semanal con duraciones (necesita columna `duracion` en turnos: agregarla es compatible)
-- [ ] Ficha de cliente nueva (etiquetas, antes/después) y página de Finanzas
+- [x] Agenda: vistas Semana (escritorio) / Día (celular) / Mes. Turnos con alto según duración,
+      superposiciones marcadas en rosa + aviso, tocar un horario libre abre "Nuevo turno" con fecha y hora
+      (`pages/calendario/semana/`). Campo "Duración" en el turno
+- [x] Ficha de cliente nueva (`pages/clientes/ficha/`): acciones (dar turno, WhatsApp, editar, eliminar),
+      otros perros del mismo dueño (mismo nombre o teléfono, sin cambiar la base), frecuencia + "Agendar",
+      datos y totales, etiquetas con colores (alergia rosa / cuidados ámbar), fotos de antes y después, historial
+- [ ] **Migración 2 pendiente de correr** (`supabase/migracion_02_agenda_ficha.sql`): `turnos.duracion`,
+      `clientes.etiquetas`, tabla `fotos_cliente`. La app detecta si existe (`db.detectarCapacidades`) y
+      mientras no, usa 60 min y oculta etiquetas/fotos
+- [ ] Página de Finanzas
 - [ ] Login con el diseño de la maqueta
 - [ ] Skeletons y empty states; `lang="es"`, título y favicon en `index.html`
 
@@ -208,3 +216,4 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Imagen de Horarios: diseño nuevo agregado como opción, el clásico se mantiene.
 - 2026-09-23 — Seguridad aplicada (PR #1 mergeado, RLS activo, verificado por la dueña). Versión nueva en https://paupet-nueva.vercel.app.
 - 2026-09-23 — Rediseño aplicado en la app: estilos, menú, navegación móvil, panel Hoy y ventana de cobro.
+- 2026-09-23 — Agenda semanal con duraciones y ficha de cliente nueva. Migración 2 escrita (falta correrla).

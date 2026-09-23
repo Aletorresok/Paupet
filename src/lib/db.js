@@ -25,8 +25,25 @@ function mergeDuplicados(clientes) {
   return result;
 }
 
+// Qué columnas/tablas nuevas existen en la base (ver supabase/migracion_02_agenda_ficha.sql).
+// Mientras no se corra la migración, la app funciona igual pero sin guardar esos datos.
+export const capacidades = { duracion: false, etiquetas: false, fotos: false };
+
+const existe = async (tabla, columna = 'id') => {
+  const { error } = await supabase.from(tabla).select(columna).limit(1);
+  return !error;
+};
+
 // Capa de datos: todas las queries a Supabase.
 export const db = {
+  async detectarCapacidades() {
+    const [duracion, etiquetas, fotos] = await Promise.all([
+      existe('turnos', 'duracion'), existe('clientes', 'etiquetas'), existe('fotos_cliente'),
+    ]);
+    Object.assign(capacidades, { duracion, etiquetas, fotos });
+    return { ...capacidades };
+  },
+
   async uploadFoto(file, clienteId) {
     const ext = file.name.split('.').pop();
     const path = `clientes/${clienteId}_${Date.now()}.${ext}`;
@@ -64,7 +81,7 @@ export const db = {
     return { ...data, visitas: [] };
   },
   async updateCliente(id, fields) {
-    const allowed = ['dog','owner','raza','size','pelaje','tel','notes','foto','inasistencias'];
+    const allowed = ['dog','owner','raza','size','pelaje','tel','notes','foto','inasistencias', ...(capacidades.etiquetas ? ['etiquetas'] : [])];
     const update = Object.fromEntries(Object.entries(fields).filter(([k]) => allowed.includes(k)));
     const { error } = await supabase.from('clientes').update(update).eq('id', id);
     if (error) throw error;
@@ -89,6 +106,26 @@ export const db = {
     if (error) throw error;
   },
 
+  async getFotos(clienteId) {
+    if (!capacidades.fotos) return [];
+    const { data, error } = await supabase.from('fotos_cliente').select('*').eq('cliente_id', clienteId).order('fecha', { ascending: false });
+    if (error) throw error;
+    return data;
+  },
+  async insertFoto(clienteId, file, tipo) {
+    const ext = file.name.split('.').pop();
+    const path = `clientes/${clienteId}/${tipo}_${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from('fotos').upload(path, file);
+    if (upErr) throw upErr;
+    const url = supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
+    const { error } = await supabase.from('fotos_cliente').insert({ cliente_id: clienteId, url, tipo });
+    if (error) throw error;
+  },
+  async deleteFoto(id) {
+    const { error } = await supabase.from('fotos_cliente').delete().eq('id', id);
+    if (error) throw error;
+  },
+
   async getTurnos() {
     const { data, error } = await supabase
       .from('turnos')
@@ -101,6 +138,7 @@ export const db = {
       dogName: t.dog_name,
       fromPortal: t.from_portal,
       formaPago: t.forma_pago || 'efectivo',
+      duracion: t.duracion || 60,
     }));
   },
   async insertTurno(t) {
@@ -114,6 +152,7 @@ export const db = {
       estado: t.estado || 'pending',
       from_portal: t.fromPortal || false,
       forma_pago: t.formaPago || 'efectivo',
+      ...(capacidades.duracion && t.duracion ? { duracion: t.duracion } : {}),
     }).select('id').single();
     if (error) throw error;
     return data;
@@ -123,6 +162,7 @@ export const db = {
     if ('clientId' in mapped) { mapped.cliente_id = mapped.clientId; delete mapped.clientId; }
     if ('dogName' in mapped) { mapped.dog_name = mapped.dogName; delete mapped.dogName; }
     if ('formaPago' in mapped) { mapped.forma_pago = mapped.formaPago; delete mapped.formaPago; }
+    if (!capacidades.duracion) delete mapped.duracion;
     const { error } = await supabase.from('turnos').update(mapped).eq('id', id);
     if (error) throw error;
   },

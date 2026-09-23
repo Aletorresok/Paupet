@@ -1,3 +1,4 @@
+import { fmtDuracion } from '../../lib/duracion';
 import Icon from '../../components/ui/Icon';
 import Btn from '../../components/ui/Btn';
 import WhatsAppBtn from '../../components/ui/WhatsAppBtn';
@@ -12,7 +13,7 @@ export default function TurnoCard({ turno: t, cliente: c, onConfirmar, onComplet
     <div style={{background:'#F7F4EF',borderRadius:10,padding:'10px 12px',marginBottom:8,borderLeft:`3px solid ${borderColor(t.estado)}`,opacity:completed?.75:1}}>
       <div style={{fontSize:11,color:'#5B6661',fontWeight:600,textTransform:'uppercase'}}>{t.hora}</div>
       <div style={{fontSize:14,fontWeight:500}}>{t.dogName||c.dog}</div>
-      <div style={{fontSize:12,color:'#5B6661'}}>{t.servicio} · {fmtPeso(t.precio)} {t.forma_pago ? `(${t.forma_pago})` : ''}</div>
+      <div style={{fontSize:12,color:'#5B6661'}}>{t.servicio} · {fmtDuracion(t.duracion || 60)} · {fmtPeso(t.precio)}</div>
       <div style={{display:'flex',gap:4,marginTop:7,flexWrap:'wrap'}}>
         {t.estado==='pending' && <Btn size="xs" variant="ghost" onClick={()=>onConfirmar(t.id)}><Icon name="check" size={16}/>Confirmar</Btn>}
         {!completed && <Btn size="xs" onClick={()=>onCompletar(t.id)}>Completar y cobrar</Btn>}

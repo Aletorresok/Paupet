@@ -74,5 +74,12 @@ export function useClienteActions({ clientes, loadAll, toast, askConfirm, modals
     } catch(e) { toast(e.message, true); }
   };
 
-  return { handleSaveVisit, handleEditVisit, handleDeleteVisit, handleDeleteClient, handleSaveNewClient, handleDecrementarInasistencia };
+  const handleSaveEtiquetas = async (id, etiquetas) => {
+    try {
+      await db.updateCliente(id, { etiquetas });
+      await loadAll();
+    } catch(e) { toast(e.message, true); }
+  };
+
+  return { handleSaveEtiquetas, handleSaveVisit, handleEditVisit, handleDeleteVisit, handleDeleteClient, handleSaveNewClient, handleDecrementarInasistencia };
 }

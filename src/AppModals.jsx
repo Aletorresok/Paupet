@@ -6,7 +6,7 @@ import ModalCobro from './pages/calendario/ModalCobro';
 import ModalNota from './pages/notas/ModalNota';
 import { CLOSED_TURNO, CLOSED_NOTA, CLOSED_COBRO } from './hooks/useModals';
 
-export default function AppModals({ modals, clientes, turnos, clienteActions: ca, turnoActions: ta, notaActions: na, confirm, closeConfirm }) {
+export default function AppModals({ modals, clientes, turnos, caps, toast, clienteActions: ca, turnoActions: ta, notaActions: na, confirm, closeConfirm }) {
   const { modalCliente, setModalCliente, modalNuevoCliente, setModalNuevoCliente, modalTurno, setModalTurno, modalNota, setModalNota, modalCobro, setModalCobro } = modals;
   const turnoCobro = modalCobro.open ? turnos.find(t => t.id === modalCobro.turnoId) : null;
   const activeCliente = clientes.find(c=>c.id===modalCliente.id);
@@ -15,6 +15,10 @@ export default function AppModals({ modals, clientes, turnos, clienteActions: ca
     <>
       <ModalCliente
         open={modalCliente.open} cliente={activeCliente}
+        clientes={clientes} turnos={turnos} caps={caps} toast={toast}
+        onSelectCliente={id=>setModalCliente({open:true,id})}
+        onDarTurno={(clientId, fecha)=>{setModalCliente({open:false,id:null});setModalTurno({open:true,fecha,clientId,turnoEdit:null});}}
+        onSaveEtiquetas={ca.handleSaveEtiquetas}
         onClose={()=>setModalCliente({open:false,id:null})}
         onSaveVisit={ca.handleSaveVisit}
         onEditVisit={ca.handleEditVisit}
@@ -32,7 +36,7 @@ export default function AppModals({ modals, clientes, turnos, clienteActions: ca
         open={modalTurno.open}
         onClose={()=>setModalTurno(CLOSED_TURNO)}
         onSave={ta.handleSaveNewTurno} onUpdate={ta.handleUpdateTurno}
-        clientes={clientes} defaultFecha={modalTurno.fecha} turnoEdit={modalTurno.turnoEdit}
+        clientes={clientes} defaultFecha={modalTurno.fecha} defaultHora={modalTurno.hora} defaultClientId={modalTurno.clientId} turnoEdit={modalTurno.turnoEdit}
       />
       <ModalNota
         open={modalNota.open} defaultTipo={modalNota.tipo} initial={modalNota.initial}

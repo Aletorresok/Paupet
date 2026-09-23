@@ -109,6 +109,7 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
         precio: parseFloat(form.precio) || 0,
         estado: form.estado || 'confirmed',
         formaPago: form.formaPago || 'efectivo',
+        duracion: Number(form.duracion) || 60,
       });
       setModalTurno(CLOSED_TURNO);
       await loadAll();

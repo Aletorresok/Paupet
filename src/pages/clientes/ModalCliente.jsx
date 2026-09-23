@@ -1,95 +1,76 @@
-import Icon from '../../components/ui/Icon';
-import { useState, useEffect } from 'react';
 import Btn from '../../components/ui/Btn';
+import Icon from '../../components/ui/Icon';
 import Modal from '../../components/ui/Modal';
 import ModalHead from '../../components/ui/ModalHead';
 import WhatsAppBtn from '../../components/ui/WhatsAppBtn';
-import { serif } from '../../lib/styles';
+import { useResp } from '../../context/resp';
+import { C } from '../../lib/styles';
 import { animalIcon, todayStr } from '../../lib/utils';
 import { abrirWhatsApp } from '../../lib/whatsapp';
-import ClienteDatos from './ClienteDatos';
-import FrecuenciaBanner from './FrecuenciaBanner';
-import InasistenciasBanner from './InasistenciasBanner';
-import VisitaItem from './VisitaItem';
-import VisitaForm from './VisitaForm';
+import DatosPerro from './ficha/DatosPerro';
+import EtiquetasEditor from './ficha/EtiquetasEditor';
+import FotosAntesDespues from './ficha/FotosAntesDespues';
+import FrecuenciaCard from './ficha/FrecuenciaCard';
+import HistorialVisitas from './ficha/HistorialVisitas';
+import Seccion from './ficha/Seccion';
+import { perrosDelDueno } from './ficha/etiquetas';
 
-const emptyVisita = () => ({ svc:'', precio:'', fecha:todayStr(), formaPago:'efectivo' });
-const subtitleStyle = {fontFamily:serif,fontSize:14,fontWeight:600};
-
-export default function ModalCliente({ open, cliente, onClose, onSaveVisit, onEditVisit, onDeleteVisit, onDelete, onEdit, onDecrementarInasistencia }) {
-  const [showForm, setShowForm] = useState(false);
-  const [visitaForm, setVisitaForm] = useState(emptyVisita);
-  const [editingVisita, setEditingVisita] = useState(null);
-
-  useEffect(() => {
-    if (open) { setShowForm(false); setVisitaForm(emptyVisita()); setEditingVisita(null); }
-  }, [open]);
-
+// Ficha completa del perro: datos, frecuencia, etiquetas, fotos e historial.
+export default function ModalCliente({ open, cliente, clientes, turnos, caps, toast, onClose, onSelectCliente, onDarTurno,
+  onSaveVisit, onEditVisit, onDeleteVisit, onDelete, onEdit, onDecrementarInasistencia, onSaveEtiquetas }) {
+  const { isMob } = useResp();
   if (!open || !cliente) return null;
   const c = cliente;
-
-  const handleSaveVisita = () => {
-    const { svc, precio, fecha, formaPago } = visitaForm;
-    if (editingVisita) {
-      onEditVisit(editingVisita.id, svc, parseFloat(precio)||0, fecha, formaPago);
-      setEditingVisita(null);
-    } else {
-      onSaveVisit(c.id, svc, parseFloat(precio)||0, fecha, formaPago);
-    }
-    setShowForm(false); setVisitaForm(emptyVisita());
-  };
-
-  const startEditVisita = (v) => {
-    setEditingVisita(v);
-    setVisitaForm({ svc:v.servicio, precio:String(v.precio), fecha:v.fecha, formaPago:v.forma_pago || 'efectivo' });
-    setShowForm(true);
-  };
-
-  const toggleNuevaVisita = () => {
-    setShowForm(!showForm); setEditingVisita(null); setVisitaForm(emptyVisita());
-  };
+  const hermanos = perrosDelDueno(c, clientes);
+  const hoy = todayStr();
+  const proximo = turnos
+    .filter(t => t.clientId === c.id && t.fecha >= hoy && t.estado !== 'completed')
+    .sort((a,b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora))[0];
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <ModalHead title={c.dog} subtitle={`👤 ${c.owner}${c.tel?' · 📱 '+c.tel:''}`} onClose={onClose}
-        avatar={c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" /> : <span style={{fontSize:34}}>{animalIcon(c.raza)}</span>}
+    <Modal open={open} onClose={onClose} width={1000}>
+      <ModalHead title={c.dog} subtitle={`${c.owner || ''}${c.tel ? ' · ' + c.tel : ''}`} onClose={onClose}
+        avatar={c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" /> : <span style={{fontSize:30}}>{animalIcon(c.raza)}</span>}
       />
-      <div style={{padding:'18px 22px'}}>
-        <ClienteDatos cliente={c} />
-        <FrecuenciaBanner visitas={c.visitas} />
-
-        {(c.inasistencias||0) > 0 && (
-          <InasistenciasBanner cantidad={c.inasistencias} onRestar={() => onDecrementarInasistencia(c.id)} />
-        )}
-
-        <div style={{...subtitleStyle,marginBottom:6}}>Notas</div>
-        <div style={{background:'#FBE7EC',borderRadius:10,padding:'10px 13px',fontSize:13,lineHeight:1.6,borderLeft:'3px solid #B83D62',marginBottom:14}}>{c.notes||'Sin notas especiales.'}</div>
-
-        <div style={{...subtitleStyle,margin:'14px 0 8px'}}>Historial de visitas</div>
-        {!(c.visitas||[]).length ? <p style={{fontSize:13,color:'#5B6661'}}>Sin visitas aún</p>
-          : [...(c.visitas||[])].sort((a,b) => (b.fecha||'').localeCompare(a.fecha||'')).map((v,i) => (
-            <VisitaItem key={v.id||i} visita={v} onEdit={() => startEditVisita(v)} onDelete={() => onDeleteVisit(v.id)} />
-          ))
-        }
-
-        <div style={{display:'flex',gap:8,marginTop:14,flexWrap:'wrap'}}>
-          <Btn size="sm" onClick={toggleNuevaVisita}>
-            {showForm && !editingVisita ? 'Cancelar' : '+ Registrar visita'}
-          </Btn>
-          {c.tel && <WhatsAppBtn size="sm" onClick={() => abrirWhatsApp(c.tel, c.dog, c.owner)}>WhatsApp</WhatsAppBtn>}
-          <Btn size="sm" variant="ghost" onClick={() => onEdit(c)}><Icon name="edit" size={16}/>Editar</Btn>
-          <Btn size="sm" variant="danger" onClick={() => onDelete(c.id)}><Icon name="trash" size={16}/>Eliminar</Btn>
+      <div style={{padding:isMob?'16px':'18px 22px',display:'flex',flexDirection:'column',gap:16,background:C.fondo}}>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}}>
+          <Btn onClick={() => onDarTurno(c.id, todayStr())}><Icon name="plus" strokeWidth={2}/>Dar turno</Btn>
+          {c.tel && <WhatsAppBtn size="" onClick={() => abrirWhatsApp(c.tel, c.dog, c.owner)}>WhatsApp</WhatsAppBtn>}
+          <Btn variant="ghost" onClick={() => onEdit(c)}><Icon name="edit" size={16}/>Editar</Btn>
+          <Btn variant="danger" onClick={() => onDelete(c.id)}><Icon name="trash" size={16}/>Eliminar</Btn>
         </div>
 
-        {showForm && (
-          <VisitaForm
-            values={visitaForm}
-            onChange={setVisitaForm}
-            isEdit={!!editingVisita}
-            onSave={handleSaveVisita}
-            onCancel={() => { setEditingVisita(null); setShowForm(false); }}
-          />
+        {hermanos.length > 0 && (
+          <div style={{display:'flex',gap:8,alignItems:'center',flexWrap:'wrap',fontSize:14,color:C.tintaSuave}}>
+            Otros perros de {c.owner}:
+            {hermanos.map(h => (
+              <button key={h.id} type="button" onClick={() => onSelectCliente(h.id)} style={{display:'flex',alignItems:'center',gap:8,height:40,padding:'0 14px 0 6px',borderRadius:12,border:`1px solid ${C.linea}`,background:'white',fontFamily:'inherit',fontSize:14,fontWeight:500,cursor:'pointer',color:C.tinta}}>
+                <span style={{width:28,height:28,borderRadius:'50%',background:C.rosaSuave,display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',fontSize:15}}>
+                  {h.foto ? <img src={h.foto} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/> : animalIcon(h.raza)}
+                </span>
+                {h.dog}
+              </button>
+            ))}
+          </div>
         )}
+
+        <FrecuenciaCard cliente={c} proximoTurno={proximo} onAgendar={fecha => onDarTurno(c.id, fecha)} />
+
+        <div style={{display:'grid',gridTemplateColumns:isMob?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1.15fr)',gap:16,alignItems:'start'}}>
+          <div style={{display:'flex',flexDirection:'column',gap:16,minWidth:0}}>
+            <Seccion titulo="Datos">
+              <DatosPerro cliente={c} onRestarInasistencia={() => onDecrementarInasistencia(c.id)} />
+            </Seccion>
+            <Seccion titulo="A tener en cuenta">
+              <EtiquetasEditor etiquetas={c.etiquetas || []} habilitado={caps.etiquetas} onChange={e => onSaveEtiquetas(c.id, e)} />
+              {c.notes && <p style={{fontSize:14,lineHeight:1.5,background:C.fondo,borderRadius:10,padding:'10px 12px',margin:0}}>{c.notes}</p>}
+            </Seccion>
+            <Seccion titulo="Antes y después">
+              <FotosAntesDespues clienteId={c.id} habilitado={caps.fotos} toast={toast} />
+            </Seccion>
+          </div>
+          <HistorialVisitas cliente={c} onSaveVisit={onSaveVisit} onEditVisit={onEditVisit} onDeleteVisit={onDeleteVisit} />
+        </div>
       </div>
     </Modal>
   );
