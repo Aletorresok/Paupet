@@ -1,17 +1,18 @@
-import { useState } from 'react';
 import RespProvider from './context/RespProvider';
-import { SESSION_KEY } from './lib/constants';
+import { supabase } from './lib/supabase';
+import { useSession } from './hooks/useSession';
 import LoginPage from './pages/login/LoginPage';
 import AppShell from './AppShell';
 
 export default function App() {
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1');
+  const session = useSession();
 
-  if (!authed) return <LoginPage onLogin={() => setAuthed(true)} />;
+  if (session === undefined) return null;
+  if (!session) return <LoginPage />;
 
   return (
     <RespProvider>
-      <AppShell onLogout={() => { sessionStorage.removeItem(SESSION_KEY); setAuthed(false); }} />
+      <AppShell onLogout={() => supabase.auth.signOut()} />
     </RespProvider>
   );
 }
