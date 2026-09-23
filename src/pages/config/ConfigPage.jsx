@@ -4,9 +4,10 @@ import Btn from '../../components/ui/Btn';
 import PageHeader from '../../components/ui/PageHeader';
 import { DIAS_CONFIG } from '../../lib/constants';
 import ConfigGeneral from './ConfigGeneral';
+import RespaldoCard from './RespaldoCard';
 import DiaConfigCard from './DiaConfigCard';
 
-export default function ConfigPage({ config, onSave }) {
+export default function ConfigPage({ config, onSave, toast }) {
   const { isMob } = useResp();
   const [nombre, setNombre] = useState(config.nombre);
   const [msg, setMsg] = useState(config.msg||'');
@@ -35,6 +36,7 @@ export default function ConfigPage({ config, onSave }) {
       <PageHeader title="Configuración" subtitle="Horarios por día (para el portal de reservas)">
         <Btn onClick={()=>onSave({nombre,msg,anticip:parseInt(anticip),slots,horarios})} size={isMob?'sm':''}>💾 Guardar todo</Btn>
       </PageHeader>
+      <RespaldoCard toast={toast} />
       <ConfigGeneral nombre={nombre} anticip={anticip} msg={msg} onNombre={setNombre} onAnticip={setAnticip} onMsg={setMsg} />
       {DIAS_CONFIG.map(d=>{
         const daySlots=(slots[d.key]||[]).slice().sort((a,b)=>a.hora.localeCompare(b.hora));

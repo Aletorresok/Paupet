@@ -29,6 +29,18 @@ function mergeDuplicados(clientes) {
 // Mientras no se corra la migración, la app funciona igual pero sin guardar esos datos.
 export const capacidades = { duracion: false, etiquetas: false, fotos: false };
 
+// Supabase devuelve como máximo 1000 filas por consulta: se piden por tandas hasta traer todo.
+// `consulta` es una función que arma la query (sin .range) para poder repetirla.
+export async function traerTodo(consulta, tanda = 1000) {
+  const filas = [];
+  for (let desde = 0; ; desde += tanda) {
+    const { data, error } = await consulta().range(desde, desde + tanda - 1);
+    if (error) throw error;
+    filas.push(...data);
+    if (data.length < tanda) return filas;
+  }
+}
+
 const existe = async (tabla, columna = 'id') => {
   const { error } = await supabase.from(tabla).select(columna).limit(1);
   return !error;
@@ -54,11 +66,11 @@ export const db = {
   },
 
   async getClientes() {
-    const { data, error } = await supabase
+    const data = await traerTodo(() => supabase
       .from('clientes')
       .select('*, visitas(*)')
-      .order('dog', { ascending: true });
-    if (error) throw error;
+      .order('dog', { ascending: true })
+      .order('id', { ascending: true }));
     return mergeDuplicados(data.map(c => ({
       ...c,
       visitas: (c.visitas || []).map(v => ({
@@ -127,11 +139,11 @@ export const db = {
   },
 
   async getTurnos() {
-    const { data, error } = await supabase
+    const data = await traerTodo(() => supabase
       .from('turnos')
       .select('*')
-      .order('fecha', { ascending: true });
-    if (error) throw error;
+      .order('fecha', { ascending: true })
+      .order('id', { ascending: true }));
     return data.map(t => ({
       ...t,
       clientId: t.cliente_id,
@@ -183,8 +195,7 @@ export const db = {
   },
 
   async getNotas() {
-    const { data, error } = await supabase.from('notas').select('*').order('created_at', { ascending: false });
-    if (error) throw error;
+    const data = await traerTodo(() => supabase.from('notas').select('*').order('created_at', { ascending: false }).order('id', { ascending: true }));
     return data.map(n => ({ ...n, notas: n.notas_texto }));
   },
   async insertNota(n) {

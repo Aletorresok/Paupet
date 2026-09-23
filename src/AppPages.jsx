@@ -9,7 +9,7 @@ import FinanzasPage from './pages/finanzas/FinanzasPage';
 import { todayStr } from './lib/utils';
 
 // Renderiza la página activa.
-export default function AppPages({ page, setPage, data, modals, turnoActions: ta, notaActions: na, configActions }) {
+export default function AppPages({ page, setPage, data, modals, toast, turnoActions: ta, notaActions: na, configActions }) {
   const { clientes, turnos, notas, config } = data;
   const { setModalCliente, setModalNuevoCliente, setModalTurno, setModalNota } = modals;
 
@@ -29,7 +29,7 @@ export default function AppPages({ page, setPage, data, modals, turnoActions: ta
     case 'horarios':
       return <HorariosPage horariosData={config.horariosSemanales} onSaveHorarios={configActions.handleSaveHorarios}/>;
     case 'config':
-      return <ConfigPage config={config} onSave={configActions.handleSaveConfig}/>;
+      return <ConfigPage config={config} onSave={configActions.handleSaveConfig} toast={toast}/>;
     default:
       return null;
   }

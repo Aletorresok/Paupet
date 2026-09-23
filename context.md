@@ -202,6 +202,19 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - Navegación: menú lateral claro en escritorio; barra inferior (Hoy/Agenda/Clientes/Más) + botón flotante en celular
 - Los datos de la maqueta son de ejemplo
 
+## Copias de seguridad
+- El plan gratis de Supabase no tiene copias restaurables → botón **Configuración → Copia de seguridad**
+  (`lib/respaldo.js`): descarga un JSON con todas las tablas tal cual (clientes, visitas, turnos, notas,
+  config y fotos_cliente si existe). Recordatorio en el panel si pasaron más de 7 días (por dispositivo).
+- Restaurar: todavía manual (pedírselo a Claude con el archivo).
+- Todas las lecturas usan `traerTodo()` (tandas de 1000): antes, pasando las 1000 filas, los turnos
+  más nuevos dejaban de aparecer.
+
+## Incidente 2026-09-23 (falsa alarma)
+- Parecía que faltaban clientes/turnos de la semana. Verificado en Supabase: los clientes estaban (hasta id 112)
+  y no había turnos después del 18/9 porque Pau no había cargado ninguno. Faltan ids 94 y 96 (antiguos).
+- Se encontró y arregló: la vista Semana ocultaba turnos sin hora.
+
 ## Preguntas abiertas
 - Portal de reservas: a medio hacer, sin decidir si se hace.
 - ¿Protección de previews de Vercel activada? Si sí, la novia necesitaría login de Vercel: desactivarla o asignar un dominio a la rama.
@@ -221,3 +234,4 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Rediseño aplicado en la app: estilos, menú, navegación móvil, panel Hoy y ventana de cobro.
 - 2026-09-23 — Agenda semanal con duraciones y ficha de cliente nueva. Migración 2 escrita (falta correrla).
 - 2026-09-23 — Finanzas y login nuevo. Con esto están todas las pantallas de la maqueta.
+- 2026-09-23 — Copia de seguridad descargable + recordatorio semanal; lecturas paginadas (sin límite de 1000).
