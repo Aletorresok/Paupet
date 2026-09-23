@@ -22,7 +22,7 @@ language sql
 stable
 security definer
 set search_path = public
-as $$
+as $funcion$
   with
   ahora as (
     select (now() at time zone 'America/Argentina/Buenos_Aires') as t
@@ -44,7 +44,7 @@ as $$
   ),
   ocupados as (
     select left(t.fecha::text, 10) as fecha,
-           case when t.hora ~ '^([01]?\d|2[0-3]):[0-5]\d' then substring(t.hora from '^\d{1,2}:\d{2}')::time end as desde,
+           case when t.hora ~ '^([01]{0,1}\d|2[0-3]):[0-5]\d' then substring(t.hora from '^\d{1,2}:\d{2}')::time end as desde,
            greatest(coalesce(t.duracion, 60), 1) as minutos
     from turnos t
   )
@@ -55,9 +55,9 @@ as $$
     -- con al menos una hora de anticipación
     and o.fecha + o.hora_t > ahora.t + interval '1 hour'
     -- día apagado en "Horarios para Stories"
-    and not (coalesce(semana.h->'diasActivos', '[]'::jsonb) ? ('NO:' || o.fecha::text))
+    and not (coalesce(semana.h->'diasActivos', '[]'::jsonb) @> jsonb_build_array('NO:' || o.fecha::text))
     -- horario marcado como tomado
-    and not (coalesce(semana.h->'tomados'->(o.fecha::text), '[]'::jsonb) ? o.hora)
+    and not (coalesce(semana.h->'tomados'->(o.fecha::text), '[]'::jsonb) @> jsonb_build_array(o.hora))
     -- ya hay un turno en ese momento
     and not exists (
       select 1 from ocupados x
@@ -66,7 +66,7 @@ as $$
         and o.hora_t <  x.desde + make_interval(mins => x.minutos)
     )
   order by o.fecha, o.hora;
-$$;
+$funcion$;
 
 revoke all on function public.horarios_libres() from public;
 grant execute on function public.horarios_libres() to anon, authenticated;
