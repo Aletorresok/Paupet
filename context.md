@@ -241,12 +241,12 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   Ganancia neta (no pasa contraste); cambiar etiquetas de días (ya pasan contraste).
 - Avatares ilustrados por raza (`src/assets/avatares`, `lib/avatarPerro.js`, `PetAvatar`): caniche, golden,
   salchicha, yorkie/terrier, ovejero; cualquier otra → mestizo. Gatos siguen con 🐱. Reemplazan los emojis.
-- Micro-interacciones: vibración corta en cada aviso (doble si es error), transición al tocar botones,
+- Micro-interacciones: transición al tocar botones (la vibración se probó y se sacó por pedido),
   el salchicha dormido "respira", y todo se apaga con "reducir movimiento".
 - /turnos: días en fila deslizable (con cantidad de libres) y los horarios del día elegido abajo.
 - Descartado de Gemini: verde #25D366 con texto blanco en el botón (no pasa contraste); sacar la vista previa
   del mensaje (da confianza de qué se manda).
-- Para decidir con Pau: "Caja de hoy" en el inicio (prompt 7) y carrusel de fotos reales en /turnos (prompt 8).
+- "Caja de hoy" en el inicio: por ahora no (Pau decide más adelante). Fotos reales en /turnos: sin decidir.
 
 ## Incidente 2026-09-23 (falsa alarma)
 - Parecía que faltaban clientes/turnos de la semana. Verificado en Supabase: los clientes estaban (hasta id 112)
