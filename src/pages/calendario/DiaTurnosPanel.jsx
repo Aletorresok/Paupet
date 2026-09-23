@@ -13,7 +13,7 @@ export default function DiaTurnosPanel({ selectedDay, turnos, clientes, ...actio
         {selectedDay ? fmtFecha(selectedDay) : 'Seleccioná un día'}
       </div>
       {!selectedDay ? <p style={empty}>Hacé click en un día del calendario</p>
-        : !turnos.length ? <EstadoVacio ilustracion="durmiendo" texto="Sin turnos para este día" tamanio={120} />
+        : !turnos.length ? <EstadoVacio ilustracion="durmiendo" texto="Sin turnos para este día" tamanio={130} style={{padding:'32px 8px'}} />
         : turnos.map(t => (
           <TurnoCard key={t.id} turno={t} cliente={clientes.find(x=>x.id===t.clientId)||{}} {...actions} />
         ))

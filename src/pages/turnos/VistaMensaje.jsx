@@ -1,8 +1,6 @@
-import { useState } from 'react';
-import Icon from '../../components/ui/Icon';
 import EstadoVacio from '../../components/ui/EstadoVacio';
 import { WHATSAPP_PAU_VISIBLE } from '../../lib/constants';
-import { linkWhatsApp } from './mensajeTurno';
+import BotonEnviar from './BotonEnviar';
 
 // Cómo le llega el mensaje a Pau, en *negrita* estilo WhatsApp.
 function Burbuja({ texto }) {
@@ -18,9 +16,8 @@ function Burbuja({ texto }) {
   );
 }
 
-export default function VistaMensaje({ texto, faltan }) {
+export default function VistaMensaje({ texto, faltan, enviado, onEnviado }) {
   const listo = faltan.length === 0;
-  const [enviado, setEnviado] = useState(false);
   return (
     <aside className="pt-lado" aria-labelledby="pt-t-msj">
       <span className="pt-eyebrow" id="pt-t-msj">El mensaje que le llega a Pau</span>
@@ -31,12 +28,8 @@ export default function VistaMensaje({ texto, faltan }) {
         </div>
         <Burbuja texto={texto} />
       </div>
-      {!listo && <p className="pt-falta">Falta completar: {faltan.join(', ')}.</p>}
-      <a className="pt-enviar" href={listo ? linkWhatsApp(texto) : undefined} target="_blank" rel="noopener noreferrer"
-        aria-disabled={!listo} onClick={e => { if (!listo) e.preventDefault(); else setEnviado(true); }}>
-        <Icon name="chat" size={22} strokeWidth={1.9} />
-        Enviar por WhatsApp
-      </a>
+      {!listo && <p className="pt-falta pt-falta-lado">Falta completar: {faltan.join(', ')}.</p>}
+      <BotonEnviar className="pt-enviar-lado" texto={texto} listo={listo} onEnviado={onEnviado} />
       {enviado && listo && (
         <EstadoVacio ilustracion="enviado" titulo="¡Listo! Se abrió WhatsApp"
           texto="Tocá enviar en el chat y Pau te responde para confirmar. Si no se abrió, tocá de nuevo el botón verde." tamanio={130} />

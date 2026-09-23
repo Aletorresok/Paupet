@@ -231,6 +231,16 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   `fondosStory.js`). Falta feedback de Pau para elegir el definitivo.
 - Al pedir más a Gemini: "fondo blanco liso" (no transparente) y PNG ≥ 2048 px; íconos como código SVG.
 
+## Pulido visual (revisión de Gemini, 2026-09-23)
+- Hecho: /turnos con campos y botones más visibles, más aire y botón de WhatsApp fijo abajo en el celular;
+  ficha con Editar/Eliminar en menú "⋯" (`MenuMas`), datos en negrita, historial con filas más altas y fecha corta;
+  Clientes en una columna en el celular; Historial (celular) perro/dueño/servicio a la izquierda y precio/fecha
+  a la derecha; "Ya les toca volver" con el botón de WhatsApp siempre alineado; aviso de copia en una línea
+  (si se cierra, no vuelve hasta el día siguiente); gráfico con guía a mitad y línea base; sombra del botón +.
+- Descartado: unificar "Registrar gasto" con el + (hacen cosas distintas); número en menta sobre blanco en
+  Ganancia neta (no pasa contraste); cambiar etiquetas de días (ya pasan contraste).
+- Pendiente con Gemini: avatares por defecto (caras de perro en el mismo estilo) para reemplazar los emojis.
+
 ## Incidente 2026-09-23 (falsa alarma)
 - Parecía que faltaban clientes/turnos de la semana. Verificado en Supabase: los clientes estaban (hasta id 112)
   y no había turnos después del 18/9 porque Pau no había cargado ninguno. Faltan ids 94 y 96 (antiguos).

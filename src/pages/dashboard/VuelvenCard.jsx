@@ -13,14 +13,14 @@ export default function VuelvenCard({ items, onOpenClient }) {
       <p style={{fontSize:13,color:C.tintaSuave,marginBottom:8}}>Según cada cuánto viene cada perro · sin turno agendado</p>
       {!items.length ? <p style={{fontSize:14,color:C.tintaSuave,padding:'8px 0'}}>Nadie atrasado por ahora.</p>
         : items.map(({ cliente: c, frec: f }) => (
-          <div key={c.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderTop:'1px solid #F0EBE4'}}>
+          <div key={c.id} style={{display:'grid',gridTemplateColumns:'auto minmax(0,1fr) 44px',alignItems:'center',gap:12,padding:'10px 0',minHeight:64,boxSizing:'border-box',borderTop:'1px solid #F0EBE4'}}>
             <PetAvatar cliente={c} />
             <button type="button" onClick={() => onOpenClient(c.id)} style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',background:'none',border:'none',padding:0,textAlign:'left',fontFamily:'inherit',cursor:'pointer',color:C.tinta}}>
-              <span style={{fontSize:14,fontWeight:500}}>{c.dog} <span style={{fontWeight:400,color:C.tintaSuave}}>· {c.owner}</span></span>
+              <span style={{fontSize:15,fontWeight:600}}>{c.dog} <span style={{fontWeight:400,color:C.tintaSuave}}>· {c.owner}</span></span>
               <span style={{fontSize:12,color:C.tintaSuave}}>Cada {fmtCada(f.cadaDias)} · última hace {f.diasDesdeUltima} días</span>
+              <span style={{marginTop:4}}><Badge variant={f.estado==='vencido'?'pink':'orange'}>{fmtRestantes(f)}</Badge></span>
             </button>
-            <Badge variant={f.estado==='vencido'?'pink':'orange'}>{fmtRestantes(f)}</Badge>
-            {c.tel && <WhatsAppBtn onClick={() => abrirWhatsAppVuelta(c.tel, c.dog, c.owner)} />}
+            {c.tel ? <WhatsAppBtn size="" onClick={() => abrirWhatsAppVuelta(c.tel, c.dog, c.owner)} /> : <span/>}
           </div>
         ))
       }

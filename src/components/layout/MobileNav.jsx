@@ -22,7 +22,7 @@ export default function MobileNav({ activePage, onNav, pendingCount, onNuevoTurn
       <button type="button" onClick={onNuevoTurno} aria-label="Nuevo turno" style={{
         position:'fixed',right:16,bottom:92,zIndex:50,width:60,height:60,borderRadius:18,border:'none',
         background:C.menta,color:C.sobreMenta,display:'flex',alignItems:'center',justifyContent:'center',
-        boxShadow:'0 10px 24px rgba(95,191,155,.45)',cursor:'pointer',
+        boxShadow:'0 8px 20px rgba(19,48,42,.28), 0 2px 6px rgba(19,48,42,.18)',cursor:'pointer',
       }}>
         <Icon name="plus" size={26} strokeWidth={2} />
       </button>

@@ -37,7 +37,7 @@ export default function FinanzasPage({ clientes, notas, onNuevoGasto, onNav }) {
         <div style={{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}}>
           <MesNav mes={mes} onChange={setMes} />
           <Btn variant="ghost" onClick={() => descargarCsv(csvDelMes(clientes, notas, mes), `paupet_${mes}.csv`)}><Icon name="download"/>{isMob ? 'CSV' : 'Exportar CSV'}</Btn>
-          <Btn onClick={onNuevoGasto}><Icon name="plus" strokeWidth={2}/>Registrar gasto</Btn>
+          <Btn variant="ghost" onClick={onNuevoGasto}><Icon name="plus" strokeWidth={2}/>Registrar gasto</Btn>
         </div>
       </PageHeader>
 

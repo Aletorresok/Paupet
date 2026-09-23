@@ -3,6 +3,7 @@ import GlobalStyles from '../../components/layout/GlobalStyles';
 import Chips from './Chips';
 import ElegirHorario from './ElegirHorario';
 import VistaMensaje from './VistaMensaje';
+import BotonEnviar from './BotonEnviar';
 import { useHorariosLibres } from './useHorariosLibres';
 import { armarMensaje } from './mensajeTurno';
 import { ESTILOS_TURNOS } from './estilos';
@@ -20,6 +21,7 @@ const VACIO = {
 export default function PedirTurnoPage() {
   const [f, setF] = useState(VACIO);
   const [aMano, setAMano] = useState(false);
+  const [enviado, setEnviado] = useState(false);
   const { cargando, dias } = useHorariosLibres();
   const set = (campo, valor) => setF(x => ({ ...x, [campo]: valor }));
 
@@ -88,8 +90,13 @@ export default function PedirTurnoPage() {
           </section>
         </div>
 
-        <VistaMensaje texto={texto} faltan={faltan} />
+        <VistaMensaje texto={texto} faltan={faltan} enviado={enviado} onEnviado={() => setEnviado(true)} />
       </main>
+      {/* En el celular el botón queda fijo abajo, siempre a mano. */}
+      <div className="pt-barra">
+        {faltan.length > 0 && <p className="pt-falta">Falta: {faltan.join(', ')}.</p>}
+        <BotonEnviar texto={texto} listo={faltan.length === 0} onEnviado={() => setEnviado(true)} />
+      </div>
     </>
   );
 }

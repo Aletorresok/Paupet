@@ -25,7 +25,9 @@ export default function BarrasMeses({ serie, mesSel, onSelectMes }) {
       <div style={{position:'relative',height:ALTO+24}}>
         <span style={{position:'absolute',left:0,top:-2,fontSize:11,color:C.tintaSuave}}>{fmtK(max)}</span>
         <div style={{position:'absolute',left:0,right:0,top:6,borderTop:`1px dashed ${COL.grilla}`}}/>
-        <div style={{position:'absolute',left:0,right:0,top:ALTO,borderTop:`1px solid ${C.linea}`}}/>
+        <span style={{position:'absolute',left:0,top:6+(ALTO-10)/2-14,fontSize:11,color:C.tintaSuave}}>{fmtK(max/2)}</span>
+        <div style={{position:'absolute',left:0,right:0,top:6+(ALTO-10)/2,borderTop:`1px dashed ${COL.grilla}`}}/>
+        <div style={{position:'absolute',left:0,right:0,top:ALTO,borderTop:`1.5px solid ${C.lineaFuerte}`}}/>
         <div style={{position:'absolute',inset:0,display:'grid',gridTemplateColumns:`repeat(${serie.length},minmax(0,1fr))`}}>
           {serie.map(s => {
             const sel = s.mes === mesSel;

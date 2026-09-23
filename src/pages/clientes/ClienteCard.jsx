@@ -1,5 +1,6 @@
 import Badge from '../../components/ui/Badge';
-import { serif } from '../../lib/styles';
+import { C, serif } from '../../lib/styles';
+import { useResp } from '../../context/resp';
 import { animalIcon, diasDesde } from '../../lib/utils';
 import { calcFrecuencia } from '../../lib/frecuencia';
 
@@ -15,8 +16,26 @@ function ultimaVisitaBadge(visitas) {
   };
 }
 
+// En el celular, fila de lista (avatar · nombres · estado); en pantallas grandes, tarjeta.
+function ClienteFila({ cliente: c, badge, onClick }) {
+  return (
+    <button type="button" onClick={onClick} style={{display:'flex',alignItems:'center',gap:12,width:'100%',minHeight:72,padding:'10px 14px',background:'white',border:`1px solid ${C.linea}`,borderRadius:14,cursor:'pointer',textAlign:'left',fontFamily:'inherit',color:C.tinta}}>
+      <span style={{width:52,height:52,borderRadius:'50%',flexShrink:0,overflow:'hidden',background:'linear-gradient(135deg,#dff5ec,#FBE7EC)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26}}>
+        {c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" /> : animalIcon(c.raza)}
+      </span>
+      <span style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',gap:2}}>
+        <span style={{fontFamily:serif,fontSize:17,fontWeight:600,...ellipsis}}>{c.dog}</span>
+        <span style={{fontSize:13,color:C.tintaSuave,...ellipsis}}>{[c.owner, c.raza].filter(Boolean).join(' · ')}</span>
+      </span>
+      <Badge variant={badge.variant}>{badge.text}</Badge>
+    </button>
+  );
+}
+
 export default function ClienteCard({ cliente: c, onClick }) {
+  const { isMob } = useResp();
   const badge = ultimaVisitaBadge(c.visitas);
+  if (isMob) return <ClienteFila cliente={c} badge={badge} onClick={onClick} />;
   return (
     <div onClick={onClick} style={{background:'white',borderRadius:16,overflow:'hidden',boxShadow:'0 2px 8px rgba(0,0,0,.06)',cursor:'pointer',transition:'transform .15s'}}>
       <div style={{height:110,background:'linear-gradient(135deg,#dff5ec,#FBE7EC)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:44,overflow:'hidden'}}>

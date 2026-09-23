@@ -24,7 +24,7 @@ export default function ClientesPage({ clientes, onOpenClient, onNuevo }) {
         <SearchInput value={q} onChange={setQ} placeholder="Buscar perrito o dueño..." />
         <span style={{fontSize:13,color:'#5B6661',whiteSpace:'nowrap'}}>{filtered.length} cliente{filtered.length!==1?'s':''}</span>
       </div>
-      <div style={{display:'grid',gridTemplateColumns:`repeat(auto-fill,minmax(${isMob?'150px':'200px'},1fr))`,gap:14}}>
+      <div style={{display:'grid',gridTemplateColumns:isMob?'minmax(0,1fr)':'repeat(auto-fill,minmax(200px,1fr))',gap:isMob?8:14}}>
         {!filtered.length ? (q.trim()
           ? <EstadoVacio ilustracion="buscando" titulo={`No encontramos «${q.trim()}»`} texto="Probá con el nombre del perro o del dueño, o con menos letras." style={{gridColumn:'1/-1'}} />
           : <EstadoVacio ilustracion="durmiendo" titulo="Todavía no hay clientes" texto="Agregá el primero con «+ Nuevo cliente»." style={{gridColumn:'1/-1'}} />)

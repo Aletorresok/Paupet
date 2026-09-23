@@ -2,7 +2,7 @@ import Btn from '../../components/ui/Btn';
 import Icon from '../../components/ui/Icon';
 import Modal from '../../components/ui/Modal';
 import ModalHead from '../../components/ui/ModalHead';
-import WhatsAppBtn from '../../components/ui/WhatsAppBtn';
+import MenuMas from '../../components/ui/MenuMas';
 import { useResp } from '../../context/resp';
 import { C } from '../../lib/styles';
 import { animalIcon, todayStr } from '../../lib/utils';
@@ -35,9 +35,13 @@ export default function ModalCliente({ open, cliente, clientes, turnos, caps, to
       <div style={{padding:isMob?'16px':'18px 22px',display:'flex',flexDirection:'column',gap:16,background:C.fondo}}>
         <div style={{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}}>
           <Btn onClick={() => onDarTurno(c.id, todayStr())}><Icon name="plus" strokeWidth={2}/>Dar turno</Btn>
-          {c.tel && <WhatsAppBtn size="" onClick={() => abrirWhatsApp(c.tel, c.dog, c.owner)}>WhatsApp</WhatsAppBtn>}
-          <Btn variant="ghost" onClick={() => onEdit(c)}><Icon name="edit" size={16}/>Editar</Btn>
-          <Btn variant="danger" onClick={() => onDelete(c.id)}><Icon name="trash" size={16}/>Eliminar</Btn>
+          {c.tel && <Btn variant="ghost" onClick={() => abrirWhatsApp(c.tel, c.dog, c.owner)} style={{color:C.whatsapp}}><Icon name="chat" size={18}/>WhatsApp</Btn>}
+          <div style={{marginLeft:'auto'}}>
+            <MenuMas label="Más acciones del cliente" acciones={[
+              { label:'Editar datos', icon:'edit', onClick:() => onEdit(c) },
+              { label:'Eliminar cliente', icon:'trash', onClick:() => onDelete(c.id), peligro:true },
+            ]} />
+          </div>
         </div>
 
         {hermanos.length > 0 && (
