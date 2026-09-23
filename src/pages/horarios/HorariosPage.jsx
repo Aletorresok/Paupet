@@ -4,11 +4,14 @@ import Btn from '../../components/ui/Btn';
 import PageHeader from '../../components/ui/PageHeader';
 import { MESES } from '../../lib/constants';
 import { sans, serif } from '../../lib/styles';
-import { generarSlots, descargarNodoComoPng } from './horariosUtils';
+import { generarSlots, descargarNodoComoPng, rangoSemana } from './horariosUtils';
 import { useHorariosSemana } from './useHorariosSemana';
 import SemanaNav from './SemanaNav';
 import DiaSlotsCard from './DiaSlotsCard';
 import StoryPreview from './StoryPreview';
+import StoryPreviewNuevo from './StoryPreviewNuevo';
+import DisenoSelector from './DisenoSelector';
+import { leerDiseno, guardarDiseno } from './disenoStorage';
 import AutoGenModal from './AutoGenModal';
 
 export default function HorariosPage({ horariosData, onSaveHorarios }) {
@@ -22,6 +25,8 @@ export default function HorariosPage({ horariosData, onSaveHorarios }) {
   const previewRef = useRef(null);
   const [autoGenModal, setAutoGenModal] = useState({open:false, dia:null});
   const [autoGenForm, setAutoGenForm] = useState({desde:'09:00',hasta:'17:00',dur:'60'});
+  const [diseno, setDiseno] = useState(leerDiseno);
+  const cambiarDiseno = d => { setDiseno(d); guardarDiseno(d); };
 
   const agregarSlot = (dia) => {
     const hora = nuevoSlot[dia]||'';
@@ -45,7 +50,12 @@ export default function HorariosPage({ horariosData, onSaveHorarios }) {
   const descargarImagen = async () => {
     setGenerando(true);
     try {
-      await descargarNodoComoPng(previewRef.current, `horarios_paupet_${semanaInicio.getDate()}_${MESES[semanaInicio.getMonth()]}.png`);
+      const nuevo = diseno === 'nuevo';
+      await descargarNodoComoPng(
+        previewRef.current,
+        `horarios_paupet_${semanaInicio.getDate()}_${MESES[semanaInicio.getMonth()]}${nuevo ? '_nuevo' : ''}.png`,
+        nuevo ? '#5FBF9B' : '#7ec8a0',
+      );
     } catch(e) {
       alert('Error al generar imagen: ' + e.message);
     } finally {
@@ -88,9 +98,13 @@ export default function HorariosPage({ horariosData, onSaveHorarios }) {
       <div style={{marginBottom:8,display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
         <div style={{fontFamily:serif,fontSize:16,fontWeight:600}}>Vista previa</div>
         <span style={{fontSize:11,color:'#9a9090'}}>1080×1920px · Stories</span>
+        <DisenoSelector value={diseno} onChange={cambiarDiseno} />
       </div>
       <div style={{overflowX:'auto'}}>
-        <StoryPreview ref={previewRef} dias={dias.filter(d => d.activo)} />
+        {diseno === 'nuevo'
+          ? <StoryPreviewNuevo ref={previewRef} dias={dias.filter(d => d.activo)} rango={rangoSemana(semanaInicio)} />
+          : <StoryPreview ref={previewRef} dias={dias.filter(d => d.activo)} />
+        }
       </div>
 
       {autoGenModal.open && (

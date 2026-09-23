@@ -19,6 +19,15 @@ export const getDiaDate = (semanaInicio, dia) => {
   return d;
 };
 
+const MES_CORTO = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+// Rango de la semana (lunes a sábado) para mostrar en la imagen: "29 sep – 4 oct".
+export const rangoSemana = (semanaInicio) => {
+  const fin = new Date(semanaInicio);
+  fin.setDate(fin.getDate() + 5);
+  return `${semanaInicio.getDate()} ${MES_CORTO[semanaInicio.getMonth()]} – ${fin.getDate()} ${MES_CORTO[fin.getMonth()]}`;
+};
+
 // Genera horarios "HH:MM" entre desde y hasta cada `dur` minutos.
 export const generarSlots = (desde, hasta, dur) => {
   const durN = parseInt(dur)||60;
@@ -34,11 +43,14 @@ export const generarSlots = (desde, hasta, dur) => {
 };
 
 // Renderiza un nodo del DOM a PNG con html2canvas (cargado on-demand) y lo descarga.
-export const descargarNodoComoPng = async (node, filename) => {
-  const script = document.createElement('script');
-  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-  await new Promise((res,rej) => { script.onload=res; script.onerror=rej; document.head.appendChild(script); });
-  const canvas = await window.html2canvas(node, {scale:2,useCORS:true,backgroundColor:'#7ec8a0',logging:false,width:540,height:960});
+export const descargarNodoComoPng = async (node, filename, backgroundColor = '#7ec8a0') => {
+  if (!window.html2canvas) {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    await new Promise((res,rej) => { script.onload=res; script.onerror=rej; document.head.appendChild(script); });
+  }
+  await document.fonts.ready;
+  const canvas = await window.html2canvas(node, {scale:2,useCORS:true,backgroundColor,logging:false,width:540,height:960});
   const link = document.createElement('a');
   link.download = filename;
   link.href = canvas.toDataURL('image/png');

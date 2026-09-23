@@ -172,7 +172,14 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - ✅ Ajustado (v4): **verde menta #5FBF9B** como color principal con texto oscuro #13302A encima (contraste 6,5:1); bordes de selección #3FA380;
   sólo efectivo/transferencia, sin propina; precio siempre a mano (con referencia "la última vez le cobraste…");
   "Servicios frecuentes" sin precios fijos (sólo rango cobrado, informativo).
-- Pendiente: comentarios de la dueña y su novia sobre la maqueta.
+- ✅ La dueña aprobó la maqueta ("espectacular"). Falta el feedback de Pau (la usuaria real).
+
+## Imagen de Horarios para Stories
+- **Clásico** (el de siempre, a Pau le gusta): se conserva tal cual (`StoryPreview.jsx`).
+- **Nuevo** (de la maqueta): `StoryPreviewNuevo.jsx` — fondo menta, "Turnos libres", sólo horarios libres
+  por día ("Completo" si no queda ninguno), ilustración de la peluquera con el salchicha abajo.
+- Se elige con el selector Clásico / Nuevo ✨ arriba de la vista previa; el dispositivo recuerda la última elección.
+- Pendiente: decidir con Pau cuál queda (o ajustes al nuevo).
 - Tipografía: Fraunces (títulos) + Outfit (texto, números con `tabular-nums`)
 - Íconos de línea (tipo Lucide) en vez de emojis; botones ≥ 44px
 - Navegación: menú lateral claro en escritorio; barra inferior (Hoy/Agenda/Clientes/Más) + botón flotante en celular
@@ -192,3 +199,4 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Maqueta del rediseño publicada: https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy (14 pantallas: escritorio, ventanas, celular y guía de estilo). Pendiente de ajustes con la dueña.
 - 2026-09-23 — Decisiones de la dueña registradas. Setup de versión en paralelo (aviso + link a la anterior). Fase 1 compatible hecha. Frecuencia de vuelta implementada.
 - 2026-09-23 — Fase 0 preparada: login con Supabase Auth en ambas versiones (PR #1 para `main`), script RLS. Maqueta v4 con menta y sin propina/MP/precios fijos.
+- 2026-09-23 — Imagen de Horarios: diseño nuevo agregado como opción, el clásico se mantiene.
