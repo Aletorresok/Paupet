@@ -11,7 +11,7 @@ export default function SemanaNav({ semanaInicio, onChange }) {
     <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18,background:'white',borderRadius:12,padding:'10px 16px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',width:'fit-content'}}>
       <button onClick={()=>onChange(-1)} style={arrowBtn}>‹</button>
       <div style={{textAlign:'center',minWidth:180}}>
-        <div style={{fontSize:10,color:'#9a9090',textTransform:'uppercase',letterSpacing:.5,marginBottom:1}}>Semana a publicar</div>
+        <div style={{fontSize:10,color:'#5B6661',textTransform:'uppercase',letterSpacing:.5,marginBottom:1}}>Semana a publicar</div>
         <div style={{fontFamily:serif,fontSize:16,fontWeight:600}}>{label}</div>
       </div>
       <button onClick={()=>onChange(1)} style={arrowBtn}>›</button>

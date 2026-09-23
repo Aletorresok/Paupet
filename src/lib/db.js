@@ -128,9 +128,10 @@ export const db = {
   },
   // Marca el turno como completado sólo si todavía no lo estaba. Devuelve false si otro
   // click (u otro dispositivo) ya lo había completado, para no duplicar la visita.
-  async completarTurno(id) {
+  // `cobro` opcional: {servicio, precio, forma_pago} finales, se guardan en el mismo paso.
+  async completarTurno(id, cobro = {}) {
     const { data, error } = await supabase
-      .from('turnos').update({ estado: 'completed' })
+      .from('turnos').update({ ...cobro, estado: 'completed' })
       .eq('id', id).neq('estado', 'completed')
       .select('id');
     if (error) throw error;

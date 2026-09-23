@@ -2,7 +2,7 @@ import { useResp } from '../../context/resp';
 import { MESES } from '../../lib/constants';
 import { serif } from '../../lib/styles';
 
-const arrowBtn = {background:'white',border:'1.5px solid #ede8e8',borderRadius:'50%',width:30,height:30,cursor:'pointer',fontSize:14,display:'flex',alignItems:'center',justifyContent:'center'};
+const arrowBtn = {background:'white',border:'1.5px solid #E6E0D8',borderRadius:'50%',width:30,height:30,cursor:'pointer',fontSize:14,display:'flex',alignItems:'center',justifyContent:'center'};
 
 export default function MonthNav({ year, month, onChange }) {
   const { isMob } = useResp();

@@ -1,18 +1,23 @@
 import { db } from '../lib/db';
-import { CLOSED_TURNO } from './useModals';
+import { CLOSED_TURNO, CLOSED_COBRO } from './useModals';
 
 export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, modals }) {
   const { setModalTurno } = modals;
 
-  const handleCompletar = async (id) => {
+  // Abre la ventana "Completar y cobrar".
+  const handleCompletar = (id) => modals.setModalCobro({ open: true, turnoId: id });
+
+  // Completa el turno con lo que efectivamente se cobró y lo guarda en el historial.
+  const handleCobrar = async (id, { servicio, precio, formaPago }) => {
     const t = turnos.find(x=>x.id===id); if (!t) return;
-    if (t.estado === 'completed') return;
+    if (t.estado === 'completed') { modals.setModalCobro(CLOSED_COBRO); return; }
     try {
-      const marcado = await db.completarTurno(id);
+      const marcado = await db.completarTurno(id, { servicio, precio, forma_pago: formaPago });
+      modals.setModalCobro(CLOSED_COBRO);
       if (!marcado) { await loadAll(); return; }
       if (t.clientId) {
         try {
-          await db.insertVisita(t.clientId, t.servicio, t.precio||0, t.fecha, t.forma_pago || 'efectivo');
+          await db.insertVisita(t.clientId, servicio, precio, t.fecha, formaPago);
         } catch(e) {
           // Si no se pudo guardar la visita, el turno vuelve a quedar como estaba.
           await db.updateTurno(id, {estado: t.estado});
@@ -20,13 +25,14 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
         }
       }
       await loadAll();
-      toast('Turno completado y guardado en el historial 🎉');
+      toast(`Cobrado ${'$'}${Number(precio).toLocaleString('es-AR')} · guardado en el historial`);
     } catch(e) { toast(e.message, true); }
   };
 
   const handleNoVino = async (id) => {
     const ok = await askConfirm('¿Marcar este turno como inasistencia?');
     if (!ok) return;
+    modals.setModalCobro(CLOSED_COBRO);
     const t = turnos.find(x=>x.id===id); if (!t) return;
     const c = clientes.find(x=>x.id===t.clientId);
     try {
@@ -110,5 +116,5 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
     } catch(e) { toast('Error: ' + e.message, true); }
   };
 
-  return { handleCompletar, handleNoVino, handleConfirmar, handleEditTurno, handleUpdateTurno, handleDeleteTurno, handleSaveNewTurno };
+  return { handleCompletar, handleCobrar, handleNoVino, handleConfirmar, handleEditTurno, handleUpdateTurno, handleDeleteTurno, handleSaveNewTurno };
 }

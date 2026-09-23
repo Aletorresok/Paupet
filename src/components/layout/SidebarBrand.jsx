@@ -1,11 +1,16 @@
-import { serif } from '../../lib/styles';
+import { C, serif } from '../../lib/styles';
+import Icon from '../ui/Icon';
 
 export default function SidebarBrand() {
   return (
-    <div style={{textAlign:'center',marginBottom:24,position:'relative',zIndex:1}}>
-      <div style={{width:50,height:50,background:'white',borderRadius:'50%',margin:'0 auto 8px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,boxShadow:'0 4px 16px rgba(0,0,0,.15)'}}>🐾</div>
-      <h1 style={{fontFamily:serif,fontSize:19,color:'white',letterSpacing:.5}}>Paupet</h1>
-      <span style={{fontSize:10,color:'rgba(255,255,255,.7)',fontWeight:300,letterSpacing:1,textTransform:'uppercase'}}>Peluquería Canina</span>
+    <div style={{display:'flex',alignItems:'center',gap:12,padding:'0 8px'}}>
+      <div style={{width:40,height:40,borderRadius:12,background:C.menta,color:C.sobreMenta,display:'flex',alignItems:'center',justifyContent:'center'}}>
+        <Icon name="paw" size={22} />
+      </div>
+      <div style={{display:'flex',flexDirection:'column'}}>
+        <span style={{fontFamily:serif,fontSize:20,fontWeight:600,lineHeight:1.1}}>Paupet</span>
+        <span style={{fontSize:12,color:C.tintaSuave}}>Peluquería canina</span>
+      </div>
     </div>
   );
 }

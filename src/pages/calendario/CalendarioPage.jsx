@@ -26,7 +26,7 @@ export default function CalendarioPage({ clientes, turnos, onAddTurno, onComplet
 
   return (
     <section>
-      <PageHeader title="Calendario de Turnos" subtitle="Agenda y gestión de citas">
+      <PageHeader title="Agenda" subtitle="Turnos del mes">
         <Btn onClick={() => onAddTurno(selectedDay)} size={isMob?'sm':''}>+ Agregar turno</Btn>
       </PageHeader>
 

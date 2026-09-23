@@ -64,7 +64,7 @@ export default function ModalClienteForm({ open, onClose, onSave, initial }) {
         </FormGroup>
         <div style={{display:'flex',gap:10,marginTop:14}}>
           <Btn onClick={handleSave} disabled={saving} style={{flex:1,justifyContent:'center'}}>
-            {saving ? '⏳ Guardando...' : `✓ ${initial?'Guardar cambios':'Guardar cliente'}`}
+            {saving ? 'Guardando…' : `${initial?'Guardar cambios':'Guardar cliente'}`}
           </Btn>
           {!initial && <Btn variant="ghost" onClick={() => setForm(EMPTY)}>Limpiar</Btn>}
         </div>

@@ -65,9 +65,9 @@ export default function HorariosPage({ horariosData, onSaveHorarios }) {
 
   return (
     <section>
-      <PageHeader title="📸 Horarios para publicar" subtitle="Cargá los turnos disponibles y descargá la imagen" titleStyle={{fontSize:isMob?22:28}}>
+      <PageHeader title="Horarios para Stories" subtitle="Cargá los horarios de la semana y descargá la imagen">
         <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-          <button onClick={semana.limpiarSemana} style={{background:'none',border:'1.5px solid #ede8e8',borderRadius:50,padding:'7px 14px',fontSize:12,cursor:'pointer',color:'#9a9090',fontFamily:sans}}>🗑 Limpiar</button>
+          <button onClick={semana.limpiarSemana} style={{background:'none',border:'1.5px solid #E6E0D8',borderRadius:50,padding:'7px 14px',fontSize:12,cursor:'pointer',color:'#5B6661',fontFamily:sans}}>🗑 Limpiar</button>
           <Btn size="sm" onClick={handleGuardar} disabled={guardando} variant="ghost">
             {guardando ? '⏳...' : '💾 Guardar'}
           </Btn>
@@ -97,7 +97,7 @@ export default function HorariosPage({ horariosData, onSaveHorarios }) {
 
       <div style={{marginBottom:8,display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
         <div style={{fontFamily:serif,fontSize:16,fontWeight:600}}>Vista previa</div>
-        <span style={{fontSize:11,color:'#9a9090'}}>1080×1920px · Stories</span>
+        <span style={{fontSize:11,color:'#5B6661'}}>1080×1920px · Stories</span>
         <DisenoSelector value={diseno} onChange={cambiarDiseno} />
       </div>
       <div style={{overflowX:'auto'}}>

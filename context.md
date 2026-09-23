@@ -22,7 +22,7 @@ bucket de storage `fotos`.
 
 ## Versión nueva en paralelo
 - **Anterior (la que se usa hoy):** `main` → https://paupet.vercel.app (producción en Vercel). No se toca.
-- **Nueva (en prueba):** rama `claude/tender-wozniak-n0x9av` → preview automático de Vercel.
+- **Nueva (en prueba):** rama `claude/tender-wozniak-n0x9av` → https://paupet-nueva.vercel.app
   Muestra un aviso arriba con link "Volver a la versión anterior".
 - **Comparten la misma base de datos Supabase** → lo que se carga en una aparece en la otra.
 - ⚠️ **Regla de compatibilidad:** mientras convivan, la nueva NO puede cambiar la forma de los datos
@@ -138,15 +138,21 @@ Reglas del refactor:
       (hoy es warning `react-hooks/set-state-in-effect`; 7 casos) → usar `key` en el modal
 - [ ] Mover estilos inline a CSS (se hace junto con la Fase 3 de tokens)
 
-### Fase 3 — Rediseño visual
-- [ ] Tokens de diseño (CSS variables) y contraste AA
-- [ ] Íconos consistentes (Lucide) en vez de emojis
-- [ ] Navegación inferior en mobile + FAB "Nuevo turno"
-- [ ] Botones táctiles ≥ 44px
-- [ ] Dashboard: próximo turno, timeline del día, mini gráfico
-- [ ] Calendario con chips (hora + nombre) en desktop
-- [ ] Skeletons y empty states
-- [ ] `lang="es"`, título, favicon, fuentes en `index.html`
+### Fase 3 — Rediseño visual (en curso, según la maqueta aprobada)
+- [x] Tokens de diseño en `lib/styles.js` (`C.*`): menta #5FBF9B con texto #13302A, grises con contraste AA
+- [x] Tipografía Fraunces (títulos) + Outfit (texto, números tabulares)
+- [x] Íconos de línea (`components/ui/Icon.jsx`) en menú y botones (quedan emojis en algunos textos)
+- [x] Menú lateral claro con secciones "Día a día" / "Negocio"
+- [x] Celular: barra inferior Hoy/Agenda/Clientes/Más + botón flotante "Nuevo turno" (reemplaza al menú hamburguesa)
+- [x] Botones ≥ 44px (tamaño normal), badges y modales nuevos
+- [x] Panel "Hoy": saludo, KPIs (ingresos efectivo/transferencia, ganancia neta = ingresos − gastos, servicios + ticket, sin confirmar),
+      próximo turno destacado, agenda de hoy, "Ya les toca volver", recordatorios de mañana por WhatsApp, inasistencias
+- [x] Ventana "Completar y cobrar": qué se hizo, monto a mano, efectivo/transferencia, aviso de frecuencia.
+      Guarda turno + visita con lo cobrado (columnas existentes: compatible con la versión anterior)
+- [ ] Agenda semanal con duraciones (necesita columna `duracion` en turnos: agregarla es compatible)
+- [ ] Ficha de cliente nueva (etiquetas, antes/después) y página de Finanzas
+- [ ] Login con el diseño de la maqueta
+- [ ] Skeletons y empty states; `lang="es"`, título y favicon en `index.html`
 
 ### Fase 4 — Funcionalidades
 - [ ] Modelo dueño → varios perros (requiere migrar datos: después de pasar a la versión nueva)
@@ -200,3 +206,5 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Decisiones de la dueña registradas. Setup de versión en paralelo (aviso + link a la anterior). Fase 1 compatible hecha. Frecuencia de vuelta implementada.
 - 2026-09-23 — Fase 0 preparada: login con Supabase Auth en ambas versiones (PR #1 para `main`), script RLS. Maqueta v4 con menta y sin propina/MP/precios fijos.
 - 2026-09-23 — Imagen de Horarios: diseño nuevo agregado como opción, el clásico se mantiene.
+- 2026-09-23 — Seguridad aplicada (PR #1 mergeado, RLS activo, verificado por la dueña). Versión nueva en https://paupet-nueva.vercel.app.
+- 2026-09-23 — Rediseño aplicado en la app: estilos, menú, navegación móvil, panel Hoy y ventana de cobro.

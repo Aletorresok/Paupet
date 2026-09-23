@@ -11,8 +11,8 @@ export default function VisitaForm({ values, onChange, isEdit, onSave, onCancel 
   const grid = {display:'grid',gridTemplateColumns:isMob?'1fr':'1fr 1fr',gap:10,marginBottom:10};
   return (
     <div style={{background:'#dff5ec',borderRadius:10,padding:14,marginTop:10}}>
-      <div style={{fontSize:12,fontWeight:600,color:'#3a9b7b',marginBottom:10}}>
-        {isEdit ? '✏️ Editar visita' : '+ Nueva visita'}
+      <div style={{fontSize:12,fontWeight:600,color:'#1F5A45',marginBottom:10}}>
+        {isEdit ? 'Editar visita' : '+ Nueva visita'}
       </div>
       <div style={grid}>
         <FormGroup label="Servicio"><input value={values.svc} onChange={e=>set('svc',e.target.value)} placeholder="Baño y corte" style={inputStyle} /></FormGroup>

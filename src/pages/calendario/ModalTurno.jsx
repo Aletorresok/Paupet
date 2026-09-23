@@ -66,7 +66,7 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
   return (
     <Modal open={open} onClose={onClose} width={480}>
       <ModalHead
-        title={isEdit ? '✏️ Editar Turno' : 'Agregar Turno'}
+        title={isEdit ? 'Editar turno' : 'Nuevo turno'}
         subtitle={isEdit ? `${turnoEdit?.dogName || ''} — ${fmtFecha(turnoEdit?.fecha)}` : ''}
         onClose={onClose}
       />
@@ -92,7 +92,7 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
         </div>
 
         <Btn onClick={handleGuardar} disabled={saving} style={{width:'100%',justifyContent:'center',marginTop:6}}>
-          {saving ? '⏳ Guardando...' : isEdit ? '✓ Guardar cambios' : '✓ Guardar turno'}
+          {saving ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Guardar turno'}
         </Btn>
       </div>
     </Modal>

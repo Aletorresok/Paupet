@@ -11,7 +11,7 @@ export default function ClienteSelector({ isEdit, mode, onMode, form, set, clien
   );
   return (
     <div style={{marginBottom:14,padding:12,background:'#dff5ec',borderRadius:10}}>
-      <div style={{fontSize:11,fontWeight:600,color:'#3a9b7b',marginBottom:8,textTransform:'uppercase'}}>
+      <div style={{fontSize:11,fontWeight:600,color:'#1F5A45',marginBottom:8,textTransform:'uppercase'}}>
         {isEdit ? '🔄 Reasignar cliente (opcional)' : '¿Cliente nuevo o existente?'}
       </div>
       {!isEdit && (

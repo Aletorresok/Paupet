@@ -30,14 +30,15 @@ export const DEFAULT_CONFIG = {
   slots: {}
 };
 
+// Menú. `grupo` separa las secciones del menú lateral; `movil` = aparece en la barra inferior del celular.
 export const NAV_ITEMS = [
-  {page:'dashboard', icon:'🏠', label:'Panel de Control'},
-  {page:'clientes',  icon:'🐶', label:'Clientes'},
-  {page:'calendario',icon:'📅', label:'Calendario', badge:true},
-  {page:'historial', icon:'📋', label:'Historial'},
-  {page:'notas',     icon:'📝', label:'Notas & Stock'},
-  {page:'horarios',  icon:'📸', label:'Horarios'},
-  {page:'config',    icon:'⚙️', label:'Configuración'},
+  {page:'dashboard', icon:'home',     label:'Hoy',           grupo:'dia', movil:true},
+  {page:'calendario',icon:'calendar', label:'Agenda',        grupo:'dia', movil:true, badge:true},
+  {page:'clientes',  icon:'users',    label:'Clientes',      grupo:'dia', movil:true},
+  {page:'horarios',  icon:'camera',   label:'Horarios para Stories', grupo:'dia'},
+  {page:'historial', icon:'history',  label:'Historial',     grupo:'negocio'},
+  {page:'notas',     icon:'notes',    label:'Notas y gastos',grupo:'negocio'},
+  {page:'config',    icon:'settings', label:'Configuración', grupo:'negocio'},
 ];
 
 

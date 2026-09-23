@@ -34,7 +34,7 @@ export default function ModalNota({ open, onClose, onSave, defaultTipo='compra',
 
   return (
     <Modal open={open} onClose={onClose} width={440}>
-      <ModalHead title={isEdit ? `✏️ Editar ${tipo==='compra'?'Item':'Egreso'}` : 'Nueva Nota'} onClose={onClose} />
+      <ModalHead title={isEdit ? `Editar ${tipo==='compra'?'Item':'Egreso'}` : 'Nueva Nota'} onClose={onClose} />
       <div style={{padding:'18px 22px'}}>
         {!isEdit && (
           <div style={{display:'flex',gap:8,marginBottom:14}}>

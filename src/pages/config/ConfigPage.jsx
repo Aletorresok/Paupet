@@ -32,7 +32,7 @@ export default function ConfigPage({ config, onSave }) {
 
   return (
     <section>
-      <PageHeader title="Configuración de Agenda" subtitle="Turnos disponibles por día para el portal de reservas">
+      <PageHeader title="Configuración" subtitle="Horarios por día (para el portal de reservas)">
         <Btn onClick={()=>onSave({nombre,msg,anticip:parseInt(anticip),slots,horarios})} size={isMob?'sm':''}>💾 Guardar todo</Btn>
       </PageHeader>
       <ConfigGeneral nombre={nombre} anticip={anticip} msg={msg} onNombre={setNombre} onAnticip={setAnticip} onMsg={setMsg} />

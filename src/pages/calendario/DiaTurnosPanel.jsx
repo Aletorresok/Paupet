@@ -5,7 +5,7 @@ import TurnoCard from './TurnoCard';
 
 export default function DiaTurnosPanel({ selectedDay, turnos, clientes, ...actions }) {
   const { isMob } = useResp();
-  const empty = { fontSize:13, color:'#9a9090' };
+  const empty = { fontSize:13, color:'#5B6661' };
   return (
     <div style={{width:isMob?'100%':'300px',flexShrink:0,...cardStyle,padding:'18px 16px'}}>
       <div style={sectionTitleStyle}>

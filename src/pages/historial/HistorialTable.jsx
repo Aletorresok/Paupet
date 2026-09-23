@@ -12,7 +12,7 @@ export default function HistorialTable({ items }) {
           <Td>{v.servicio}</Td>
           <Td>{fmtFecha(v.fecha)}</Td>
           <Td><Badge variant={v.forma_pago==='transferencia'?'blue':'green'}>{v.forma_pago || 'efectivo'}</Badge></Td>
-          <Td><strong style={{color:'#3a9b7b'}}>{fmtPeso(v.precio)}</strong></Td>
+          <Td><strong style={{color:'#1F5A45'}}>{fmtPeso(v.precio)}</strong></Td>
         </tr>
       ))}
     </Table>

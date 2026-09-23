@@ -9,7 +9,7 @@ export default function FotoPicker({ foto, isEdit, onFile }) {
       </div>
       <div>
         <div style={{fontSize:13,fontWeight:500,marginBottom:2}}>Foto del perro</div>
-        <div style={{fontSize:11,color:'#9a9090'}}>Hacé click para {isEdit?'cambiar':'subir'}</div>
+        <div style={{fontSize:11,color:'#5B6661'}}>Hacé click para {isEdit?'cambiar':'subir'}</div>
         <input ref={inputRef} type="file" accept="image/*" style={{display:'none'}} onChange={e => { const f = e.target.files[0]; if (f) onFile(f); }} />
       </div>
     </div>

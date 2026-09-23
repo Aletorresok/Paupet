@@ -1,10 +1,11 @@
-import { sans } from '../../lib/styles';
+import { C, sans } from '../../lib/styles';
+import Icon from './Icon';
 
 export default function SearchInput({ value, onChange, placeholder, style }) {
   return (
-    <div style={{display:'flex',alignItems:'center',gap:8,background:'white',border:'1.5px solid #ede8e8',borderRadius:50,padding:'9px 16px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',flex:1,...style}}>
-      <span>🔍</span>
-      <input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{border:'none',outline:'none',fontFamily:sans,fontSize:13,width:'100%',background:'transparent'}} />
-    </div>
+    <label style={{display:'flex',alignItems:'center',gap:8,background:'white',border:`1px solid ${C.linea}`,borderRadius:12,height:44,padding:'0 14px',boxSizing:'border-box',flex:1,color:C.tintaSuave,...style}}>
+      <Icon name="search" />
+      <input type="search" aria-label={placeholder} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{border:'none',outline:'none',fontFamily:sans,fontSize:15,width:'100%',background:'transparent',color:C.tinta}} />
+    </label>
   );
 }

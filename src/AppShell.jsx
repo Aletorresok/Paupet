@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useResp } from './context/resp';
 import GlobalStyles from './components/layout/GlobalStyles';
 import Sidebar from './components/layout/Sidebar';
-import MobileHeader from './components/layout/MobileHeader';
+import MobileNav from './components/layout/MobileNav';
+import { todayStr } from './lib/utils';
 import BetaBanner from './components/layout/BetaBanner';
 import Spinner from './components/ui/Spinner';
 import ToastContainer from './components/ui/ToastContainer';
@@ -20,7 +21,6 @@ import AppModals from './AppModals';
 export default function AppShell({ onLogout }) {
   const { isMob } = useResp();
   const [page, setPage] = useState('dashboard');
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const { toasts, toast } = useToasts();
   const { confirm, askConfirm, closeConfirm } = useConfirm();
@@ -42,12 +42,11 @@ export default function AppShell({ onLogout }) {
       <div style={{display:'flex',flexDirection:'column',height:'100vh',overflow:'hidden'}}>
       <BetaBanner />
       <div style={{display:'flex',flex:1,minHeight:0,overflow:'hidden'}}>
-        <Sidebar activePage={page} onNav={setPage} pendingCount={pendingCount} mobileOpen={menuOpen} onMobileClose={() => setMenuOpen(false)} onLogout={onLogout}/>
+        {!isMob && <Sidebar activePage={page} onNav={setPage} pendingCount={pendingCount} onLogout={onLogout}/>}
 
         <div style={{flex:1,display:'flex',flexDirection:'column',minWidth:0,overflow:'hidden'}}>
-          {isMob && <MobileHeader onMenu={() => setMenuOpen(true)} />}
 
-          <main style={{flex:1,overflowY:'auto',padding:isMob?'16px 14px':'24px 28px',minWidth:0}}>
+          <main style={{flex:1,overflowY:'auto',padding:isMob?'20px 16px 110px':'28px 36px',minWidth:0}}>
             {data.loading ? <Spinner /> : (
               <AppPages
                 page={page} setPage={setPage}
@@ -60,8 +59,15 @@ export default function AppShell({ onLogout }) {
       </div>
       </div>
 
+      {isMob && (
+        <MobileNav
+          activePage={page} onNav={setPage} pendingCount={pendingCount} onLogout={onLogout}
+          onNuevoTurno={() => modals.setModalTurno({open:true, fecha:todayStr(), turnoEdit:null})}
+        />
+      )}
+
       <AppModals
-        modals={modals} clientes={data.clientes}
+        modals={modals} clientes={data.clientes} turnos={data.turnos}
         clienteActions={clienteActions} turnoActions={turnoActions} notaActions={notaActions}
         confirm={confirm} closeConfirm={closeConfirm}
       />

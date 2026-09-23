@@ -26,8 +26,8 @@ export default function HistorialPage({ clientes, turnos }) {
 
   return (
     <section>
-      <PageHeader title="Historial de Visitas" subtitle="Registro completo de todos los servicios">
-        {totalFiltered > 0 && <div style={{background:'#dff5ec',borderRadius:50,padding:'8px 16px',fontSize:13,fontWeight:600,color:'#3a9b7b'}}>Total: {fmtPeso(totalFiltered)}</div>}
+      <PageHeader title="Historial" subtitle="Todos los servicios realizados">
+        {totalFiltered > 0 && <div style={{background:'#dff5ec',borderRadius:50,padding:'8px 16px',fontSize:13,fontWeight:600,color:'#1F5A45'}}>Total: {fmtPeso(totalFiltered)}</div>}
       </PageHeader>
       <div style={{...cardStyle,padding:'18px 20px'}}>
         <div style={{display:'flex',gap:10,flexWrap:'wrap',marginBottom:16}}>

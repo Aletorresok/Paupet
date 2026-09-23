@@ -11,7 +11,7 @@ export default function NotasPage({ notas, onToggleCompra, onDeleteNota, onEditN
 
   return (
     <section>
-      <PageHeader title="Notas & Stock 📝" subtitle="Compras pendientes y control de egresos">
+      <PageHeader title="Notas y gastos" subtitle="Lista de compras y gastos del negocio">
         <Btn onClick={()=>onAgregar(tab==='compras'?'compra':'egreso')} size={isMob?'sm':''}>+ Agregar {tab==='compras'?'item':'egreso'}</Btn>
       </PageHeader>
       <div style={{display:'flex',gap:8,marginBottom:18}}>

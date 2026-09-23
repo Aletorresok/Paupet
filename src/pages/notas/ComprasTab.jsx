@@ -10,7 +10,7 @@ export default function ComprasTab({ notas, onToggleCompra, onEditNota, onDelete
     <div style={{...cardStyle,padding:'18px 20px'}}>
       <div style={{marginBottom:14,display:'flex',gap:10,alignItems:'center'}}>
         <SearchInput value={q} onChange={setQ} placeholder="Buscar item..." />
-        <span style={{fontSize:13,color:'#9a9090',whiteSpace:'nowrap'}}>{compras.length} item{compras.length!==1?'s':''}</span>
+        <span style={{fontSize:13,color:'#5B6661',whiteSpace:'nowrap'}}>{compras.length} item{compras.length!==1?'s':''}</span>
       </div>
       {!compras.length ? <div style={emptyTextStyle}>No hay items pendientes 🎉</div>
         : <div style={{display:'flex',flexDirection:'column',gap:10}}>

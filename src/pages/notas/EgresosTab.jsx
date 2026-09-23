@@ -21,7 +21,7 @@ export default function EgresosTab({ notas, onEditNota, onDeleteNota }) {
       <div style={{marginBottom:14,display:'flex',gap:10,alignItems:'center',flexWrap:'wrap'}}>
         <SearchInput value={q} onChange={setQ} placeholder="Buscar egreso..." style={{minWidth:160}} />
         <MonthSelect value={mes} onChange={setMes} months={egresoMonths} />
-        <span style={{fontSize:13,color:'#3a9b7b',fontWeight:600,whiteSpace:'nowrap'}}>Total: {fmtPeso(totalEgresos)}</span>
+        <span style={{fontSize:13,color:'#1F5A45',fontWeight:600,whiteSpace:'nowrap'}}>Total: {fmtPeso(totalEgresos)}</span>
       </div>
       {!egresos.length ? <div style={emptyTextStyle}>No hay egresos registrados</div>
         : <List egresos={egresos} onEditNota={onEditNota} onDeleteNota={onDeleteNota} />

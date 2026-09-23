@@ -39,7 +39,7 @@ export default function LoginPage() {
       <div style={{position:'fixed',top:0,left:0,right:0,zIndex:10}}><BetaBanner /></div>
       <div style={{
         minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center',
-        background:'linear-gradient(135deg, #dff5ec 0%, #fde8ed 50%, #e8f4ff 100%)',
+        background:'linear-gradient(135deg, #dff5ec 0%, #FBE7EC 50%, #e8f4ff 100%)',
         padding:16,
       }}>
         <div style={{position:'fixed',top:40,left:30,fontSize:80,opacity:.06,userSelect:'none',transform:'rotate(-20deg)'}}>🐾</div>
@@ -60,11 +60,11 @@ export default function LoginPage() {
             fontSize:32, boxShadow:'0 8px 24px rgba(95,191,155,.35)',
           }}>🐾</div>
 
-          <h1 style={{fontFamily:"'Cormorant Garamond',serif", fontSize:32, fontWeight:600, marginBottom:4}}>Paupet</h1>
-          <p style={{fontSize:13, color:'#9a9090', marginBottom:32}}>Peluquería Canina · Panel de gestión</p>
+          <h1 style={{fontFamily:"'Fraunces',Georgia,serif", fontSize:32, fontWeight:600, marginBottom:4}}>Paupet</h1>
+          <p style={{fontSize:13, color:'#5B6661', marginBottom:32}}>Peluquería Canina · Panel de gestión</p>
 
           <div style={{textAlign:'left', marginBottom:14}}>
-            <label htmlFor="login-email" style={{fontSize:11, color:'#9a9090', textTransform:'uppercase', letterSpacing:.6, fontWeight:500, display:'block', marginBottom:6}}>Email</label>
+            <label htmlFor="login-email" style={{fontSize:11, color:'#5B6661', textTransform:'uppercase', letterSpacing:.6, fontWeight:500, display:'block', marginBottom:6}}>Email</label>
             <input
               id="login-email"
               type="email"
@@ -75,16 +75,16 @@ export default function LoginPage() {
               placeholder="nombre@ejemplo.com"
               autoFocus
               style={{
-                width:'100%', border:`1.5px solid ${error?'#e8809a':'#ede8e8'}`,
+                width:'100%', border:`1.5px solid ${error?'#B83D62':'#E6E0D8'}`,
                 borderRadius:12, padding:'12px 16px',
                 fontFamily:"'Outfit',sans-serif", fontSize:15, outline:'none',
-                background:'#faf8f5', color:'#2e2828', boxSizing:'border-box',
+                background:'#F7F4EF', color:'#1F2A26', boxSizing:'border-box',
               }}
             />
           </div>
 
           <div style={{textAlign:'left', marginBottom:20}}>
-            <label htmlFor="login-pw" style={{fontSize:11, color:'#9a9090', textTransform:'uppercase', letterSpacing:.6, fontWeight:500, display:'block', marginBottom:6}}>Contraseña</label>
+            <label htmlFor="login-pw" style={{fontSize:11, color:'#5B6661', textTransform:'uppercase', letterSpacing:.6, fontWeight:500, display:'block', marginBottom:6}}>Contraseña</label>
             <div style={{position:'relative'}}>
               <input
                 id="login-pw"
@@ -95,10 +95,10 @@ export default function LoginPage() {
                 onKeyDown={e => e.key === 'Enter' && handleSubmit()}
                 placeholder="••••••••"
                 style={{
-                  width:'100%', border:`1.5px solid ${error?'#e8809a':'#ede8e8'}`,
+                  width:'100%', border:`1.5px solid ${error?'#B83D62':'#E6E0D8'}`,
                   borderRadius:12, padding:'12px 44px 12px 16px',
                   fontFamily:"'Outfit',sans-serif", fontSize:15, outline:'none',
-                  background:'#faf8f5', color:'#2e2828', boxSizing:'border-box',
+                  background:'#F7F4EF', color:'#1F2A26', boxSizing:'border-box',
                   transition:'border-color .2s',
                 }}
               />
@@ -106,10 +106,10 @@ export default function LoginPage() {
                 type="button"
                 aria-label={show ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 onClick={() => setShow(s => !s)}
-                style={{position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',fontSize:16,color:'#9a9090',padding:0,lineHeight:1}}
+                style={{position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',fontSize:16,color:'#5B6661',padding:0,lineHeight:1}}
               >{show ? '🙈' : '👁'}</button>
             </div>
-            {error && <p style={{fontSize:12, color:'#e8809a', marginTop:8}}>{error}</p>}
+            {error && <p style={{fontSize:12, color:'#B83D62', marginTop:8}}>{error}</p>}
           </div>
 
           <button
@@ -130,7 +130,7 @@ export default function LoginPage() {
             }
           </button>
 
-          <p style={{fontSize:11, color:'#c0b8b8', marginTop:20, lineHeight:1.5}}>
+          <p style={{fontSize:11, color:'#8A948F', marginTop:20, lineHeight:1.5}}>
             Acceso restringido al equipo de Paupet
           </p>
         </div>

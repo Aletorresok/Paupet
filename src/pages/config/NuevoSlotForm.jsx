@@ -2,11 +2,11 @@ import Btn from '../../components/ui/Btn';
 import FormGroup from '../../components/ui/FormGroup';
 import { sans } from '../../lib/styles';
 
-const smallInput = {border:'1.5px solid #ede8e8',borderRadius:8,padding:'6px 9px',fontFamily:sans,fontSize:12,outline:'none',background:'white'};
+const smallInput = {border:'1.5px solid #E6E0D8',borderRadius:8,padding:'6px 9px',fontFamily:sans,fontSize:12,outline:'none',background:'white'};
 
 export default function NuevoSlotForm({ hora, dur, onHora, onDur, onAdd }) {
   return (
-    <div style={{display:'flex',alignItems:'flex-end',gap:8,background:'#faf8f5',borderRadius:8,padding:'10px 12px',flexWrap:'wrap'}}>
+    <div style={{display:'flex',alignItems:'flex-end',gap:8,background:'#F7F4EF',borderRadius:8,padding:'10px 12px',flexWrap:'wrap'}}>
       <FormGroup label="Hora">
         <input type="time" value={hora} onChange={e=>onHora(e.target.value)} style={smallInput}/>
       </FormGroup>

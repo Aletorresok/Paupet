@@ -1,18 +1,20 @@
-export default function SidebarNavItem({ icon, label, active, badgeCount, onClick, muted }) {
+import { C } from '../../lib/styles';
+import Icon from '../ui/Icon';
+
+export default function SidebarNavItem({ icon, label, active, badgeCount, onClick }) {
   return (
-    <div onClick={onClick} style={{
-      display:'flex',alignItems:'center',gap:9,padding:'10px 12px',borderRadius:10,cursor:'pointer',
-      fontSize:13,fontWeight:active?500:400,
-      background:active?'white':'transparent',
-      color:active?'#2e2828':muted?'rgba(255,255,255,.6)':'rgba(255,255,255,.85)',
-      boxShadow:active?'0 4px 20px rgba(0,0,0,.08)':'none',
-      transition:'all .2s',
+    <button type="button" onClick={onClick} aria-current={active ? 'page' : undefined} style={{
+      display:'flex',alignItems:'center',gap:12,height:44,padding:'0 12px',borderRadius:10,cursor:'pointer',
+      fontSize:15,fontWeight:active?600:400,border:'none',width:'100%',textAlign:'left',fontFamily:'inherit',
+      background:active?C.mentaSuave:'transparent',
+      color:active?C.verde:C.tinta,
+      transition:'background .15s',
     }}>
-      <span style={{fontSize:15,width:20,textAlign:'center',flexShrink:0}}>{icon}</span>
+      <Icon name={icon} size={20} />
       <span style={{flex:1}}>{label}</span>
       {badgeCount > 0 && (
-        <span style={{background:'#e8809a',color:'white',fontSize:10,fontWeight:600,borderRadius:20,padding:'2px 6px',minWidth:18,textAlign:'center'}}>{badgeCount}</span>
+        <span style={{background:C.rosaSuave,color:C.rosa,fontSize:12,fontWeight:600,borderRadius:999,padding:'2px 8px'}}>{badgeCount} pend.</span>
       )}
-    </div>
+    </button>
   );
 }

@@ -1,24 +1,24 @@
-import { sans } from '../../lib/styles';
+import { C, sans } from '../../lib/styles';
 
 const variants = {
-  primary: {background:'#5fbf9b',color:'white'},
-  pink:    {background:'#e8809a',color:'white'},
-  ghost:   {background:'transparent',color:'#9a9090',border:'1.5px solid #ede8e8'},
-  danger:  {background:'#fde8ed',color:'#e8809a',border:'1.5px solid #f5c6d0'},
+  primary: {background:C.menta,color:C.sobreMenta,border:'none'},
+  pink:    {background:C.rosa,color:'white',border:'none'},
+  ghost:   {background:'white',color:C.tinta,border:`1px solid ${C.linea}`},
+  danger:  {background:'white',color:C.rosa,border:`1px solid ${C.linea}`},
 };
 const sizes = {
-  '':  {padding:'10px 20px',fontSize:13},
-  sm:  {padding:'7px 14px', fontSize:12},
-  xs:  {padding:'5px 10px', fontSize:11},
+  '':  {height:44,padding:'0 18px',fontSize:15,borderRadius:12},
+  sm:  {height:36,padding:'0 14px',fontSize:14,borderRadius:10},
+  xs:  {height:32,padding:'0 10px',fontSize:13,borderRadius:9},
 };
 
-export default function Btn({ variant='primary', size='', onClick, children, style={}, disabled=false }) {
+export default function Btn({ variant='primary', size='', onClick, children, style={}, disabled=false, title, ...rest }) {
   return (
-    <button onClick={onClick} disabled={disabled} style={{
-      display:'inline-flex',alignItems:'center',gap:7,border:'none',borderRadius:50,
+    <button type="button" onClick={onClick} disabled={disabled} title={title} aria-label={rest['aria-label']} style={{
+      display:'inline-flex',alignItems:'center',justifyContent:'center',gap:7,
       cursor:disabled?'not-allowed':'pointer',fontFamily:sans,
-      fontWeight:500,whiteSpace:'nowrap',transition:'all .2s',
-      opacity:disabled?.6:1,
+      fontWeight:600,whiteSpace:'nowrap',transition:'background .15s, opacity .15s',
+      opacity:disabled?.6:1,boxSizing:'border-box',
       ...variants[variant],...sizes[size],...style,
     }}>
       {children}

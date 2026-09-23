@@ -1,3 +1,4 @@
+import Icon from '../../components/ui/Icon';
 import { useState, useEffect } from 'react';
 import Btn from '../../components/ui/Btn';
 import Modal from '../../components/ui/Modal';
@@ -61,11 +62,11 @@ export default function ModalCliente({ open, cliente, onClose, onSaveVisit, onEd
           <InasistenciasBanner cantidad={c.inasistencias} onRestar={() => onDecrementarInasistencia(c.id)} />
         )}
 
-        <div style={{...subtitleStyle,marginBottom:6}}>📝 Notas</div>
-        <div style={{background:'#fde8ed',borderRadius:10,padding:'10px 13px',fontSize:13,lineHeight:1.6,borderLeft:'3px solid #e8809a',marginBottom:14}}>{c.notes||'Sin notas especiales.'}</div>
+        <div style={{...subtitleStyle,marginBottom:6}}>Notas</div>
+        <div style={{background:'#FBE7EC',borderRadius:10,padding:'10px 13px',fontSize:13,lineHeight:1.6,borderLeft:'3px solid #B83D62',marginBottom:14}}>{c.notes||'Sin notas especiales.'}</div>
 
-        <div style={{...subtitleStyle,margin:'14px 0 8px'}}>✂️ Historial de visitas</div>
-        {!(c.visitas||[]).length ? <p style={{fontSize:13,color:'#9a9090'}}>Sin visitas aún</p>
+        <div style={{...subtitleStyle,margin:'14px 0 8px'}}>Historial de visitas</div>
+        {!(c.visitas||[]).length ? <p style={{fontSize:13,color:'#5B6661'}}>Sin visitas aún</p>
           : [...(c.visitas||[])].sort((a,b) => (b.fecha||'').localeCompare(a.fecha||'')).map((v,i) => (
             <VisitaItem key={v.id||i} visita={v} onEdit={() => startEditVisita(v)} onDelete={() => onDeleteVisit(v.id)} />
           ))
@@ -73,11 +74,11 @@ export default function ModalCliente({ open, cliente, onClose, onSaveVisit, onEd
 
         <div style={{display:'flex',gap:8,marginTop:14,flexWrap:'wrap'}}>
           <Btn size="sm" onClick={toggleNuevaVisita}>
-            {showForm && !editingVisita ? '✕ Cancelar' : '+ Registrar visita'}
+            {showForm && !editingVisita ? 'Cancelar' : '+ Registrar visita'}
           </Btn>
-          {c.tel && <WhatsAppBtn size="sm" onClick={() => abrirWhatsApp(c.tel, c.dog, c.owner)}>💬 WhatsApp</WhatsAppBtn>}
-          <Btn size="sm" variant="ghost" onClick={() => onEdit(c)}>✏️ Editar</Btn>
-          <Btn size="sm" variant="danger" onClick={() => onDelete(c.id)}>🗑 Eliminar</Btn>
+          {c.tel && <WhatsAppBtn size="sm" onClick={() => abrirWhatsApp(c.tel, c.dog, c.owner)}>WhatsApp</WhatsAppBtn>}
+          <Btn size="sm" variant="ghost" onClick={() => onEdit(c)}><Icon name="edit" size={16}/>Editar</Btn>
+          <Btn size="sm" variant="danger" onClick={() => onDelete(c.id)}><Icon name="trash" size={16}/>Eliminar</Btn>
         </div>
 
         {showForm && (
