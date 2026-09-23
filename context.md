@@ -96,10 +96,18 @@ Reglas del refactor:
 
 ### Fase 0 — Seguridad (pendiente, requiere acceso al panel de Supabase)
 > El repo es **público** en GitHub: el código que lee la contraseña desde `config` está a la vista.
-- [ ] Reemplazar login por Supabase Auth (email + contraseña)
-- [ ] Activar RLS en todas las tablas (solo usuarios autenticados)
-- [ ] Borrar `password_hash` en texto plano de `config`
-- [ ] Revisar políticas del bucket `fotos`
+- [x] Login con Supabase Auth en la versión nueva (`hooks/useSession.js`, `pages/login/LoginPage.jsx`)
+- [x] Mismo login para la versión anterior: PR https://github.com/Aletorresok/Paupet/pull/1 (rama `claude/login-seguro`, **sin mergear**)
+- [x] Script `supabase/seguridad.sql`: RLS sólo para `authenticated` en las 5 tablas, `revoke` a `anon`,
+      borra `password_hash`, escritura del bucket `fotos` sólo para logueados
+- **Pasos para la dueña (en este orden):**
+  1. [ ] Supabase → Authentication → Users → Add user (uno por persona, "Auto Confirm User")
+  2. [ ] Supabase → Authentication → Sign In / Providers → desactivar "Allow new users to sign up"
+         (si no, cualquiera con la clave pública podría crearse un usuario y entrar)
+  3. [ ] Mergear el PR #1 → Vercel publica el login nuevo en paupet.vercel.app → probar entrar
+  4. [ ] Correr `supabase/seguridad.sql` en el SQL Editor
+  5. [ ] Probar las dos versiones
+- ⚠️ Con RLS activo, el portal de reservas (si se retoma) necesitará sus propias políticas para `anon`.
 
 ### Fase 1 — Bugs de datos
 - [x] `todayStr()` usa UTC → fecha local (`toISODate`, `parseFecha`, `diasDesde` en `lib/utils.js`)
@@ -161,7 +169,10 @@ Reglas del refactor:
 ## Maqueta (referencia visual para Fases 3 y 4)
 https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - Paleta: fondo #F7F4EF · tinta #1F2A26 · tinta suave #5B6661 · salvia #2F7A5F · salvia profundo #1F3A31 · rosa #B83D62 · ámbar #8A5300 · línea #E6E0D8
-- ⚠️ Pendiente de ajustar: volver al **verde menta #5fbf9b** como color principal (con texto oscuro encima para contraste), quitar propina y Mercado Pago, quitar precios del catálogo.
+- ✅ Ajustado (v4): **verde menta #5FBF9B** como color principal con texto oscuro #13302A encima (contraste 6,5:1); bordes de selección #3FA380;
+  sólo efectivo/transferencia, sin propina; precio siempre a mano (con referencia "la última vez le cobraste…");
+  "Servicios frecuentes" sin precios fijos (sólo rango cobrado, informativo).
+- Pendiente: comentarios de la dueña y su novia sobre la maqueta.
 - Tipografía: Fraunces (títulos) + Outfit (texto, números con `tabular-nums`)
 - Íconos de línea (tipo Lucide) en vez de emojis; botones ≥ 44px
 - Navegación: menú lateral claro en escritorio; barra inferior (Hoy/Agenda/Clientes/Más) + botón flotante en celular
@@ -180,3 +191,4 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Fase 2: `App.jsx` (2.286 líneas) dividido en ~75 archivos chicos (el más grande: `db.js`, 172 líneas). Sin cambios visuales ni de comportamiento. ESLint arreglado.
 - 2026-09-23 — Maqueta del rediseño publicada: https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy (14 pantallas: escritorio, ventanas, celular y guía de estilo). Pendiente de ajustes con la dueña.
 - 2026-09-23 — Decisiones de la dueña registradas. Setup de versión en paralelo (aviso + link a la anterior). Fase 1 compatible hecha. Frecuencia de vuelta implementada.
+- 2026-09-23 — Fase 0 preparada: login con Supabase Auth en ambas versiones (PR #1 para `main`), script RLS. Maqueta v4 con menta y sin propina/MP/precios fijos.
