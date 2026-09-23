@@ -128,6 +128,14 @@ Reglas del refactor:
 - [ ] Stock con cantidad mínima
 - [ ] PWA instalable
 
+## Maqueta (referencia visual para Fases 3 y 4)
+https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
+- Paleta: fondo #F7F4EF · tinta #1F2A26 · tinta suave #5B6661 · salvia #2F7A5F · salvia profundo #1F3A31 · rosa #B83D62 · ámbar #8A5300 · línea #E6E0D8
+- Tipografía: Fraunces (títulos) + Outfit (texto, números con `tabular-nums`)
+- Íconos de línea (tipo Lucide) en vez de emojis; botones ≥ 44px
+- Navegación: menú lateral claro en escritorio; barra inferior (Hoy/Agenda/Clientes/Más) + botón flotante en celular
+- Los datos de la maqueta son de ejemplo
+
 ## Preguntas abiertas
 - ¿Existe el portal público de reservas (`from_portal`, slots de Configuración) en otro repo?
 
@@ -138,4 +146,4 @@ Reglas del refactor:
 ## Registro de cambios
 - 2026-09-23 — Análisis inicial y plan. Inicio Fase 2 (división de `App.jsx`).
 - 2026-09-23 — Fase 2: `App.jsx` (2.286 líneas) dividido en ~75 archivos chicos (el más grande: `db.js`, 172 líneas). Sin cambios visuales ni de comportamiento. ESLint arreglado.
-- 2026-09-23 — En curso: maqueta interactiva de los cambios propuestos (Fases 3 y 4).
+- 2026-09-23 — Maqueta del rediseño publicada: https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy (14 pantallas: escritorio, ventanas, celular y guía de estilo). Pendiente de ajustes con la dueña.
