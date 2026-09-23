@@ -11,7 +11,9 @@ import DiaSlotsCard from './DiaSlotsCard';
 import StoryPreview from './StoryPreview';
 import StoryPreviewNuevo from './StoryPreviewNuevo';
 import DisenoSelector from './DisenoSelector';
-import { leerDiseno, guardarDiseno } from './disenoStorage';
+import { leerDiseno, guardarDiseno, esFondo } from './disenoStorage';
+import StoryPreviewFondo from './StoryPreviewFondo';
+import { FONDOS } from './fondosStory';
 import AutoGenModal from './AutoGenModal';
 import LinkTurnosCard from './LinkTurnosCard';
 
@@ -51,11 +53,11 @@ export default function HorariosPage({ horariosData, onSaveHorarios }) {
   const descargarImagen = async () => {
     setGenerando(true);
     try {
-      const nuevo = diseno === 'nuevo';
+      const color = esFondo(diseno) ? FONDOS[diseno].color : diseno === 'nuevo' ? '#5FBF9B' : '#7ec8a0';
       await descargarNodoComoPng(
         previewRef.current,
-        `horarios_paupet_${semanaInicio.getDate()}_${MESES[semanaInicio.getMonth()]}${nuevo ? '_nuevo' : ''}.png`,
-        nuevo ? '#5FBF9B' : '#7ec8a0',
+        `horarios_paupet_${semanaInicio.getDate()}_${MESES[semanaInicio.getMonth()]}${diseno === 'clasico' ? '' : '_' + diseno}.png`,
+        color,
       );
     } catch(e) {
       alert('Error al generar imagen: ' + e.message);
@@ -104,7 +106,9 @@ export default function HorariosPage({ horariosData, onSaveHorarios }) {
         <DisenoSelector value={diseno} onChange={cambiarDiseno} />
       </div>
       <div style={{overflowX:'auto'}}>
-        {diseno === 'nuevo'
+        {esFondo(diseno)
+          ? <StoryPreviewFondo ref={previewRef} fondo={diseno} dias={dias.filter(d => d.activo)} rango={rangoSemana(semanaInicio)} />
+          : diseno === 'nuevo'
           ? <StoryPreviewNuevo ref={previewRef} dias={dias.filter(d => d.activo)} rango={rangoSemana(semanaInicio)} />
           : <StoryPreview ref={previewRef} dias={dias.filter(d => d.activo)} />
         }
