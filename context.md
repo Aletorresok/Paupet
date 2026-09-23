@@ -242,7 +242,7 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - Avatares ilustrados por raza (`src/assets/avatares`, `lib/avatarPerro.js`, `PetAvatar`): caniche, golden,
   salchicha, yorkie/terrier, ovejero; cualquier otra → mestizo. Gatos siguen con 🐱. Reemplazan los emojis.
 - Micro-interacciones: transición al tocar botones (la vibración se probó y se sacó por pedido),
-  el salchicha dormido "respira", y todo se apaga con "reducir movimiento".
+  el salchicha dormido respira (bien visible) con "z" animadas que flotan (se sacaron las z dibujadas de la ilustración), y todo se apaga con "reducir movimiento".
 - /turnos: días en fila deslizable (con cantidad de libres) y los horarios del día elegido abajo.
 - Descartado de Gemini: verde #25D366 con texto blanco en el botón (no pasa contraste); sacar la vista previa
   del mensaje (da confianza de qué se manda).
