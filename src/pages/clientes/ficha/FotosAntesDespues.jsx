@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import Icon from '../../../components/ui/Icon';
 import { db } from '../../../lib/db';
 import { C, sans } from '../../../lib/styles';
+import EstadoVacio from '../../../components/ui/EstadoVacio';
 import { fmtFecha } from '../../../lib/utils';
 
 // Galería de fotos de antes y después del perro.
@@ -46,7 +47,7 @@ export default function FotosAntesDespues({ clienteId, habilitado, toast }) {
   return (
     <div style={{display:'flex',flexDirection:'column',gap:10}}>
       <div style={{display:'flex',gap:8}}>{boton('antes', '+ Foto de antes')}{boton('despues', '+ Foto de después')}</div>
-      {!fotos.length ? <p style={{fontSize:13,color:C.tintaSuave}}>Todavía no hay fotos.</p> : (
+      {!fotos.length ? <EstadoVacio ilustracion="banio" texto="Todavía no hay fotos. Sacá una antes y otra después del baño para ver el cambio." tamanio={110} /> : (
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(110px,1fr))',gap:8}}>
           {fotos.map(f => (
             <figure key={f.id} style={{margin:0,position:'relative',aspectRatio:'1',borderRadius:12,overflow:'hidden',background:'#EFEAE3'}}>

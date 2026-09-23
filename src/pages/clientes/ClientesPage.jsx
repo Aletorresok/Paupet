@@ -4,6 +4,7 @@ import Btn from '../../components/ui/Btn';
 import PageHeader from '../../components/ui/PageHeader';
 import SearchInput from '../../components/ui/SearchInput';
 import ClienteCard from './ClienteCard';
+import EstadoVacio from '../../components/ui/EstadoVacio';
 
 export default function ClientesPage({ clientes, onOpenClient, onNuevo }) {
   const { isMob } = useResp();
@@ -24,7 +25,9 @@ export default function ClientesPage({ clientes, onOpenClient, onNuevo }) {
         <span style={{fontSize:13,color:'#5B6661',whiteSpace:'nowrap'}}>{filtered.length} cliente{filtered.length!==1?'s':''}</span>
       </div>
       <div style={{display:'grid',gridTemplateColumns:`repeat(auto-fill,minmax(${isMob?'150px':'200px'},1fr))`,gap:14}}>
-        {!filtered.length ? <p style={{color:'#5B6661',fontSize:14,padding:'24px 0'}}>Sin clientes. ¡Agregá el primero!</p>
+        {!filtered.length ? (q.trim()
+          ? <EstadoVacio ilustracion="buscando" titulo={`No encontramos «${q.trim()}»`} texto="Probá con el nombre del perro o del dueño, o con menos letras." style={{gridColumn:'1/-1'}} />
+          : <EstadoVacio ilustracion="durmiendo" titulo="Todavía no hay clientes" texto="Agregá el primero con «+ Nuevo cliente»." style={{gridColumn:'1/-1'}} />)
           : filtered.map(c => <ClienteCard key={c.id} cliente={c} onClick={() => onOpenClient(c.id)} />)
         }
       </div>

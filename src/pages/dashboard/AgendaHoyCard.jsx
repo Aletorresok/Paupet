@@ -1,6 +1,7 @@
 import Badge from '../../components/ui/Badge';
 import Btn from '../../components/ui/Btn';
 import Icon from '../../components/ui/Icon';
+import EstadoVacio from '../../components/ui/EstadoVacio';
 import { C, cardStyle, sectionTitleStyle } from '../../lib/styles';
 import { fmtPeso } from '../../lib/utils';
 
@@ -19,7 +20,7 @@ export default function AgendaHoyCard({ turnos, clientes, onCompletar, onEditTur
         <h3 style={{...sectionTitleStyle,marginBottom:0,flex:1}}>Agenda de hoy</h3>
         <Btn size="sm" variant="ghost" onClick={onVerAgenda}>Ver agenda</Btn>
       </div>
-      {!lista.length ? <p style={{fontSize:14,color:C.tintaSuave,padding:'16px 0'}}>No hay turnos cargados para hoy.</p>
+      {!lista.length ? <EstadoVacio ilustracion="durmiendo" titulo="Hoy no hay turnos" texto="Buen momento para mirar quiénes ya deberían volver." tamanio={150} />
         : lista.map(t => {
           const c = clientes.find(x => x.id === t.clientId) || {};
           const e = ESTADO[t.estado] || ESTADO.pending;

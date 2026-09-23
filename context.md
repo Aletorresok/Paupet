@@ -218,6 +218,13 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   más nuevos dejaban de aparecer.
 - La misma corrección se pasó a la versión anterior (`main`) en el PR #2 (`claude/paginacion-main`).
 
+## Ilustraciones (Gemini)
+- 4 ilustraciones del salchicha en `src/assets/ilustraciones/*.webp` (fondo cuadriculado falso quitado,
+  480 px, WebP). Componente `components/ui/EstadoVacio.jsx`.
+- Dónde: `durmiendo` → sin turnos hoy / día sin turnos / sin clientes; `buscando` → búsqueda de
+  clientes sin resultados; `banio` → ficha sin fotos; `enviado` → /turnos después de tocar "Enviar".
+- Al pedir más a Gemini: "fondo blanco liso" (no transparente) y PNG ≥ 2048 px; íconos como código SVG.
+
 ## Incidente 2026-09-23 (falsa alarma)
 - Parecía que faltaban clientes/turnos de la semana. Verificado en Supabase: los clientes estaban (hasta id 112)
   y no había turnos después del 18/9 porque Pau no había cargado ninguno. Faltan ids 94 y 96 (antiguos).
