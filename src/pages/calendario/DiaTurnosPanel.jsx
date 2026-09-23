@@ -1,0 +1,22 @@
+import { useResp } from '../../context/resp';
+import { cardStyle, sectionTitleStyle } from '../../lib/styles';
+import { fmtFecha } from '../../lib/utils';
+import TurnoCard from './TurnoCard';
+
+export default function DiaTurnosPanel({ selectedDay, turnos, clientes, ...actions }) {
+  const { isMob } = useResp();
+  const empty = { fontSize:13, color:'#9a9090' };
+  return (
+    <div style={{width:isMob?'100%':'300px',flexShrink:0,...cardStyle,padding:'18px 16px'}}>
+      <div style={sectionTitleStyle}>
+        {selectedDay ? fmtFecha(selectedDay) : 'Seleccioná un día'}
+      </div>
+      {!selectedDay ? <p style={empty}>Hacé click en un día del calendario</p>
+        : !turnos.length ? <p style={empty}>Sin turnos para este día</p>
+        : turnos.map(t => (
+          <TurnoCard key={t.id} turno={t} cliente={clientes.find(x=>x.id===t.clientId)||{}} {...actions} />
+        ))
+      }
+    </div>
+  );
+}

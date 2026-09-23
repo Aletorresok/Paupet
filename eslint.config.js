@@ -24,6 +24,8 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // Patrón heredado (reset de formularios al abrir modales). Pendiente de migrar.
+      'react-hooks/set-state-in-effect': 'warn',
     },
   },
 ])

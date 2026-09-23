@@ -1,0 +1,43 @@
+export const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+export const DIAS_ES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+export const CAL_DAYS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+export const DIAS_CONFIG = [
+  {key:'lunes',    label:'Lunes',    emoji:'🌿'},
+  {key:'martes',   label:'Martes',   emoji:'🌸'},
+  {key:'miercoles',label:'Miércoles',emoji:'🌿'},
+  {key:'jueves',   label:'Jueves',   emoji:'🌸'},
+  {key:'viernes',  label:'Viernes',  emoji:'🌿'},
+  {key:'sabado',   label:'Sábado',   emoji:'🌸'},
+  {key:'domingo',  label:'Domingo',  emoji:'☀️'},
+];
+export const DIAS_SEMANA_HOD = ['lunes','martes','miercoles','jueves','viernes','sabado'];
+export const DIAS_HOD_LABELS = {lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado'};
+export const PELUQUERA_IMG = 'https://qelrwbavnrxdlxfckehz.supabase.co/storage/v1/object/public/Fotos/WhatsApp_Image_2026-03-06_at_19.29.42-removebg-preview.png';
+
+export const DEFAULT_CONFIG = {
+  nombre: 'Paupet Peluquería',
+  msg: '¡Hola! Reservá el turno de tu peludo. 🐾',
+  anticip: 30,
+  horarios: {
+    lunes:    {open:true,  desde:'09:00',hasta:'18:00'},
+    martes:   {open:true,  desde:'09:00',hasta:'18:00'},
+    miercoles:{open:true,  desde:'09:00',hasta:'18:00'},
+    jueves:   {open:true,  desde:'09:00',hasta:'18:00'},
+    viernes:  {open:true,  desde:'09:00',hasta:'17:00'},
+    sabado:   {open:true,  desde:'09:00',hasta:'13:00'},
+    domingo:  {open:false, desde:'09:00',hasta:'13:00'},
+  },
+  slots: {}
+};
+
+export const NAV_ITEMS = [
+  {page:'dashboard', icon:'🏠', label:'Panel de Control'},
+  {page:'clientes',  icon:'🐶', label:'Clientes'},
+  {page:'calendario',icon:'📅', label:'Calendario', badge:true},
+  {page:'historial', icon:'📋', label:'Historial'},
+  {page:'notas',     icon:'📝', label:'Notas & Stock'},
+  {page:'horarios',  icon:'📸', label:'Horarios'},
+  {page:'config',    icon:'⚙️', label:'Configuración'},
+];
+
+export const SESSION_KEY = 'paupet_auth';
