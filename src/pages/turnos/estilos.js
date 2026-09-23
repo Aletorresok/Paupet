@@ -5,6 +5,8 @@ export const ESTILOS_TURNOS = `
 .pt-wrap{max-width:1040px;margin:0 auto;padding:28px 16px 48px;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;align-items:start}
 @media (max-width:880px){.pt-wrap{grid-template-columns:minmax(0,1fr);max-width:540px;padding-top:20px}}
 .pt-form{display:flex;flex-direction:column;gap:18px}
+.pt-hero{display:block;width:100%;max-width:440px;height:auto;margin:0 auto -6px}
+@media (max-width:480px){.pt-hero{max-width:320px}}
 .pt-cabecera{display:flex;gap:16px;align-items:center}
 .pt-cabecera h1{font-family:${serif};font-size:30px;font-weight:600;line-height:1.1;text-wrap:balance}
 .pt-cabecera p{margin-top:6px;color:${C.tintaSuave};font-size:15px;line-height:1.45}

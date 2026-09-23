@@ -223,6 +223,11 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   480 px, WebP). Componente `components/ui/EstadoVacio.jsx`.
 - Dónde: `durmiendo` → sin turnos hoy / día sin turnos / sin clientes; `buscando` → búsqueda de
   clientes sin resultados; `banio` → ficha sin fotos; `enviado` → /turnos después de tocar "Enviar".
+- `pau-secador.webp` (Pau secando al salchicha): login (panel verde y arriba en celular) y cabecera de /turnos.
+- Íconos de servicios en `Icon.jsx` (banio, banioCorte, tijera, carda, unias, pawNuevo), redibujados en SVG
+  a partir de la propuesta de Gemini; se usan en los botones de servicio de /turnos.
+- Pendiente: fondos de historias (Gemini hizo 3: menta, crema, menta con salchicha) → pedir cada uno por separado
+  en 1080×1920 y sumarlos como diseños en Horarios para Stories.
 - Al pedir más a Gemini: "fondo blanco liso" (no transparente) y PNG ≥ 2048 px; íconos como código SVG.
 
 ## Incidente 2026-09-23 (falsa alarma)

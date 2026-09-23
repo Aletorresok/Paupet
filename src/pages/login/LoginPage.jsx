@@ -4,6 +4,7 @@ import { C, serif } from '../../lib/styles';
 import BetaBanner from '../../components/layout/BetaBanner';
 import GlobalStyles from '../../components/layout/GlobalStyles';
 import Icon from '../../components/ui/Icon';
+import pauSecador from '../../assets/ilustraciones/pau-secador.webp';
 
 // Mensajes de Supabase Auth traducidos.
 const traducirError = msg =>
@@ -52,15 +53,17 @@ export default function LoginPage() {
             <div style={{width:44,height:44,borderRadius:12,background:C.menta,color:C.sobreMenta,display:'flex',alignItems:'center',justifyContent:'center'}}><Icon name="paw" size={24}/></div>
             <span style={{fontFamily:serif,fontSize:24,fontWeight:600}}>Paupet</span>
           </div>
-          <div style={{flex:1}}/>
-          <h1 style={{margin:0,fontFamily:serif,fontSize:48,fontWeight:500,lineHeight:1.08}}>Tu agenda, tus clientes y tu caja, en un solo lugar.</h1>
+          <div style={{flex:1,minHeight:0,display:'flex',alignItems:'center',justifyContent:'center',padding:'12px 0'}}>
+            <img src={pauSecador} alt="Pau secando a un salchicha en la mesa de peluquería" style={{width:'100%',maxWidth:460,maxHeight:'42vh',objectFit:'contain'}} />
+          </div>
+          <h1 style={{margin:0,fontFamily:serif,fontSize:40,fontWeight:500,lineHeight:1.1}}>Tu agenda, tus clientes y tu caja, en un solo lugar.</h1>
           <p style={{margin:0,fontSize:17,color:'#CFE3DA',lineHeight:1.5,maxWidth:440}}>Turnos, recordatorios por WhatsApp, cobros y la imagen de horarios para Stories.</p>
         </aside>
 
         <main style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',padding:'72px 20px 32px'}}>
           <form onSubmit={handleSubmit} style={{width:'100%',maxWidth:400,display:'flex',flexDirection:'column',gap:18}}>
             <div style={{display:'flex',flexDirection:'column',gap:6}}>
-              <div className="login-logo-movil" style={{width:52,height:52,borderRadius:14,background:C.menta,color:C.sobreMenta,alignItems:'center',justifyContent:'center',marginBottom:8}}><Icon name="paw" size={28}/></div>
+              <img className="login-logo-movil" src={pauSecador} alt="" style={{width:'100%',maxWidth:300,height:'auto',alignSelf:'center',marginBottom:8}} />
               <h2 style={{margin:0,fontFamily:serif,fontSize:32,fontWeight:600}}>Ingresar</h2>
               <span style={{fontSize:15,color:C.tintaSuave}}>Con tu email y contraseña.</span>
             </div>

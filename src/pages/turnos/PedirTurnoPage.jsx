@@ -6,7 +6,8 @@ import VistaMensaje from './VistaMensaje';
 import { useHorariosLibres } from './useHorariosLibres';
 import { armarMensaje } from './mensajeTurno';
 import { ESTILOS_TURNOS } from './estilos';
-import { TAMANIOS, VINO_ANTES, SERVICIOS, A_TENER_EN_CUENTA } from './opciones';
+import pauSecador from '../../assets/ilustraciones/pau-secador.webp';
+import { TAMANIOS, VINO_ANTES, SERVICIOS, A_TENER_EN_CUENTA, ICONOS_SERVICIO } from './opciones';
 
 const VACIO = {
   perro: '', duenio: '', raza: '', tamanio: '', vinoAntes: '',
@@ -33,8 +34,8 @@ export default function PedirTurnoPage() {
       <style>{ESTILOS_TURNOS}</style>
       <main className="pt-wrap">
         <div className="pt-form">
+          <img className="pt-hero" src={pauSecador} alt="Pau secando a un salchicha en la mesa de peluquería" />
           <header className="pt-cabecera">
-            <img className="pt-avatar" src="/pau-avatar.png" alt="Ilustración de Pau con su perro salchicha" />
             <div>
               <h1>Pedí tu turno en Paupet</h1>
               <p>Completá estos datos y se arma un mensaje de WhatsApp para Pau. Ella te confirma el día y el precio.</p>
@@ -60,14 +61,14 @@ export default function PedirTurnoPage() {
             </div>
             <div className="pt-grupo">
               <span className="pt-tit">¿Ya vino a Paupet?</span>
-              <Chips opciones={VINO_ANTES} value={f.vinoAntes} onChange={v => set('vinoAntes', v)} label="¿Ya vino a Paupet?" />
+              <Chips opciones={VINO_ANTES} value={f.vinoAntes} onChange={v => set('vinoAntes', v)} label="¿Ya vino a Paupet?" iconos={ICONOS_SERVICIO} />
             </div>
           </section>
 
           <section className="pt-bloque" aria-labelledby="pt-t-serv">
             <h2 id="pt-t-serv">¿Qué necesita?</h2>
             <p className="pt-sub">Podés elegir más de uno. El precio te lo pasa Pau, porque depende de cada perro.</p>
-            <Chips multiple opciones={SERVICIOS} value={f.servicios} onChange={v => set('servicios', v)} label="Servicios" />
+            <Chips multiple opciones={SERVICIOS} value={f.servicios} onChange={v => set('servicios', v)} label="Servicios" iconos={ICONOS_SERVICIO} />
             <div className="pt-grupo">
               <span className="pt-tit">¿Algo que Pau tenga que saber? <span className="pt-opc">(opcional)</span></span>
               <Chips multiple opciones={A_TENER_EN_CUENTA} value={f.aTenerEnCuenta} onChange={v => set('aTenerEnCuenta', v)} label="Para tener en cuenta" />

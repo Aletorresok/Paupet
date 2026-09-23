@@ -12,6 +12,13 @@ const PATHS = {
   search: <><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></>,
   chat: <path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.2A8 8 0 1 1 20 12z"/>,
   check: <path d="M5 12.5l4.5 4.5L19 7.5"/>,
+  // Servicios (idea de Gemini, redibujados con el mismo trazo que el resto).
+  banio: <><path d="M3 12h18M4.5 12v2.5A4.5 4.5 0 0 0 9 19h6a4.5 4.5 0 0 0 4.5-4.5V12M7.5 19l-1 2M16.5 19l1 2M6 12V7a2 2 0 0 1 4 0"/><circle cx="14" cy="7.5" r="1.7"/><circle cx="18.2" cy="5" r="1.2"/><circle cx="18" cy="9.3" r="0.9"/></>,
+  tijera: <><circle cx="8" cy="18" r="2.6"/><circle cx="16" cy="18" r="2.6"/><path d="M9.6 16 16 3M14.4 16 8 3"/></>,
+  banioCorte: <><circle cx="7" cy="18" r="2.6"/><circle cx="15" cy="18" r="2.6"/><path d="M8.6 16 15 3M13.4 16 7 3"/><path d="M20 6.5s-2 2.2-2 3.7a2 2 0 0 0 4 0c0-1.5-2-3.7-2-3.7z"/></>,
+  carda: <><rect x="4" y="3" width="16" height="9" rx="2"/><path d="M8 6v3M12 6v3M16 6v3M10.5 12v7.5a1.5 1.5 0 0 0 3 0V12"/></>,
+  unias: <><path d="M7.5 16 17 6.5a2.1 2.1 0 0 1 3 3L10.5 19a2.1 2.1 0 0 1-3-3z"/><path d="M10 14.5 16.5 8"/><circle cx="5" cy="19" r="2"/></>,
+  pawNuevo: <><circle cx="6" cy="10" r="1.8"/><circle cx="10.5" cy="7" r="1.8"/><circle cx="15" cy="10" r="1.8"/><path d="M10.5 12.5c-3 0-5.5 3.2-5.5 5.2 0 1.6 1.4 2.3 2.7 2.3 1.1 0 1.8-.6 2.8-.6s1.7.6 2.8.6c1.3 0 2.7-.7 2.7-2.3 0-2-2.5-5.2-5.5-5.2z"/><path d="M19 2.5l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L16.1 4.6l2-.3z"/></>,
   x: <path d="M6 6l12 12M18 6 6 18"/>,
   edit: <path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/>,
   trash: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>,
