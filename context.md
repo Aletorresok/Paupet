@@ -209,6 +209,7 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - Restaurar: todavía manual (pedírselo a Claude con el archivo).
 - Todas las lecturas usan `traerTodo()` (tandas de 1000): antes, pasando las 1000 filas, los turnos
   más nuevos dejaban de aparecer.
+- La misma corrección se pasó a la versión anterior (`main`) en el PR #2 (`claude/paginacion-main`).
 
 ## Incidente 2026-09-23 (falsa alarma)
 - Parecía que faltaban clientes/turnos de la semana. Verificado en Supabase: los clientes estaban (hasta id 112)
