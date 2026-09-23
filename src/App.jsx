@@ -109,6 +109,18 @@ const getSlotsDelDia = (slots, fechaKey) => {
 // ══════════════════════════════════════════════
 //  SUPABASE DATA LAYER
 // ══════════════════════════════════════════════
+// Supabase devuelve como máximo 1000 filas por pedido: traemos de a tandas
+// hasta que venga una incompleta, así no se pierde nada cuando crecen los datos.
+async function traerTodo(consulta, tanda = 1000) {
+  const filas = [];
+  for (let desde = 0; ; desde += tanda) {
+    const { data, error } = await consulta().range(desde, desde + tanda - 1);
+    if (error) throw error;
+    filas.push(...data);
+    if (data.length < tanda) return filas;
+  }
+}
+
 const db = {
   async uploadFoto(file, clienteId) {
     const ext = file.name.split('.').pop();
@@ -120,11 +132,11 @@ const db = {
   },
 
   async getClientes() {
-    const { data, error } = await supabase
+    const data = await traerTodo(() => supabase
       .from('clientes')
       .select('*, visitas(*)')
-      .order('dog', { ascending: true });
-    if (error) throw error;
+      .order('dog', { ascending: true })
+      .order('id', { ascending: true }));
     const seen = new Set();
     return data
       .filter(c => {
@@ -181,11 +193,11 @@ const db = {
   },
 
   async getTurnos() {
-    const { data, error } = await supabase
+    const data = await traerTodo(() => supabase
       .from('turnos')
       .select('*')
-      .order('fecha', { ascending: true });
-    if (error) throw error;
+      .order('fecha', { ascending: true })
+      .order('id', { ascending: true }));
     return data.map(t => ({
       ...t,
       clientId: t.cliente_id,
@@ -223,8 +235,8 @@ const db = {
   },
 
   async getNotas() {
-    const { data, error } = await supabase.from('notas').select('*').order('created_at', { ascending: false });
-    if (error) throw error;
+    const data = await traerTodo(() => supabase.from('notas').select('*')
+      .order('created_at', { ascending: false }).order('id', { ascending: true }));
     return data.map(n => ({ ...n, notas: n.notas_texto }));
   },
   async insertNota(n) {
