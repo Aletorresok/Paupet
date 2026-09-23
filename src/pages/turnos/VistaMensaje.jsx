@@ -16,7 +16,7 @@ function Burbuja({ texto }) {
   );
 }
 
-export default function VistaMensaje({ texto, faltan, enviado, onEnviado }) {
+export default function VistaMensaje({ texto, faltan, enviado, onEnviado, onFaltante }) {
   const listo = faltan.length === 0;
   return (
     <aside className="pt-lado" aria-labelledby="pt-t-msj">
@@ -29,7 +29,7 @@ export default function VistaMensaje({ texto, faltan, enviado, onEnviado }) {
         <Burbuja texto={texto} />
       </div>
       {!listo && <p className="pt-falta pt-falta-lado">Falta completar: {faltan.join(', ')}.</p>}
-      <BotonEnviar className="pt-enviar-lado" texto={texto} listo={listo} onEnviado={onEnviado} />
+      <BotonEnviar className="pt-enviar-lado" texto={texto} listo={listo} onEnviado={onEnviado} onFaltante={onFaltante} />
       {enviado && listo && (
         <EstadoVacio ilustracion="enviado" titulo="¡Listo! Se abrió WhatsApp"
           texto="Tocá enviar en el chat y Pau te responde para confirmar. Si no se abrió, tocá de nuevo el botón verde." tamanio={130} />

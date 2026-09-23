@@ -35,13 +35,15 @@ export function armarMensaje(f) {
     '¿Tenés disponible? ¡Gracias!',
   ].filter(l => l !== false && l !== undefined && l !== null);
 
-  const faltan = [];
-  if (!f.perro.trim()) faltan.push('el nombre del perro');
-  if (!f.duenio.trim()) faltan.push('tu nombre');
-  if (f.servicios.length === 0) faltan.push('un servicio');
-  if (!cuando) faltan.push('cuándo te queda bien');
+  // Lo que falta, en orden, con el id del campo o sección a donde llevar a la persona.
+  const pendientes = [
+    !f.perro.trim() && ['el nombre del perro', 'pt-perro'],
+    !f.duenio.trim() && ['tu nombre', 'pt-duenio'],
+    f.servicios.length === 0 && ['un servicio', 'pt-t-serv'],
+    !cuando && ['cuándo te queda bien', 'pt-t-cuando'],
+  ].filter(Boolean);
 
-  return { texto: lineas.join('\n'), faltan };
+  return { texto: lineas.join('\n'), faltan: pendientes.map(p => p[0]), primerFaltante: pendientes[0]?.[1] || null };
 }
 
 export const linkWhatsApp = texto => `https://wa.me/${WHATSAPP_PAU}?text=${encodeURIComponent(texto)}`;

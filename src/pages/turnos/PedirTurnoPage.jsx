@@ -29,7 +29,15 @@ export default function PedirTurnoPage() {
   useEffect(() => { document.title = 'Pedí tu turno · Paupet'; }, []);
 
   const conHorarios = dias.length > 0 && !aMano;
-  const { texto, faltan } = armarMensaje(conHorarios ? f : { ...f, horario: null });
+  const { texto, faltan, primerFaltante } = armarMensaje(conHorarios ? f : { ...f, horario: null });
+
+  // Tocar "Enviar" con datos incompletos lleva al primer campo que falta.
+  const irAFaltante = () => {
+    const el = primerFaltante && document.getElementById(primerFaltante);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (el.tagName === 'INPUT') setTimeout(() => el.focus({ preventScroll: true }), 350);
+  };
 
   return (
     <>
@@ -92,12 +100,12 @@ export default function PedirTurnoPage() {
           </section>
         </div>
 
-        <VistaMensaje texto={texto} faltan={faltan} enviado={enviado} onEnviado={() => setEnviado(true)} />
+        <VistaMensaje texto={texto} faltan={faltan} enviado={enviado} onEnviado={() => setEnviado(true)} onFaltante={irAFaltante} />
       </main>
       {/* En el celular el botón queda fijo abajo, siempre a mano. */}
       <div className="pt-barra">
         {faltan.length > 0 && <p className="pt-falta">Falta: {faltan.join(', ')}.</p>}
-        <BotonEnviar texto={texto} listo={faltan.length === 0} onEnviado={() => setEnviado(true)} />
+        <BotonEnviar texto={texto} listo={faltan.length === 0} onEnviado={() => setEnviado(true)} onFaltante={irAFaltante} />
       </div>
     </>
   );
