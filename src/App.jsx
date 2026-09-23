@@ -2154,36 +2154,29 @@ function AppInner({ onLogout }) {
 // ══════════════════════════════════════════════
 //  LOGIN
 // ══════════════════════════════════════════════
-const SESSION_KEY = 'paupet_auth';
+// Mensajes de Supabase Auth traducidos.
+const traducirError = msg =>
+  /invalid login credentials/i.test(msg) ? 'Email o contraseña incorrectos 🔒'
+  : /email not confirmed/i.test(msg) ? 'El email todavía no está confirmado.'
+  : /fetch/i.test(msg) ? 'Sin conexión. Probá de nuevo.'
+  : 'Error al ingresar: ' + msg;
 
-function LoginPage({ onLogin }) {
+// Login con usuarios de Supabase Auth. La sesión la guarda supabase-js; App escucha el cambio.
+function LoginPage() {
+  const [email, setEmail] = useState('');
   const [pw, setPw]       = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [show, setShow]   = useState(false);
 
+  const puedeEnviar = email.trim() && pw;
+
   const handleSubmit = async () => {
-    if (!pw.trim()) return;
+    if (!puedeEnviar || loading) return;
     setLoading(true); setError('');
-    try {
-      const { data, error: loginError } = await supabase
-        .from('config').select('password_hash').eq('id', 1).single();
-      if (loginError) throw loginError;
-      const stored = data?.password_hash || '';
-      const expected = stored.startsWith('pw:') ? stored.slice(3) : stored;
-      if (!expected) {
-        setError('No hay contraseña configurada.');
-      } else if (pw === expected) {
-        sessionStorage.setItem(SESSION_KEY, '1');
-        onLogin();
-      } else {
-        setError('Contraseña incorrecta 🔒');
-      }
-    } catch(e) {
-      setError('Error al verificar: ' + e.message);
-    } finally {
-      setLoading(false);
-    }
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email: email.trim(), password: pw });
+    if (loginError) setError(traducirError(loginError.message));
+    setLoading(false);
   };
 
   return (
@@ -2221,16 +2214,37 @@ function LoginPage({ onLogin }) {
           <h1 style={{fontFamily:"'Cormorant Garamond',serif", fontSize:32, fontWeight:600, marginBottom:4}}>Paupet</h1>
           <p style={{fontSize:13, color:'#9a9090', marginBottom:32}}>Peluquería Canina · Panel de gestión</p>
 
+          <div style={{textAlign:'left', marginBottom:14}}>
+            <label htmlFor="login-email" style={{fontSize:11, color:'#9a9090', textTransform:'uppercase', letterSpacing:.6, fontWeight:500, display:'block', marginBottom:6}}>Email</label>
+            <input
+              id="login-email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={e => { setEmail(e.target.value); setError(''); }}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+              placeholder="nombre@ejemplo.com"
+              autoFocus
+              style={{
+                width:'100%', border:`1.5px solid ${error?'#e8809a':'#ede8e8'}`,
+                borderRadius:12, padding:'12px 16px',
+                fontFamily:"'Outfit',sans-serif", fontSize:15, outline:'none',
+                background:'#faf8f5', color:'#2e2828', boxSizing:'border-box',
+              }}
+            />
+          </div>
+
           <div style={{textAlign:'left', marginBottom:20}}>
-            <label style={{fontSize:11, color:'#9a9090', textTransform:'uppercase', letterSpacing:.6, fontWeight:500, display:'block', marginBottom:6}}>Contraseña</label>
+            <label htmlFor="login-pw" style={{fontSize:11, color:'#9a9090', textTransform:'uppercase', letterSpacing:.6, fontWeight:500, display:'block', marginBottom:6}}>Contraseña</label>
             <div style={{position:'relative'}}>
               <input
+                id="login-pw"
+                autoComplete="current-password"
                 type={show ? 'text' : 'password'}
                 value={pw}
                 onChange={e => { setPw(e.target.value); setError(''); }}
                 onKeyDown={e => e.key === 'Enter' && handleSubmit()}
                 placeholder="••••••••"
-                autoFocus
                 style={{
                   width:'100%', border:`1.5px solid ${error?'#e8809a':'#ede8e8'}`,
                   borderRadius:12, padding:'12px 44px 12px 16px',
@@ -2240,6 +2254,8 @@ function LoginPage({ onLogin }) {
                 }}
               />
               <button
+                type="button"
+                aria-label={show ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 onClick={() => setShow(s => !s)}
                 style={{position:'absolute',right:14,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',cursor:'pointer',fontSize:16,color:'#9a9090',padding:0,lineHeight:1}}
               >{show ? '🙈' : '👁'}</button>
@@ -2249,13 +2265,13 @@ function LoginPage({ onLogin }) {
 
           <button
             onClick={handleSubmit}
-            disabled={loading || !pw.trim()}
+            disabled={loading || !puedeEnviar}
             style={{
               width:'100%', padding:'13px 20px',
-              background: loading || !pw.trim() ? '#b8ddd0' : 'linear-gradient(135deg,#4caf8e,#5fbf9b)',
+              background: loading || !puedeEnviar ? '#b8ddd0' : 'linear-gradient(135deg,#4caf8e,#5fbf9b)',
               color:'white', border:'none', borderRadius:50,
               fontFamily:"'Outfit',sans-serif", fontWeight:600, fontSize:15,
-              cursor: loading || !pw.trim() ? 'not-allowed' : 'pointer',
+              cursor: loading || !puedeEnviar ? 'not-allowed' : 'pointer',
               transition:'all .2s', display:'flex', alignItems:'center', justifyContent:'center', gap:8,
             }}
           >
@@ -2274,14 +2290,26 @@ function LoginPage({ onLogin }) {
   );
 }
 
-export default function App() {
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1');
+// Sesión de Supabase Auth. `undefined` mientras se consulta, `null` si no hay usuario.
+function useSession() {
+  const [session, setSession] = useState(undefined);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_evt, s) => setSession(s));
+    return () => subscription.unsubscribe();
+  }, []);
+  return session;
+}
 
-  if (!authed) return <LoginPage onLogin={() => setAuthed(true)} />;
+export default function App() {
+  const session = useSession();
+
+  if (session === undefined) return null;
+  if (!session) return <LoginPage />;
 
   return (
     <RespProvider>
-      <AppInner onLogout={() => { sessionStorage.removeItem(SESSION_KEY); setAuthed(false); }} />
+      <AppInner onLogout={() => supabase.auth.signOut()} />
     </RespProvider>
   );
 }
