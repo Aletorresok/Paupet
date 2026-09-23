@@ -12,6 +12,8 @@ const NOMBRES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 // Tocar un lugar vacío crea un turno a esa hora (redondeada a la media hora).
 export default function AgendaSemana({ dias, turnos, clientes, seleccionado, onSelectTurno, onSelectDia, onNuevo }) {
   const deLaSemana = turnos.filter(t => dias.some(d => toISODate(d) === t.fecha));
+  // Los turnos sin hora no entran en la grilla: se muestran arriba de cada día.
+  const sinHora = deLaSemana.filter(t => !t.hora);
   const { desde, hasta } = rangoHoras(deLaSemana);
   const horas = [];
   for (let m = desde; m < hasta; m += 60) horas.push(m);
@@ -45,6 +47,13 @@ export default function AgendaSemana({ dias, turnos, clientes, seleccionado, onS
               <span style={{fontSize:12,textTransform:'uppercase',letterSpacing:'.06em',color:esHoy?C.verde:C.tintaSuave}}>{NOMBRES[d.getDay()]}</span>
               <span style={{fontSize:17,fontWeight:600}}>{d.getDate()}</span>
             </button>
+            {sinHora.filter(t => t.fecha === iso).map(t => (
+              <button key={t.id} type="button" onClick={() => onSelectTurno(t)} title="Turno sin hora cargada" style={{
+                display:'block',width:'calc(100% - 6px)',margin:'3px',boxSizing:'border-box',textAlign:'left',cursor:'pointer',
+                border:`1px dashed ${C.ambar}`,background:C.ambarSuave,color:'#5E3900',borderRadius:8,padding:'3px 6px',
+                fontFamily:'inherit',fontSize:12,fontWeight:600,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',
+              }}>Sin hora · {t.dogName || (clientes.find(c => c.id === t.clientId) || {}).dog}</button>
+            ))}
             <div onClick={e => clickVacio(iso, e)} title="Tocá para agregar un turno" style={{
               position:'relative',height:altoGrilla,cursor:'copy',
               backgroundImage:`repeating-linear-gradient(to bottom, transparent 0, transparent ${60*PX_MIN-1}px, #F3EFE9 ${60*PX_MIN-1}px, #F3EFE9 ${60*PX_MIN}px)`,
