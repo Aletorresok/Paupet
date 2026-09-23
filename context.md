@@ -23,6 +23,7 @@ bucket de storage `fotos`.
   Muestra los horarios libres vía `horarios_libres()` (migración 3, `security definer`, sólo fecha/hora):
   lo guardado en "Horarios para Stories" (cualquiera de las dos versiones), sin días apagados, tomados,
   ni los que se pisan con un turno (según su duración). Sin horarios o sin migración 3 → texto libre.
+  ✅ Migración 3 corrida el 2026-09-23 (devolvió jueves 24/9 13:00). También creó `turnos.duracion`.
   Código: `src/pages/turnos/*`, link para copiar en Horarios (`LinkTurnosCard`), `vercel.json` (rewrite SPA).
   Maqueta: https://claude.ai/artifact/7zKUNXftKQc6LQrYnidLmU
 
