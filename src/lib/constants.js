@@ -41,3 +41,7 @@ export const NAV_ITEMS = [
 ];
 
 export const SESSION_KEY = 'paupet_auth';
+
+// Versión actual en producción. Mientras la nueva se prueba en paralelo, se muestra un aviso
+// con un link para volver a ésta. Al publicar la nueva en este dominio, el aviso desaparece solo.
+export const URL_VERSION_ANTERIOR = 'https://paupet.vercel.app';

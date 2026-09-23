@@ -8,8 +8,17 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
     const t = turnos.find(x=>x.id===id); if (!t) return;
     if (t.estado === 'completed') return;
     try {
-      await db.updateTurno(id, {estado:'completed'});
-      if (t.clientId) await db.insertVisita(t.clientId, t.servicio, t.precio||0, t.fecha, t.forma_pago || 'efectivo');
+      const marcado = await db.completarTurno(id);
+      if (!marcado) { await loadAll(); return; }
+      if (t.clientId) {
+        try {
+          await db.insertVisita(t.clientId, t.servicio, t.precio||0, t.fecha, t.forma_pago || 'efectivo');
+        } catch(e) {
+          // Si no se pudo guardar la visita, el turno vuelve a quedar como estaba.
+          await db.updateTurno(id, {estado: t.estado});
+          throw e;
+        }
+      }
       await loadAll();
       toast('Turno completado y guardado en el historial 🎉');
     } catch(e) { toast(e.message, true); }
@@ -68,8 +77,8 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
     }
     if (!form.dog || !form.owner) { toast('Completá nombre del perro y dueño', true); return null; }
     const existe = clientes.find(c =>
-      c.dog.toLowerCase().trim() === form.dog.toLowerCase().trim() &&
-      c.owner.toLowerCase().trim() === form.owner.toLowerCase().trim()
+      (c.dog || '').toLowerCase().trim() === form.dog.toLowerCase().trim() &&
+      (c.owner || '').toLowerCase().trim() === form.owner.toLowerCase().trim()
     );
     if (existe) return { clientId: existe.id, dogName: existe.dog };
     const newC = await db.insertCliente({dog:form.dog,owner:form.owner,raza:form.raza||'',tel:form.tel||'',size:'',pelaje:'',notes:'',foto:null});

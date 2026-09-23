@@ -3,6 +3,7 @@ import { useResp } from './context/resp';
 import GlobalStyles from './components/layout/GlobalStyles';
 import Sidebar from './components/layout/Sidebar';
 import MobileHeader from './components/layout/MobileHeader';
+import BetaBanner from './components/layout/BetaBanner';
 import Spinner from './components/ui/Spinner';
 import ToastContainer from './components/ui/ToastContainer';
 import { useToasts } from './hooks/useToasts';
@@ -38,7 +39,9 @@ export default function AppShell({ onLogout }) {
     <>
       <GlobalStyles />
 
-      <div style={{display:'flex',height:'100vh',overflow:'hidden'}}>
+      <div style={{display:'flex',flexDirection:'column',height:'100vh',overflow:'hidden'}}>
+      <BetaBanner />
+      <div style={{display:'flex',flex:1,minHeight:0,overflow:'hidden'}}>
         <Sidebar activePage={page} onNav={setPage} pendingCount={pendingCount} mobileOpen={menuOpen} onMobileClose={() => setMenuOpen(false)} onLogout={onLogout}/>
 
         <div style={{flex:1,display:'flex',flexDirection:'column',minWidth:0,overflow:'hidden'}}>
@@ -54,6 +57,7 @@ export default function AppShell({ onLogout }) {
             )}
           </main>
         </div>
+      </div>
       </div>
 
       <AppModals

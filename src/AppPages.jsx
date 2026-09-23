@@ -13,7 +13,7 @@ export default function AppPages({ page, setPage, data, modals, turnoActions: ta
 
   switch (page) {
     case 'dashboard':
-      return <Dashboard clientes={clientes} turnos={turnos} onNav={setPage} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno}/>;
+      return <Dashboard clientes={clientes} turnos={turnos} onNav={setPage} onOpenClient={id=>setModalCliente({open:true,id})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno}/>;
     case 'clientes':
       return <ClientesPage clientes={clientes} onOpenClient={id=>setModalCliente({open:true,id})} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>;
     case 'calendario':

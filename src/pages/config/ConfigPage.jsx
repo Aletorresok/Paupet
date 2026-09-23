@@ -21,6 +21,7 @@ export default function ConfigPage({ config, onSave }) {
     setSlots({...config.slots}); setHorarios({...config.horarios});
   }, [config]);
 
+  const toggleDayOpen = (key, open) => setHorarios(h => ({...h, [key]: {...(h[key]||{open:true,desde:'09:00',hasta:'18:00'}), open}}));
   const addSlot = key => {
     const hora=newSlot[key+'_hora']||'09:00', dur=parseInt(newSlot[key+'_dur']||60);
     const cur=slots[key]||[];
@@ -45,6 +46,7 @@ export default function ConfigPage({ config, onSave }) {
             dia={d}
             slots={daySlots}
             isOpen={isOpen}
+            onToggleOpen={open=>toggleDayOpen(d.key, open)}
             isExp={isExp}
             onToggleExp={()=>setOpenDays(o=>({...o,[d.key]:!isExp}))}
             newHora={newSlot[d.key+'_hora']||'09:00'}

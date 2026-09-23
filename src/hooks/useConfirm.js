@@ -8,7 +8,8 @@ export function useConfirm() {
     setConfirm({ open:true, msg, onConfirm: () => { setConfirm(c=>({...c,open:false})); resolve(true); }, onCancel: () => { setConfirm(c=>({...c,open:false})); resolve(false); } });
   });
 
-  const closeConfirm = () => setConfirm(c=>({...c,open:false}));
+  // Cierra resolviendo la promesa pendiente como "cancelado".
+  const closeConfirm = () => confirm.onCancel ? confirm.onCancel() : setConfirm(c=>({...c,open:false}));
 
   return { confirm, askConfirm, closeConfirm };
 }

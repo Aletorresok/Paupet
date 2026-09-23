@@ -10,8 +10,8 @@ export default function ClientesPage({ clientes, onOpenClient, onNuevo }) {
   const [q, setQ] = useState('');
   const filtered = useMemo(() =>
     clientes.filter(c =>
-      c.dog.toLowerCase().includes(q.toLowerCase()) ||
-      c.owner.toLowerCase().includes(q.toLowerCase())
+      (c.dog || '').toLowerCase().includes(q.toLowerCase()) ||
+      (c.owner || '').toLowerCase().includes(q.toLowerCase())
     ), [clientes, q]);
 
   return (

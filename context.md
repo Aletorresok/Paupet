@@ -11,6 +11,28 @@ Horarios (imagen para Stories) y Configuración.
 Tablas Supabase usadas: `clientes`, `visitas`, `turnos`, `notas`, `config` (fila id=1),
 bucket de storage `fotos`.
 
+## Decisiones de la dueña (2026-09-23)
+- **Fases 0 y 1**: de acuerdo al 100%.
+- **Precios: siguen siendo a mano.** No se estandarizan (dependen del perro, su estado y el dueño).
+  Un catálogo, si se hace, es sólo de nombres de servicio (y quizás duración), sin precio.
+- **Cobro: sólo efectivo o transferencia. No hay propina.**
+- **Frecuencia de vuelta de cada cliente + aviso cuando está por pasarse: CLAVE.**
+- **El verde menta (#5fbf9b) es indispensable.** Todo el resto de la estética es negociable.
+- **Portal de reservas**: quedó a medio hacer; todavía no se sabe si se hace. No invertir en él por ahora.
+
+## Versión nueva en paralelo
+- **Anterior (la que se usa hoy):** `main` → https://paupet.vercel.app (producción en Vercel). No se toca.
+- **Nueva (en prueba):** rama `claude/tender-wozniak-n0x9av` → preview automático de Vercel.
+  Muestra un aviso arriba con link "Volver a la versión anterior".
+- **Comparten la misma base de datos Supabase** → lo que se carga en una aparece en la otra.
+- ⚠️ **Regla de compatibilidad:** mientras convivan, la nueva NO puede cambiar la forma de los datos
+  de manera que la anterior se rompa o muestre cosas raras. Permitido: leer distinto, calcular cosas
+  nuevas, agregar columnas/tablas que la anterior ignora. Prohibido: estados nuevos en `turnos.estado`,
+  renombrar/borrar columnas, mover datos de tabla.
+  → Por eso "No vino como estado" y "dueño con varios perros" quedan para cuando se pase a la nueva.
+- ⚠️ La Fase 0 (activar RLS) rompe la versión anterior si no se cambia también su login: hay que
+  aplicar el login nuevo en **las dos** versiones antes de activar RLS.
+
 ## Estructura objetivo (Fase 2)
 
 ```
@@ -73,23 +95,25 @@ Reglas del refactor:
 ## Fases
 
 ### Fase 0 — Seguridad (pendiente, requiere acceso al panel de Supabase)
+> El repo es **público** en GitHub: el código que lee la contraseña desde `config` está a la vista.
 - [ ] Reemplazar login por Supabase Auth (email + contraseña)
 - [ ] Activar RLS en todas las tablas (solo usuarios autenticados)
 - [ ] Borrar `password_hash` en texto plano de `config`
 - [ ] Revisar políticas del bucket `fotos`
 
 ### Fase 1 — Bugs de datos
-- [ ] `todayStr()` usa UTC → fecha local (después de las 21 hs "hoy" es mañana)
-- [ ] Duplicados de clientes: se ocultan en `getClientes` y se pierden sus visitas
-- [ ] Completar turno no atómico / doble click duplica visita
-- [ ] "No vino" borra el turno → usar estado `no_show`
-- [ ] Switch Abierto/Cerrado en Configuración no funciona (`toggleDayOpen` sin uso)
-- [ ] Historial deduplica servicios legítimos (perro+fecha+servicio)
-- [ ] "Hace X días" con desfase por UTC
-- [ ] `ConfirmDialog` cancelar no resuelve la promesa
-- [ ] Búsqueda de clientes rompe si `dog`/`owner` es null
-- [ ] `Math.min(width,'95vw')` = NaN en Modal
-- [ ] Unificar los dos sistemas de horarios (Configuración vs Horarios)
+- [x] `todayStr()` usa UTC → fecha local (`toISODate`, `parseFecha`, `diasDesde` en `lib/utils.js`)
+- [x] Duplicados de clientes: ahora se fusionan en memoria (visitas sumadas, turnos re-asociados vía `aliasIds`). La base no se toca
+- [x] Completar turno: `db.completarTurno` sólo marca si no estaba completado (evita visita duplicada por doble click / dos dispositivos); si falla la visita, el turno vuelve a su estado
+- [ ] "No vino" borra el turno → usar estado `no_show` — **postergado** (rompe compatibilidad con la versión anterior)
+- [x] Switch Abierto/Cerrado en Configuración ahora funciona (botón accesible)
+- [x] Historial: las visitas nunca se descartan; un turno completado sólo aparece si no tiene su visita
+- [x] "Hace X días" con desfase por UTC
+- [x] `ConfirmDialog` cancelar resuelve la promesa con `false`
+- [x] Búsqueda de clientes no rompe si `dog`/`owner` es null
+- [x] Modal: ancho `min(Npx, 95vw)`
+- [x] Visitas del perfil ordenadas por fecha
+- [ ] Unificar los dos sistemas de horarios — **en pausa** (depende de si se hace el portal)
 
 ### Fase 2 — Estructura ✅ (división de `App.jsx`)
 - [x] Crear estructura de carpetas, mover `supabase.js` a `lib/`
@@ -117,13 +141,19 @@ Reglas del refactor:
 - [ ] `lang="es"`, título, favicon, fuentes en `index.html`
 
 ### Fase 4 — Funcionalidades
-- [ ] Modelo dueño → varios perros
-- [ ] Catálogo de servicios con precio/duración por tamaño
+- [ ] Modelo dueño → varios perros (requiere migrar datos: después de pasar a la versión nueva)
+- [ ] ~~Catálogo con precios por tamaño~~ → sólo lista de servicios frecuentes para autocompletar el nombre; **precio siempre a mano**
 - [ ] Agenda día/semana con duraciones y detección de solapes
-- [ ] Cobro al completar (monto final, medio de pago, propina)
-- [ ] Estados de turno completos (pendiente/confirmado/completado/no vino/cancelado)
+- [ ] Cobro al completar: monto final (a mano) + **efectivo / transferencia**. Sin propina
+- [ ] Estados de turno completos (pendiente/confirmado/completado/no vino/cancelado) — después de la migración
 - [ ] Recordatorios de WhatsApp en lote
-- [ ] "Clientes para llamar" según frecuencia
+- [x] **Frecuencia de vuelta** (`lib/frecuencia.js`): mediana de los últimos 5 intervalos entre visitas
+      (ignora visitas a menos de 7 días, p. ej. uñas). Aviso "le toca pronto" 7 días antes.
+  - [x] Tarjeta "Ya les toca volver" en el Panel (sin turno agendado) con WhatsApp de invitación
+  - [x] Badge de la tarjeta de cliente según frecuencia (verde / naranja pronto / rosa se pasó)
+  - [x] Perfil: "Viene cada ~N semanas · próxima estimada · le toca en X días"
+  - [ ] Sugerir el próximo turno al completar uno
+  - [ ] Ajustar el umbral de aviso (hoy 7 días) según lo que diga la dueña
 - [ ] Finanzas: ganancia neta, gráfico mensual, export CSV
 - [ ] Stock con cantidad mínima
 - [ ] PWA instalable
@@ -131,13 +161,15 @@ Reglas del refactor:
 ## Maqueta (referencia visual para Fases 3 y 4)
 https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - Paleta: fondo #F7F4EF · tinta #1F2A26 · tinta suave #5B6661 · salvia #2F7A5F · salvia profundo #1F3A31 · rosa #B83D62 · ámbar #8A5300 · línea #E6E0D8
+- ⚠️ Pendiente de ajustar: volver al **verde menta #5fbf9b** como color principal (con texto oscuro encima para contraste), quitar propina y Mercado Pago, quitar precios del catálogo.
 - Tipografía: Fraunces (títulos) + Outfit (texto, números con `tabular-nums`)
 - Íconos de línea (tipo Lucide) en vez de emojis; botones ≥ 44px
 - Navegación: menú lateral claro en escritorio; barra inferior (Hoy/Agenda/Clientes/Más) + botón flotante en celular
 - Los datos de la maqueta son de ejemplo
 
 ## Preguntas abiertas
-- ¿Existe el portal público de reservas (`from_portal`, slots de Configuración) en otro repo?
+- Portal de reservas: a medio hacer, sin decidir si se hace.
+- ¿Protección de previews de Vercel activada? Si sí, la novia necesitaría login de Vercel: desactivarla o asignar un dominio a la rama.
 
 ## Cómo validar
 - `npm ci && npm run build && npm run lint`
@@ -147,3 +179,4 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Análisis inicial y plan. Inicio Fase 2 (división de `App.jsx`).
 - 2026-09-23 — Fase 2: `App.jsx` (2.286 líneas) dividido en ~75 archivos chicos (el más grande: `db.js`, 172 líneas). Sin cambios visuales ni de comportamiento. ESLint arreglado.
 - 2026-09-23 — Maqueta del rediseño publicada: https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy (14 pantallas: escritorio, ventanas, celular y guía de estilo). Pendiente de ajustes con la dueña.
+- 2026-09-23 — Decisiones de la dueña registradas. Setup de versión en paralelo (aviso + link a la anterior). Fase 1 compatible hecha. Frecuencia de vuelta implementada.

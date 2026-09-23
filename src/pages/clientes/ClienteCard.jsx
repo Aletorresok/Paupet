@@ -1,14 +1,16 @@
 import Badge from '../../components/ui/Badge';
 import { serif } from '../../lib/styles';
-import { animalIcon } from '../../lib/utils';
+import { animalIcon, diasDesde } from '../../lib/utils';
+import { calcFrecuencia } from '../../lib/frecuencia';
 
 const ellipsis = {overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'};
 
 function ultimaVisitaBadge(visitas) {
   const ultima = visitas?.length ? [...visitas].sort((a,b) => b.fecha.localeCompare(a.fecha))[0] : null;
-  const dias = ultima ? Math.floor((Date.now()-new Date(ultima.fecha))/86400000) : null;
+  const dias = ultima ? diasDesde(ultima.fecha) : null;
+  const f = calcFrecuencia(visitas);
   return {
-    variant: dias===null?'gray':dias>30?'pink':'green',
+    variant: dias===null?'gray':f?(f.estado==='vencido'?'pink':f.estado==='pronto'?'orange':'green'):dias>30?'pink':'green',
     text: dias===null?'Sin visitas':dias===0?'Hoy':`Hace ${dias}d`,
   };
 }

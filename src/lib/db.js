@@ -2,6 +2,29 @@ import { supabase } from './supabase';
 import { DEFAULT_CONFIG } from './constants';
 import { todayStr } from './utils';
 
+// Hay clientes cargados más de una vez (mismo perro + dueño). Se muestran como uno solo,
+// pero SIN perder las visitas de los repetidos. `aliasIds` guarda los ids repetidos para
+// poder asociarles sus turnos. No modifica la base (la versión anterior sigue igual).
+function mergeDuplicados(clientes) {
+  const porClave = new Map();
+  const result = [];
+  for (const c of clientes) {
+    const key = `${(c.dog || '').toLowerCase().trim()}|${(c.owner || '').toLowerCase().trim()}`;
+    const canon = porClave.get(key);
+    if (!canon) {
+      const nuevo = { ...c, aliasIds: [] };
+      porClave.set(key, nuevo);
+      result.push(nuevo);
+    } else {
+      canon.aliasIds.push(c.id);
+      canon.visitas = [...canon.visitas, ...c.visitas];
+      canon.foto = canon.foto || c.foto;
+      canon.tel = canon.tel || c.tel;
+    }
+  }
+  return result;
+}
+
 // Capa de datos: todas las queries a Supabase.
 export const db = {
   async uploadFoto(file, clienteId) {
@@ -19,25 +42,17 @@ export const db = {
       .select('*, visitas(*)')
       .order('dog', { ascending: true });
     if (error) throw error;
-    const seen = new Set();
-    return data
-      .filter(c => {
-        const key = `${c.dog?.toLowerCase().trim()}|${c.owner?.toLowerCase().trim()}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      })
-      .map(c => ({
-        ...c,
-        visitas: (c.visitas || []).map(v => ({
-          id: v.id,
-          servicio: v.servicio,
-          precio: v.precio,
-          fecha: v.fecha,
-          forma_pago: v.forma_pago || 'efectivo',
-          cliente_id: v.cliente_id,
-        }))
-      }));
+    return mergeDuplicados(data.map(c => ({
+      ...c,
+      visitas: (c.visitas || []).map(v => ({
+        id: v.id,
+        servicio: v.servicio,
+        precio: v.precio,
+        fecha: v.fecha,
+        forma_pago: v.forma_pago || 'efectivo',
+        cliente_id: v.cliente_id,
+      }))
+    })));
   },
   async insertCliente(c) {
     const { data, error } = await supabase
@@ -110,6 +125,16 @@ export const db = {
     if ('formaPago' in mapped) { mapped.forma_pago = mapped.formaPago; delete mapped.formaPago; }
     const { error } = await supabase.from('turnos').update(mapped).eq('id', id);
     if (error) throw error;
+  },
+  // Marca el turno como completado sólo si todavía no lo estaba. Devuelve false si otro
+  // click (u otro dispositivo) ya lo había completado, para no duplicar la visita.
+  async completarTurno(id) {
+    const { data, error } = await supabase
+      .from('turnos').update({ estado: 'completed' })
+      .eq('id', id).neq('estado', 'completed')
+      .select('id');
+    if (error) throw error;
+    return data.length > 0;
   },
   async deleteTurno(id) {
     const { error } = await supabase.from('turnos').delete().eq('id', id);

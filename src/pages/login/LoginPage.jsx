@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { SESSION_KEY } from '../../lib/constants';
+import BetaBanner from '../../components/layout/BetaBanner';
 
 export default function LoginPage({ onLogin }) {
   const [pw, setPw]       = useState('');
@@ -41,6 +42,7 @@ export default function LoginPage({ onLogin }) {
         @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
         @keyframes spin{to{transform:rotate(360deg)}}
       `}</style>
+      <div style={{position:'fixed',top:0,left:0,right:0,zIndex:10}}><BetaBanner /></div>
       <div style={{
         minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center',
         background:'linear-gradient(135deg, #dff5ec 0%, #fde8ed 50%, #e8f4ff 100%)',

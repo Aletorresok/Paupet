@@ -13,7 +13,10 @@ export function usePaupetData(toast) {
   const loadAll = useCallback(async () => {
     try {
       const [c, t, n, cfg] = await Promise.all([db.getClientes(), db.getTurnos(), db.getNotas(), db.getConfig()]);
-      setClientes(c); setTurnos(t); setNotas(n); setConfig(cfg);
+      // Los turnos de un cliente repetido se asocian al cliente que se muestra.
+      const canonicoDe = new Map(c.flatMap(cl => cl.aliasIds.map(id => [id, cl.id])));
+      const turnosMapeados = t.map(x => canonicoDe.has(x.clientId) ? {...x, clientId: canonicoDe.get(x.clientId)} : x);
+      setClientes(c); setTurnos(turnosMapeados); setNotas(n); setConfig(cfg);
     } catch(e) {
       toast('Error cargando datos: ' + e.message, true);
     } finally {

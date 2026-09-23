@@ -7,6 +7,7 @@ import { serif } from '../../lib/styles';
 import { animalIcon, todayStr } from '../../lib/utils';
 import { abrirWhatsApp } from '../../lib/whatsapp';
 import ClienteDatos from './ClienteDatos';
+import FrecuenciaBanner from './FrecuenciaBanner';
 import InasistenciasBanner from './InasistenciasBanner';
 import VisitaItem from './VisitaItem';
 import VisitaForm from './VisitaForm';
@@ -54,6 +55,7 @@ export default function ModalCliente({ open, cliente, onClose, onSaveVisit, onEd
       />
       <div style={{padding:'18px 22px'}}>
         <ClienteDatos cliente={c} />
+        <FrecuenciaBanner visitas={c.visitas} />
 
         {(c.inasistencias||0) > 0 && (
           <InasistenciasBanner cantidad={c.inasistencias} onRestar={() => onDecrementarInasistencia(c.id)} />
@@ -64,7 +66,7 @@ export default function ModalCliente({ open, cliente, onClose, onSaveVisit, onEd
 
         <div style={{...subtitleStyle,margin:'14px 0 8px'}}>✂️ Historial de visitas</div>
         {!(c.visitas||[]).length ? <p style={{fontSize:13,color:'#9a9090'}}>Sin visitas aún</p>
-          : [...(c.visitas||[])].reverse().map((v,i) => (
+          : [...(c.visitas||[])].sort((a,b) => (b.fecha||'').localeCompare(a.fecha||'')).map((v,i) => (
             <VisitaItem key={v.id||i} visita={v} onEdit={() => startEditVisita(v)} onDelete={() => onDeleteVisit(v.id)} />
           ))
         }

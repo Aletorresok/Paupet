@@ -14,7 +14,7 @@ export default function Modal({ open, onClose, children, width = 560 }) {
     }}>
       <div style={{
         background:'#faf8f5', borderRadius: isMob ? '18px 18px 0 0' : 18,
-        width: isMob ? '100%' : Math.min(width, '95vw'),
+        width: isMob ? '100%' : `min(${width}px, 95vw)`,
         maxWidth: isMob ? '100%' : width,
         maxHeight: isMob ? '92vh' : '88vh',
         overflowY:'auto',

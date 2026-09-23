@@ -1,6 +1,19 @@
 import { MESES } from './constants';
 
-export const todayStr = () => new Date().toISOString().split('T')[0];
+const pad2 = n => String(n).padStart(2,'0');
+
+// Fecha local (no UTC) en formato "YYYY-MM-DD".
+export const toISODate = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+export const todayStr = () => toISODate(new Date());
+
+// "YYYY-MM-DD" → Date a medianoche local (new Date('YYYY-MM-DD') la interpreta en UTC).
+export const parseFecha = f => {
+  const [y, m, d] = f.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
+
+// Días enteros desde una fecha "YYYY-MM-DD" hasta hoy.
+export const diasDesde = f => Math.round((parseFecha(todayStr()) - parseFecha(f)) / 86400000);
 
 export const fmtFecha = f => {
   if (!f) return '–';
