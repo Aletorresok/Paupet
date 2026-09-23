@@ -1,7 +1,7 @@
 import Icon from '../../components/ui/Icon';
 import { useResp } from '../../context/resp';
 import { C, serif } from '../../lib/styles';
-import { animalIcon } from '../../lib/utils';
+import PetAvatar from '../../components/ui/PetAvatar';
 import { abrirWhatsApp } from '../../lib/whatsapp';
 
 const btnClaro = {display:'flex',alignItems:'center',justifyContent:'center',gap:8,height:46,padding:'0 18px',borderRadius:12,border:'none',background:'white',color:C.verdeProfundo,fontFamily:'inherit',fontSize:15,fontWeight:600,cursor:'pointer'};
@@ -22,9 +22,7 @@ export default function ProximoTurnoCard({ proximo, cliente: c, onCompletar, onN
   return (
     <section aria-label="Próximo turno" style={{background:C.verdeProfundo,color:'white',borderRadius:20,padding:isMob?18:'22px 24px',display:'flex',flexDirection:isMob?'column':'row',gap:isMob?14:20,alignItems:isMob?'stretch':'center'}}>
       <div style={{display:'flex',gap:16,alignItems:'center',flex:1,minWidth:0}}>
-        <div style={{width:isMob?56:80,height:isMob?56:80,borderRadius:'50%',background:C.mentaSuave,color:C.verde,display:'flex',alignItems:'center',justifyContent:'center',fontSize:isMob?26:36,flexShrink:0,overflow:'hidden'}}>
-          {c.foto ? <img src={c.foto} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/> : animalIcon(c.raza)}
-        </div>
+        <PetAvatar cliente={c} size={isMob?56:80} style={{border:'3px solid rgba(255,255,255,.85)'}} />
         <div style={{display:'flex',flexDirection:'column',gap:4,minWidth:0}}>
           <span style={{fontSize:12,fontWeight:600,letterSpacing:'.08em',textTransform:'uppercase',color:'#A9D8C3'}}>{etiqueta}</span>
           <span style={{fontFamily:serif,fontSize:isMob?22:26,fontWeight:600,lineHeight:1.15}}>

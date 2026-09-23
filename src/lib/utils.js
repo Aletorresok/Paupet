@@ -30,14 +30,6 @@ export const fmtMes = m => {
   return `${MESES[parseInt(mm)-1]} ${yy}`;
 };
 
-export const animalIcon = (raza = '') => {
-  const r = raza.toLowerCase();
-  if (r.includes('caniche') || r.includes('poodle')) return '🐩';
-  if (r.includes('golden')) return '🦮';
-  if (r.includes('gato')) return '🐱';
-  return '🐶';
-};
-
 export const durLabel = min => {
   if (min < 60) return min + ' min';
   if (min === 60) return '1 hora';

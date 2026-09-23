@@ -1,7 +1,9 @@
 import Badge from '../../components/ui/Badge';
 import { C, serif } from '../../lib/styles';
 import { useResp } from '../../context/resp';
-import { animalIcon, diasDesde } from '../../lib/utils';
+import { diasDesde } from '../../lib/utils';
+import PetAvatar from '../../components/ui/PetAvatar';
+import { avatarPorRaza, esGato } from '../../lib/avatarPerro';
 import { calcFrecuencia } from '../../lib/frecuencia';
 
 const ellipsis = {overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'};
@@ -20,9 +22,7 @@ function ultimaVisitaBadge(visitas) {
 function ClienteFila({ cliente: c, badge, onClick }) {
   return (
     <button type="button" onClick={onClick} style={{display:'flex',alignItems:'center',gap:12,width:'100%',minHeight:72,padding:'10px 14px',background:'white',border:`1px solid ${C.linea}`,borderRadius:14,cursor:'pointer',textAlign:'left',fontFamily:'inherit',color:C.tinta}}>
-      <span style={{width:52,height:52,borderRadius:'50%',flexShrink:0,overflow:'hidden',background:'linear-gradient(135deg,#dff5ec,#FBE7EC)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26}}>
-        {c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" /> : animalIcon(c.raza)}
-      </span>
+      <PetAvatar cliente={c} size={52} />
       <span style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',gap:2}}>
         <span style={{fontFamily:serif,fontSize:17,fontWeight:600,...ellipsis}}>{c.dog}</span>
         <span style={{fontSize:13,color:C.tintaSuave,...ellipsis}}>{[c.owner, c.raza].filter(Boolean).join(' · ')}</span>
@@ -39,7 +39,7 @@ export default function ClienteCard({ cliente: c, onClick }) {
   return (
     <div onClick={onClick} style={{background:'white',borderRadius:16,overflow:'hidden',boxShadow:'0 2px 8px rgba(0,0,0,.06)',cursor:'pointer',transition:'transform .15s'}}>
       <div style={{height:110,background:'linear-gradient(135deg,#dff5ec,#FBE7EC)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:44,overflow:'hidden'}}>
-        {c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={c.dog} /> : <span>{animalIcon(c.raza)}</span>}
+        {c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={c.dog} /> : esGato(c.raza) ? <span>🐱</span> : <img src={avatarPorRaza(c.raza)} alt="" style={{height:'92%',width:'auto'}} />}
       </div>
       <div style={{padding:'11px 13px'}}>
         <div style={{fontFamily:serif,fontSize:16,fontWeight:600,...ellipsis}}>{c.dog}</div>

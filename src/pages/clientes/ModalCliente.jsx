@@ -5,7 +5,8 @@ import ModalHead from '../../components/ui/ModalHead';
 import MenuMas from '../../components/ui/MenuMas';
 import { useResp } from '../../context/resp';
 import { C } from '../../lib/styles';
-import { animalIcon, todayStr } from '../../lib/utils';
+import { todayStr } from '../../lib/utils';
+import PetAvatar from '../../components/ui/PetAvatar';
 import { abrirWhatsApp } from '../../lib/whatsapp';
 import DatosPerro from './ficha/DatosPerro';
 import EtiquetasEditor from './ficha/EtiquetasEditor';
@@ -30,7 +31,7 @@ export default function ModalCliente({ open, cliente, clientes, turnos, caps, to
   return (
     <Modal open={open} onClose={onClose} width={1000}>
       <ModalHead title={c.dog} subtitle={`${c.owner || ''}${c.tel ? ' · ' + c.tel : ''}`} onClose={onClose}
-        avatar={c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" /> : <span style={{fontSize:30}}>{animalIcon(c.raza)}</span>}
+        avatar={<PetAvatar cliente={c} size={64} style={{width:'100%',height:'100%'}} />}
       />
       <div style={{padding:isMob?'16px':'18px 22px',display:'flex',flexDirection:'column',gap:16,background:C.fondo}}>
         <div style={{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}}>
@@ -49,9 +50,7 @@ export default function ModalCliente({ open, cliente, clientes, turnos, caps, to
             Otros perros de {c.owner}:
             {hermanos.map(h => (
               <button key={h.id} type="button" onClick={() => onSelectCliente(h.id)} style={{display:'flex',alignItems:'center',gap:8,height:40,padding:'0 14px 0 6px',borderRadius:12,border:`1px solid ${C.linea}`,background:'white',fontFamily:'inherit',fontSize:14,fontWeight:500,cursor:'pointer',color:C.tinta}}>
-                <span style={{width:28,height:28,borderRadius:'50%',background:C.rosaSuave,display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',fontSize:15}}>
-                  {h.foto ? <img src={h.foto} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/> : animalIcon(h.raza)}
-                </span>
+                <PetAvatar cliente={h} size={28} />
                 {h.dog}
               </button>
             ))}

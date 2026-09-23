@@ -239,7 +239,14 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   (si se cierra, no vuelve hasta el día siguiente); gráfico con guía a mitad y línea base; sombra del botón +.
 - Descartado: unificar "Registrar gasto" con el + (hacen cosas distintas); número en menta sobre blanco en
   Ganancia neta (no pasa contraste); cambiar etiquetas de días (ya pasan contraste).
-- Pendiente con Gemini: avatares por defecto (caras de perro en el mismo estilo) para reemplazar los emojis.
+- Avatares ilustrados por raza (`src/assets/avatares`, `lib/avatarPerro.js`, `PetAvatar`): caniche, golden,
+  salchicha, yorkie/terrier, ovejero; cualquier otra → mestizo. Gatos siguen con 🐱. Reemplazan los emojis.
+- Micro-interacciones: vibración corta en cada aviso (doble si es error), transición al tocar botones,
+  el salchicha dormido "respira", y todo se apaga con "reducir movimiento".
+- /turnos: días en fila deslizable (con cantidad de libres) y los horarios del día elegido abajo.
+- Descartado de Gemini: verde #25D366 con texto blanco en el botón (no pasa contraste); sacar la vista previa
+  del mensaje (da confianza de qué se manda).
+- Para decidir con Pau: "Caja de hoy" en el inicio (prompt 7) y carrusel de fotos reales en /turnos (prompt 8).
 
 ## Incidente 2026-09-23 (falsa alarma)
 - Parecía que faltaban clientes/turnos de la semana. Verificado en Supabase: los clientes estaban (hasta id 112)

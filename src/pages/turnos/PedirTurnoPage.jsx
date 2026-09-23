@@ -22,6 +22,7 @@ export default function PedirTurnoPage() {
   const [f, setF] = useState(VACIO);
   const [aMano, setAMano] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const [diaVisto, setDiaVisto] = useState(null);
   const { cargando, dias } = useHorariosLibres();
   const set = (campo, valor) => setF(x => ({ ...x, [campo]: valor }));
 
@@ -84,6 +85,7 @@ export default function PedirTurnoPage() {
             <ElegirHorario
               dias={dias} cargando={cargando} aMano={aMano} onAMano={setAMano}
               horario={f.horario} onHorario={v => set('horario', v)}
+              diaVisto={diaVisto} onDiaVisto={setDiaVisto}
               franja={f.franja} onFranja={v => set('franja', v)}
               preferencia={f.preferencia} onPreferencia={v => set('preferencia', v)}
             />

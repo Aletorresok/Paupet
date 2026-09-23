@@ -14,7 +14,7 @@ export default function VuelvenCard({ items, onOpenClient }) {
       {!items.length ? <p style={{fontSize:14,color:C.tintaSuave,padding:'8px 0'}}>Nadie atrasado por ahora.</p>
         : items.map(({ cliente: c, frec: f }) => (
           <div key={c.id} style={{display:'grid',gridTemplateColumns:'auto minmax(0,1fr) 44px',alignItems:'center',gap:12,padding:'10px 0',minHeight:64,boxSizing:'border-box',borderTop:'1px solid #F0EBE4'}}>
-            <PetAvatar cliente={c} />
+            <PetAvatar cliente={c} size={44} />
             <button type="button" onClick={() => onOpenClient(c.id)} style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',background:'none',border:'none',padding:0,textAlign:'left',fontFamily:'inherit',cursor:'pointer',color:C.tinta}}>
               <span style={{fontSize:15,fontWeight:600}}>{c.dog} <span style={{fontWeight:400,color:C.tintaSuave}}>· {c.owner}</span></span>
               <span style={{fontSize:12,color:C.tintaSuave}}>Cada {fmtCada(f.cadaDias)} · última hace {f.diasDesdeUltima} días</span>

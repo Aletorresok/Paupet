@@ -6,7 +6,7 @@ export const ESTILOS_TURNOS = `
 @media (max-width:880px){.pt-wrap{grid-template-columns:minmax(0,1fr);max-width:540px;padding-top:20px}}
 .pt-form{display:flex;flex-direction:column;gap:18px}
 .pt-hero{display:block;width:100%;max-width:440px;height:auto;margin:0 auto -6px}
-@media (max-width:480px){.pt-hero{max-width:320px}}
+@media (max-width:480px){.pt-hero{max-width:270px}}
 .pt-cabecera{display:flex;gap:16px;align-items:center}
 .pt-cabecera h1{font-family:${serif};font-size:30px;font-weight:600;line-height:1.1;text-wrap:balance}
 .pt-cabecera p{margin-top:6px;color:${C.tintaSuave};font-size:15px;line-height:1.45}
@@ -30,12 +30,12 @@ textarea.pt-input{height:auto;min-height:76px;padding:12px 14px;resize:vertical}
 .pt-chip{font:inherit;font-size:15px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #CBC3B8;background:#FAF8F5;color:${C.tinta};cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s,border-color .15s}
 .pt-chip[aria-pressed="true"]{background:${C.mentaSuave};border-color:${C.mentaBorde};color:${C.verde};font-weight:600}
 .pt-hora{min-width:76px;justify-content:center}
-.pt-dias{display:flex;flex-direction:column;gap:12px}
-.pt-dia{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;align-items:start}
-@media (max-width:480px){.pt-dia{grid-template-columns:minmax(0,1fr);gap:6px}}
-.pt-dia-nom{padding-top:10px;font-weight:600;font-size:15px}
-.pt-dia-nom small{display:block;font-weight:400;color:${C.tintaSuave};font-size:13px}
-@media (max-width:480px){.pt-dia-nom{padding-top:0}.pt-dia-nom small{display:inline;margin-left:6px}}
+.pt-dias-scroll{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin:0 -2px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.pt-dia-chip{flex:0 0 auto;scroll-snap-align:start;width:74px;padding:8px 4px;border-radius:14px;border:1.5px solid #CBC3B8;background:#FAF8F5;color:${C.tinta};font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+.pt-dia-chip[aria-pressed="true"]{background:${C.menta};border-color:${C.mentaBorde};color:${C.sobreMenta}}
+.pt-dia-sem{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.pt-dia-num{font-family:${serif};font-size:24px;font-weight:600;line-height:1.1}
+.pt-dia-cant{font-size:11px;opacity:.85}
 .pt-link{font:inherit;font-size:15px;color:${C.verde};background:none;border:none;padding:6px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;align-self:flex-start;text-align:left}
 .pt-lado{position:sticky;top:20px;display:flex;flex-direction:column;gap:12px}
 @media (max-width:880px){.pt-lado{position:static}}

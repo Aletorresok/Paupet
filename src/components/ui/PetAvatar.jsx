@@ -1,11 +1,10 @@
-import { animalIcon } from '../../lib/utils';
+import { avatarPorRaza, esGato } from '../../lib/avatarPerro';
 
-// Avatar redondo chico con la foto del perro o un emoji según la raza.
-export default function PetAvatar({ cliente, size = 34, fontSize = 15 }) {
+// Avatar redondo con la foto del perro o, si no tiene, una cara ilustrada según la raza.
+export default function PetAvatar({ cliente, size = 34, style }) {
   const c = cliente || {};
-  return (
-    <div style={{width:size,height:size,borderRadius:'50%',background:'#FBE7EC',display:'flex',alignItems:'center',justifyContent:'center',fontSize,flexShrink:0,overflow:'hidden'}}>
-      {c.foto ? <img src={c.foto} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" /> : animalIcon(c.raza)}
-    </div>
-  );
+  const base = {width:size,height:size,borderRadius:'50%',flexShrink:0,overflow:'hidden',display:'block',...style};
+  if (c.foto) return <img src={c.foto} alt="" style={{...base,objectFit:'cover'}} />;
+  if (esGato(c.raza)) return <span aria-hidden="true" style={{...base,display:'flex',alignItems:'center',justifyContent:'center',background:'#FBE7EC',fontSize:size*.5}}>🐱</span>;
+  return <img src={avatarPorRaza(c.raza)} alt="" width={size} height={size} style={base} />;
 }

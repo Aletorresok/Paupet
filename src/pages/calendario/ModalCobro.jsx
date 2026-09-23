@@ -34,7 +34,7 @@ export default function ModalCobro({ turno: t, cliente: c, onClose, onCobrar, on
         title={`Completar turno de ${t.dogName || c.dog || ''}`}
         subtitle={`${fmtFecha(t.fecha)} · ${t.hora || ''} · ${c.owner || ''}`}
         onClose={onClose}
-        avatar={<PetAvatar cliente={c} size={56} fontSize={26} />}
+        avatar={<PetAvatar cliente={c} size={56} />}
       />
       <div style={{padding:'20px 22px',display:'flex',flexDirection:'column',gap:18}}>
         <FormGroup label="Qué se le hizo">

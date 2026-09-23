@@ -14,7 +14,14 @@ export default function GlobalStyles() {
       ::-webkit-scrollbar{width:6px;height:6px}
       ::-webkit-scrollbar-track{background:transparent}
       ::-webkit-scrollbar-thumb{background:#d0cece;border-radius:3px}
+      button{transition:transform .1s ease-out, background-color .15s, opacity .15s}
       button:active{transform:scale(.97)}
+      @keyframes respirar{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.02)}}
+      .respira{animation:respirar 3s ease-in-out infinite;transform-origin:50% 100%}
+      @media (prefers-reduced-motion: reduce){
+        *,*::before,*::after{animation:none!important;transition:none!important}
+        button:active{transform:none}
+      }
       button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid ${C.mentaBorde};outline-offset:2px}
       input,select,textarea{-webkit-appearance:none;}
       input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none}
