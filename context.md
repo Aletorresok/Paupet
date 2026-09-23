@@ -244,8 +244,10 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - Micro-interacciones: transición al tocar botones (la vibración se probó y se sacó por pedido),
   el salchicha dormido respira (bien visible) con "z" animadas que flotan (se sacaron las z dibujadas de la ilustración), y todo se apaga con "reducir movimiento".
 - /turnos: días en fila deslizable (con cantidad de libres) y los horarios del día elegido abajo.
+- Ojo: html/body tienen `overflow:hidden` (index.css). Toda página fuera de AppShell necesita su propio
+  contenedor con scroll (/turnos usa `.pt-scroll`, el login también).
 - Descartado de Gemini: verde #25D366 con texto blanco en el botón (no pasa contraste); sacar la vista previa
-  del mensaje (da confianza de qué se manda).
+  del mensaje → al final SE SACÓ (en el uso real no era práctica).
 - "Caja de hoy" en el inicio: por ahora no (Pau decide más adelante). Fotos reales en /turnos: sin decidir.
 
 ## Incidente 2026-09-23 (falsa alarma)

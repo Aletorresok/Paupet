@@ -47,7 +47,8 @@ export default function LoginPage() {
         @media (max-width: 900px){ .login-lado{display:none} .login-logo-movil{display:flex} }
       `}</style>
       <div style={{position:'fixed',top:0,left:0,right:0,zIndex:10}}><BetaBanner /></div>
-      <div style={{minHeight:'100vh',display:'flex',background:C.fondo}}>
+      <div style={{height:'100%',overflowY:'auto'}}>
+      <div style={{minHeight:'100%',display:'flex',background:C.fondo}}>
         <aside className="login-lado" style={{width:'43%',maxWidth:620,background:C.verdeProfundo,color:'white',padding:56,flexDirection:'column',gap:20,boxSizing:'border-box'}}>
           <div style={{display:'flex',alignItems:'center',gap:12,marginTop:24}}>
             <div style={{width:44,height:44,borderRadius:12,background:C.menta,color:C.sobreMenta,display:'flex',alignItems:'center',justifyContent:'center'}}><Icon name="paw" size={24}/></div>
@@ -91,6 +92,7 @@ export default function LoginPage() {
             <span style={{fontSize:13,color:C.tintaSuave,textAlign:'center'}}>Acceso sólo para el equipo de Paupet.</span>
           </form>
         </main>
+      </div>
       </div>
     </>
   );

@@ -43,6 +43,8 @@ export default function PedirTurnoPage() {
     <>
       <GlobalStyles />
       <style>{ESTILOS_TURNOS}</style>
+      {/* html y body no se desplazan (la app usa su propio contenedor), así que esta página tiene el suyo. */}
+      <div className="pt-scroll">
       <main className="pt-wrap">
         <div className="pt-form">
           <img className="pt-hero" src={pauSecador} alt="Pau secando a un salchicha en la mesa de peluquería" />
@@ -106,6 +108,7 @@ export default function PedirTurnoPage() {
       <div className="pt-barra">
         {faltan.length > 0 && <p className="pt-falta">Falta: {faltan.join(', ')}.</p>}
         <BotonEnviar texto={texto} listo={faltan.length === 0} onEnviado={() => setEnviado(true)} onFaltante={irAFaltante} />
+      </div>
       </div>
     </>
   );
