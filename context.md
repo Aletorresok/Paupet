@@ -18,11 +18,13 @@ bucket de storage `fotos`.
 - **Cobro: sólo efectivo o transferencia. No hay propina.**
 - **Frecuencia de vuelta de cada cliente + aviso cuando está por pasarse: CLAVE.**
 - **El verde menta (#5fbf9b) es indispensable.** Todo el resto de la estética es negociable.
-- **Pedido de turnos (reemplaza al portal de reservas)**: página pública que arma un mensaje de WhatsApp para
-  Pau (+54 9 11 6801-9061); ella confirma disponibilidad a mano. No escribe en la base.
-  Maqueta: https://claude.ai/artifact/7zKUNXftKQc6LQrYnidLmU. Propuesta: mostrar los horarios libres de
-  "Horarios para Stories" (menos los ocupados) vía función de Supabase que sólo devuelve fecha/hora;
-  si no hay horarios cargados, cae a texto libre. Pendiente: feedback de Pau.
+- **Pedido de turnos (reemplaza al portal de reservas)** — HECHO en la versión nueva: `/turnos`, pública.
+  Arma un mensaje de WhatsApp para Pau (+54 9 11 6801-9061); ella confirma a mano. No escribe en la base.
+  Muestra los horarios libres vía `horarios_libres()` (migración 3, `security definer`, sólo fecha/hora):
+  lo guardado en "Horarios para Stories" (cualquiera de las dos versiones), sin días apagados, tomados,
+  ni los que se pisan con un turno (según su duración). Sin horarios o sin migración 3 → texto libre.
+  Código: `src/pages/turnos/*`, link para copiar en Horarios (`LinkTurnosCard`), `vercel.json` (rewrite SPA).
+  Maqueta: https://claude.ai/artifact/7zKUNXftKQc6LQrYnidLmU
 
 ## Versión nueva en paralelo
 - **Anterior (la que se usa hoy):** `main` → https://paupet.vercel.app (producción en Vercel). No se toca.

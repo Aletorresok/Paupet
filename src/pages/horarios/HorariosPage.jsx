@@ -13,6 +13,7 @@ import StoryPreviewNuevo from './StoryPreviewNuevo';
 import DisenoSelector from './DisenoSelector';
 import { leerDiseno, guardarDiseno } from './disenoStorage';
 import AutoGenModal from './AutoGenModal';
+import LinkTurnosCard from './LinkTurnosCard';
 
 export default function HorariosPage({ horariosData, onSaveHorarios }) {
   const { isMob } = useResp();
@@ -76,6 +77,8 @@ export default function HorariosPage({ horariosData, onSaveHorarios }) {
           </Btn>
         </div>
       </PageHeader>
+
+      <LinkTurnosCard />
 
       <SemanaNav semanaInicio={semanaInicio} onChange={semana.cambiarSemana} />
 
