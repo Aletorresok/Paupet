@@ -41,3 +41,9 @@ export const abrirWhatsAppVuelta = (tel, dogName, ownerName) => {
   if (!tel) return;
   abrirChat(tel, `¡Hola ${ownerName}! 🐾 ¿Cómo está ${dogName}? Ya se está por cumplir el tiempo de su próximo baño. ¿Querés que le reservemos un turno? ✂️`);
 };
+
+// Aviso de que el perro ya está listo para retirar.
+export const abrirWhatsAppListo = (tel, dogName, ownerName) => {
+  if (!tel) return;
+  abrirChat(tel, `¡Hola ${ownerName}! 🐾 *${dogName}* ya está listo/a y quedó hermoso/a ✨ Cuando quieras podés pasar a buscarlo/a. ¡Gracias!`);
+};

@@ -2,7 +2,7 @@ import Icon from '../../components/ui/Icon';
 import { useResp } from '../../context/resp';
 import { C, serif } from '../../lib/styles';
 import PetAvatar from '../../components/ui/PetAvatar';
-import { abrirWhatsApp } from '../../lib/whatsapp';
+import { abrirWhatsApp, abrirWhatsAppListo } from '../../lib/whatsapp';
 
 const btnClaro = {display:'flex',alignItems:'center',justifyContent:'center',gap:8,height:46,padding:'0 18px',borderRadius:12,border:'none',background:'white',color:C.verdeProfundo,fontFamily:'inherit',fontSize:15,fontWeight:600,cursor:'pointer'};
 const btnBorde = {display:'flex',alignItems:'center',justifyContent:'center',gap:6,height:46,padding:'0 14px',borderRadius:12,border:'1px solid #4E6B60',background:'transparent',color:'white',fontFamily:'inherit',fontSize:14,cursor:'pointer',flex:1,minWidth:0,whiteSpace:'nowrap'};
@@ -19,6 +19,8 @@ export default function ProximoTurnoCard({ proximo, cliente: c, onCompletar, onN
     );
   }
   const { turno: t, etiqueta } = proximo;
+  // Si el turno ya está en curso, el aviso útil es "ya está listo", no el recordatorio.
+  const enCurso = etiqueta === 'Ahora' || etiqueta === 'Atrasado';
   return (
     <section aria-label="Próximo turno" style={{background:C.verdeProfundo,color:'white',borderRadius:20,padding:isMob?18:'22px 24px',display:'flex',flexDirection:isMob?'column':'row',flexWrap:'wrap',gap:isMob?14:20,alignItems:isMob?'stretch':'center'}}>
       <div style={{display:'flex',gap:16,alignItems:'center',flex:'1 1 280px',minWidth:0}}>
@@ -35,7 +37,9 @@ export default function ProximoTurnoCard({ proximo, cliente: c, onCompletar, onN
       <div style={{display:'flex',flexDirection:'column',gap:8,flex:isMob?'none':'1 0 220px',maxWidth:isMob?'none':320}}>
         <button type="button" onClick={()=>onCompletar(t.id)} style={btnClaro}><Icon name="check" strokeWidth={2}/>Completar y cobrar</button>
         <div style={{display:'flex',gap:8}}>
-          {c.tel && <button type="button" onClick={()=>abrirWhatsApp(c.tel, t.dogName||c.dog, c.owner, t)} style={btnBorde}><Icon name="chat"/>Avisar</button>}
+          {c.tel && (enCurso
+            ? <button type="button" onClick={()=>abrirWhatsAppListo(c.tel, t.dogName||c.dog, c.owner)} style={btnBorde} title="Avisar que ya está listo para retirar"><Icon name="chat"/>Está listo</button>
+            : <button type="button" onClick={()=>abrirWhatsApp(c.tel, t.dogName||c.dog, c.owner, t)} style={btnBorde} title="Mandar recordatorio del turno"><Icon name="chat"/>Avisar</button>)}
           <button type="button" onClick={()=>onEditTurno(t)} style={{...btnBorde,flex:'0 0 46px',padding:0}} aria-label="Editar turno"><Icon name="edit"/></button>
           <button type="button" onClick={()=>onNoVino(t.id)} style={btnBorde}>No vino</button>
         </div>
