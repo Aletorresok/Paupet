@@ -13,6 +13,7 @@ import EtiquetasEditor from './ficha/EtiquetasEditor';
 import FotosAntesDespues from './ficha/FotosAntesDespues';
 import FrecuenciaCard from './ficha/FrecuenciaCard';
 import HistorialVisitas from './ficha/HistorialVisitas';
+import PreciosCard from './ficha/PreciosCard';
 import Seccion from './ficha/Seccion';
 import { perrosDelDueno } from './ficha/etiquetas';
 
@@ -67,6 +68,9 @@ export default function ModalCliente({ open, cliente, clientes, turnos, caps, to
             <Seccion titulo="A tener en cuenta">
               <EtiquetasEditor etiquetas={c.etiquetas || []} habilitado={caps.etiquetas} onChange={e => onSaveEtiquetas(c.id, e)} />
               {c.notes && <p style={{fontSize:14,lineHeight:1.5,background:C.fondo,borderRadius:10,padding:'10px 12px',margin:0}}>{c.notes}</p>}
+            </Seccion>
+            <Seccion titulo="Precio en el tiempo">
+              <PreciosCard visitas={c.visitas} />
             </Seccion>
             <Seccion titulo="Antes y después">
               <FotosAntesDespues clienteId={c.id} habilitado={caps.fotos} toast={toast} />

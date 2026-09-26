@@ -113,3 +113,19 @@ test('clientes: filtros rápidos y búsqueda sin tildes', () => {
   assert.deepEqual(ids('perdidos'), [3]);
   assert.equal(normalizar('Simón'), 'simon');
 });
+
+test('precios en la ficha: servicio más frecuente y último aumento', async () => {
+  const { resumenPrecios } = await import('../src/pages/clientes/ficha/precios.js');
+  const v = [
+    { fecha: '2026-01-10', servicio: 'Baño', precio: 100 },
+    { fecha: '2026-02-10', servicio: 'Baño', precio: 100 },
+    { fecha: '2026-03-10', servicio: 'Baño', precio: 120 },
+    { fecha: '2026-04-10', servicio: 'Baño', precio: 120 },
+    { fecha: '2026-04-20', servicio: 'Uñas', precio: 30 },
+  ];
+  const r = resumenPrecios(v);
+  assert.equal(r.servicio, 'Baño');
+  assert.equal(r.variacion, 20);
+  assert.equal(r.ultimoAumento.fecha, '2026-03-10');
+  assert.equal(resumenPrecios([{ fecha: '2026-01-01', servicio: 'Baño', precio: 5 }]), null);
+});
