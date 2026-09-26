@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
 import FormGroup from '../../components/ui/FormGroup';
@@ -19,28 +19,21 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
   const isEdit = !!turnoEdit;
   const [mode, setMode] = useState('exist');
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({...EMPTY_CLIENTE,svc:'',fecha:defaultFecha||todayStr(),hora:'10:00',precio:'',formaPago:'efectivo',estado:'confirmed',duracion:60});
-
-  useEffect(() => {
-    if (!open) return;
-    setSaving(false);
-    if (isEdit) {
-      setForm({
-        ...EMPTY_CLIENTE,
-        clientId: String(turnoEdit.clientId || ''),
-        svc:    turnoEdit.servicio || '',
-        fecha:  turnoEdit.fecha    || todayStr(),
-        hora:   turnoEdit.hora     || '10:00',
-        precio: String(turnoEdit.precio || ''),
-        formaPago: turnoEdit.forma_pago || 'efectivo',
-        estado: turnoEdit.estado   || 'confirmed',
-        duracion: turnoEdit.duracion || 60,
-      });
-    } else {
-      setForm(f => ({...f, ...EMPTY_CLIENTE, clientId: defaultClientId ? String(defaultClientId) : '', fecha:defaultFecha||todayStr(), svc:defaultServicio||'', hora:defaultHora||'10:00', precio:'', formaPago:'efectivo', estado:'confirmed', duracion:defaultDuracion||60}));
-    }
-    setMode('exist');
-  }, [open, isEdit, turnoEdit, defaultFecha, defaultHora, defaultClientId, defaultServicio, defaultDuracion]);
+  // Se monta con `key` (ver AppModals): el formulario arranca de cero en cada apertura, sin efectos.
+  const [form, setForm] = useState(() => isEdit ? {
+    ...EMPTY_CLIENTE,
+    clientId: String(turnoEdit.clientId || ''),
+    svc:    turnoEdit.servicio || '',
+    fecha:  turnoEdit.fecha    || todayStr(),
+    hora:   turnoEdit.hora     || '10:00',
+    precio: String(turnoEdit.precio || ''),
+    formaPago: turnoEdit.forma_pago || 'efectivo',
+    estado: turnoEdit.estado   || 'confirmed',
+    duracion: turnoEdit.duracion || 60,
+  } : {
+    ...EMPTY_CLIENTE, clientId: defaultClientId ? String(defaultClientId) : '', fecha:defaultFecha||todayStr(), svc:defaultServicio||'',
+    hora:defaultHora||'10:00', precio:'', formaPago:'efectivo', estado:'confirmed', duracion:defaultDuracion||60,
+  });
 
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
   const servicios = useMemo(() => serviciosFrecuentes(clientes), [clientes]);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
 import FormGroup from '../../components/ui/FormGroup';
@@ -12,12 +12,9 @@ const emptyForm = () => ({item:'',cantidad:1,precio:'',notas:'',concepto:'',cate
 export default function ModalNota({ open, onClose, onSave, defaultTipo='compra', initial=null }) {
   const { isMob } = useResp();
   const isEdit = !!initial;
-  const [tipo, setTipo] = useState(defaultTipo);
-  const [form, setForm] = useState(emptyForm);
-  useEffect(() => {
-    if (open) {
-      setTipo(initial?.tipo || defaultTipo);
-      setForm(initial ? {
+  // Se monta con `key` (ver AppModals): arranca de cero en cada apertura, sin efectos.
+  const [tipo, setTipo] = useState(initial?.tipo || defaultTipo);
+  const [form, setForm] = useState(() => initial ? {
         item: initial.item||'',
         cantidad: initial.cantidad||1,
         precio: initial.precio||'',
@@ -27,8 +24,6 @@ export default function ModalNota({ open, onClose, onSave, defaultTipo='compra',
         monto: initial.monto||'',
         fecha: initial.fecha||todayStr(),
       } : emptyForm());
-    }
-  }, [open, initial, defaultTipo]);
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
   const grid = {display:'grid',gridTemplateColumns:isMob?'1fr':'1fr 1fr',gap:10,marginBottom:10};
 

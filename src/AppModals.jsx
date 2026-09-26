@@ -27,23 +27,26 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
         onEdit={c=>{setModalCliente({open:false,id:null});setModalNuevoCliente({open:true,initial:c});}}
         onDecrementarInasistencia={ca.handleDecrementarInasistencia}
       />
-      <ModalClienteForm
+      {modalNuevoCliente.open && <ModalClienteForm
+        key={modalNuevoCliente.initial?.id ?? 'nuevo'}
         open={modalNuevoCliente.open} initial={modalNuevoCliente.initial}
         onClose={()=>setModalNuevoCliente({open:false,initial:null})}
         onSave={ca.handleSaveNewClient}
-      />
-      <ModalTurno
+      />}
+      {modalTurno.open && <ModalTurno
+        key={modalTurno.turnoEdit ? `e${modalTurno.turnoEdit.id}` : `n${modalTurno.fecha}|${modalTurno.hora}|${modalTurno.clientId}|${modalTurno.servicio}`}
         open={modalTurno.open}
         onClose={()=>setModalTurno(CLOSED_TURNO)}
         onSave={ta.handleSaveNewTurno} onUpdate={ta.handleUpdateTurno}
         clientes={clientes} turnos={turnos} defaultFecha={modalTurno.fecha} defaultHora={modalTurno.hora} defaultClientId={modalTurno.clientId}
         defaultServicio={modalTurno.servicio} defaultDuracion={modalTurno.duracion} turnoEdit={modalTurno.turnoEdit}
-      />
-      <ModalNota
+      />}
+      {modalNota.open && <ModalNota
+        key={modalNota.initial?.id ?? `n${modalNota.tipo}`}
         open={modalNota.open} defaultTipo={modalNota.tipo} initial={modalNota.initial}
         onClose={()=>setModalNota(CLOSED_NOTA)}
         onSave={na.handleSaveNota}
-      />
+      />}
       {turnoCobro && (
         <ModalCobro
           key={turnoCobro.id}

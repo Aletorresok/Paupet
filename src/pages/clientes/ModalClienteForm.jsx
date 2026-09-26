@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Btn from '../../components/ui/Btn';
 import FormGroup from '../../components/ui/FormGroup';
 import Modal from '../../components/ui/Modal';
@@ -10,16 +10,10 @@ const EMPTY = {dog:'',raza:'',size:'',pelaje:'',owner:'',tel:'',notes:'',foto:nu
 const row = {display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:10};
 
 export default function ModalClienteForm({ open, onClose, onSave, initial }) {
-  const [form, setForm] = useState(EMPTY);
+  // Se monta con `key` (ver AppModals): arranca de cero en cada apertura, sin efectos.
+  const [form, setForm] = useState(() => initial || EMPTY);
   const [saving, setSaving] = useState(false);
   const [fotoFile, setFotoFile] = useState(null);
-
-  useEffect(() => {
-    if (open) {
-      setForm(initial || EMPTY);
-      setSaving(false); setFotoFile(null);
-    }
-  }, [open, initial]);
 
   const set = (k,v) => setForm(f => ({...f,[k]:v}));
   const handleFoto = f => {
