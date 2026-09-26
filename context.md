@@ -27,18 +27,14 @@ bucket de storage `fotos`.
   Código: `src/pages/turnos/*`, link para copiar en Horarios (`LinkTurnosCard`), `vercel.json` (rewrite SPA).
   Maqueta: https://claude.ai/artifact/7zKUNXftKQc6LQrYnidLmU
 
-## Versión nueva en paralelo
-- **Anterior (la que se usa hoy):** `main` → https://paupet.vercel.app (producción en Vercel). No se toca.
-- **Nueva (en prueba):** rama `claude/tender-wozniak-n0x9av` → https://paupet-nueva.vercel.app
-  Muestra un aviso arriba con link "Volver a la versión anterior".
-- **Comparten la misma base de datos Supabase** → lo que se carga en una aparece en la otra.
-- ⚠️ **Regla de compatibilidad:** mientras convivan, la nueva NO puede cambiar la forma de los datos
-  de manera que la anterior se rompa o muestre cosas raras. Permitido: leer distinto, calcular cosas
-  nuevas, agregar columnas/tablas que la anterior ignora. Prohibido: estados nuevos en `turnos.estado`,
-  renombrar/borrar columnas, mover datos de tabla.
-  → Por eso "No vino como estado" y "dueño con varios perros" quedan para cuando se pase a la nueva.
-- ⚠️ La Fase 0 (activar RLS) rompe la versión anterior si no se cambia también su login: hay que
-  aplicar el login nuevo en **las dos** versiones antes de activar RLS.
+## Versiones (unificadas el 2026-09-26)
+- **La versión nueva (con las mejoras de `propuesta/mejoras`) está en `main` → https://paupet.vercel.app.**
+- **Respaldo de la versión anterior** (App.jsx único): rama `backup/version-anterior` (incluye su `Context.md`)
+  y etiqueta `version-anterior-2026-09-26` (código exacto). Para recuperar una función vieja, buscarla ahí.
+- La rama `claude/tender-wozniak-n0x9av` (https://paupet-nueva.vercel.app) quedó como histórico; ya no hace falta.
+- Ya no convive con la versión anterior → **la regla de compatibilidad deja de aplicar**: se pueden encarar
+  "No vino como estado", "dueño con varios perros", etc. (con migración y copia de seguridad antes).
+- El aviso "versión nueva en prueba" (`BetaBanner`) no se muestra en paupet.vercel.app; en modo demo muestra la franja naranja.
 
 ## Estructura objetivo (Fase 2)
 
@@ -277,6 +273,7 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Agenda semanal con duraciones y ficha de cliente nueva. Migración 2 escrita (falta correrla).
 - 2026-09-23 — Finanzas y login nuevo. Con esto están todas las pantallas de la maqueta.
 - 2026-09-23 — Copia de seguridad descargable + recordatorio semanal; lecturas paginadas (sin límite de 1000).
-- 2026-09-26 — Rama local `propuesta/mejoras` (sobre ésta, sin subir): modo demo + 23 mejoras compatibles
+- 2026-09-26 — **Unificación:** `main` = versión nueva + mejoras. Versión anterior respaldada en `backup/version-anterior`.
+- 2026-09-26 — Rama `propuesta/mejoras` (sobre ésta, sin subir): modo demo + 23 mejoras compatibles
   (Horarios↔Agenda, próximo turno al cobrar, resumen del perro al agendar, filtros de clientes, recordatorios en lote,
   proyección y clientela en Finanzas, Horarios rediseñado, tests con `npm test`, PWA, etc.) y 13 propuestas más. Detalle y cómo revertir: `PROPUESTA.md`.
