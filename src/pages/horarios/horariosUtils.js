@@ -98,3 +98,10 @@ export const ocupadosPorAgenda = (turnos, fechaKey, horas) => {
   }
   return out;
 };
+
+// Versión comparable de lo guardado (sin la semana elegida, con claves ordenadas y sin listas vacías),
+// para saber si hay cambios sin guardar.
+export const huellaHorarios = h => {
+  const limpio = obj => Object.fromEntries(Object.entries(obj || {}).filter(([, v]) => v && v.length).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, [...v].sort()]));
+  return JSON.stringify({ slots: limpio(h?.slots), tomados: limpio(h?.tomados), diasActivos: [...(h?.diasActivos || [])].sort() });
+};

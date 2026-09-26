@@ -3,8 +3,9 @@ import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
 import PageHeader from '../../components/ui/PageHeader';
 import { MESES } from '../../lib/constants';
-import { sans, serif } from '../../lib/styles';
-import { toKey, generarSlots, descargarNodoComoPng, compartirNodoComoPng, puedeCompartirImagen, rangoSemana, ocupadosPorAgenda } from './horariosUtils';
+import { C, serif } from '../../lib/styles';
+import Icon from '../../components/ui/Icon';
+import { toKey, generarSlots, descargarNodoComoPng, compartirNodoComoPng, puedeCompartirImagen, rangoSemana, ocupadosPorAgenda, huellaHorarios } from './horariosUtils';
 import { useHorariosSemana } from './useHorariosSemana';
 import SemanaNav from './SemanaNav';
 import DiaSlotsCard from './DiaSlotsCard';
@@ -28,6 +29,7 @@ export default function HorariosPage({ horariosData, turnos = [], onSaveHorarios
     return { ...d, agenda, tomados: [...new Set([...d.tomados, ...Object.keys(agenda)])] };
   });
 
+  const sinGuardar = huellaHorarios(semana.snapshot()) !== huellaHorarios(horariosData);
   const [nuevoSlot, setNuevoSlot] = useState({});
   const [generando, setGenerando] = useState(false);
   const [guardando, setGuardando] = useState(false);
@@ -76,17 +78,17 @@ export default function HorariosPage({ horariosData, turnos = [], onSaveHorarios
     <section>
       <PageHeader title="Horarios para Stories" subtitle="Cargá los horarios de la semana y descargá la imagen">
         <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-          <button onClick={semana.limpiarSemana} style={{background:'none',border:'1.5px solid #E6E0D8',borderRadius:50,padding:'7px 14px',fontSize:12,cursor:'pointer',color:'#5B6661',fontFamily:sans}}>🗑 Limpiar</button>
-          <Btn size="sm" onClick={handleGuardar} disabled={guardando} variant="ghost">
-            {guardando ? '⏳...' : '💾 Guardar'}
+          <Btn variant="ghost" onClick={semana.limpiarSemana} title="Borrar los horarios de esta semana (hasta que guardes)"><Icon name="trash" />Limpiar</Btn>
+          <Btn variant={sinGuardar ? 'primary' : 'ghost'} onClick={handleGuardar} disabled={guardando}>
+            <Icon name="check" strokeWidth={2} />{guardando ? 'Guardando…' : sinGuardar ? 'Guardar cambios' : 'Guardado'}
           </Btn>
           {puedeCompartirImagen() && (
-            <Btn size="sm" onClick={() => descargarImagen(true)} disabled={generando}>
-              {generando ? '⏳...' : '📤 Compartir'}
+            <Btn variant="ghost" onClick={() => descargarImagen(true)} disabled={generando}>
+              <Icon name="chat" />{generando ? 'Generando…' : 'Compartir'}
             </Btn>
           )}
-          <Btn size="sm" onClick={() => descargarImagen()} disabled={generando} style={{background:'#25d366',border:'none'}}>
-            {generando ? '⏳...' : '📥 Descargar'}
+          <Btn variant="ghost" onClick={() => descargarImagen()} disabled={generando}>
+            <Icon name="download" />{generando ? 'Generando…' : 'Descargar'}
           </Btn>
         </div>
       </PageHeader>
@@ -94,13 +96,20 @@ export default function HorariosPage({ horariosData, turnos = [], onSaveHorarios
       <LinkTurnosCard />
 
       <SemanaNav semanaInicio={semanaInicio} onChange={semana.cambiarSemana} />
-      {dias.some(d => Object.keys(d.agenda).length) && (
-        <p style={{fontSize:13,color:'#5B6661',margin:'-6px 0 12px'}}>
-          📅 Los horarios con turno en la Agenda se marcan solos como tomados (también en la imagen).
-        </p>
+      {sinGuardar && (
+        <div role="status" style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap',background:C.ambarSuave,color:C.ambar,borderRadius:12,padding:'10px 14px',marginBottom:12,fontSize:14}}>
+          <Icon name="alert" />
+          <span style={{flex:1,minWidth:200}}><strong>Hay cambios sin guardar.</strong> La página para pedir turno sigue mostrando los horarios anteriores.</span>
+          <Btn size="sm" onClick={handleGuardar} disabled={guardando}>Guardar</Btn>
+        </div>
       )}
+      <p style={{fontSize:13,color:C.tintaSuave,margin:'0 0 12px',display:'flex',gap:14,flexWrap:'wrap'}}>
+        <span><span style={{display:'inline-block',width:10,height:10,borderRadius:3,background:C.mentaSuave,border:`1px solid ${C.mentaBorde}`,marginRight:5}}/>Libre</span>
+        <span><span style={{display:'inline-block',width:10,height:10,borderRadius:3,background:C.rosaSuave,border:`1px solid ${C.rosa}`,marginRight:5}}/>Tomado (tocá la hora para cambiarlo)</span>
+        <span><span style={{display:'inline-block',width:10,height:10,borderRadius:3,background:C.ambarSuave,border:`1px solid ${C.ambar}`,marginRight:5}}/>Con turno en la Agenda (automático)</span>
+      </p>
 
-      <div style={{display:'grid',gridTemplateColumns:`repeat(auto-fill,minmax(${isMob?'160px':'190px'},1fr))`,gap:10,marginBottom:24}}>
+      <div style={{display:'grid',gridTemplateColumns:`repeat(auto-fill,minmax(${isMob?'150px':'200px'},1fr))`,gap:isMob?8:12,marginBottom:24,alignItems:'start'}}>
         {dias.map(d => (
           <DiaSlotsCard
             key={d.dia}
