@@ -21,7 +21,7 @@ export default function AppPages({ page, setPage, data, modals, toast, turnoActi
     case 'calendario':
       return <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={(fecha,hora)=>setModalTurno({open:true,fecha,hora,turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onDelete={ta.handleDeleteTurno} onConfirmar={ta.handleConfirmar} onEditTurno={ta.handleEditTurno}/>;
     case 'finanzas':
-      return <FinanzasPage clientes={clientes} notas={notas} onNav={setPage} onNuevoGasto={()=>setModalNota({open:true,tipo:'egreso',initial:null})}/>;
+      return <FinanzasPage clientes={clientes} notas={notas} turnos={turnos} onNav={setPage} onNuevoGasto={()=>setModalNota({open:true,tipo:'egreso',initial:null})}/>;
     case 'historial':
       return <HistorialPage clientes={clientes} turnos={turnos}/>;
     case 'notas':

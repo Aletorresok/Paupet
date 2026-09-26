@@ -66,3 +66,30 @@ export function descargarCsv(texto, nombre) {
   a.href = url; a.download = nombre; a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+// Turnos del mes que todavía no se cobraron (de hoy en adelante): lo que "falta entrar".
+export function agendadoPorCobrar(turnos, mes, hoy) {
+  const pendientes = turnos.filter(t => t.fecha && t.fecha.startsWith(mes) && t.fecha >= hoy && t.estado !== 'completed');
+  return { cantidad: pendientes.length, monto: pendientes.reduce((s, t) => s + (t.precio || 0), 0) };
+}
+
+const DIAS_CORTOS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+// Servicios por día de la semana en los 3 meses que terminan en `mes` (para ver qué días rinden más).
+export function serviciosPorDia(clientes, mes) {
+  const desde = moverMes(mes, -2);
+  const cuenta = Array(7).fill(0), monto = Array(7).fill(0);
+  clientes.flatMap(c => c.visitas || []).forEach(v => {
+    if (!v.fecha || v.fecha.slice(0, 7) < desde || v.fecha.slice(0, 7) > mes) return;
+    const [y, m, d] = v.fecha.split('-').map(Number);
+    const dia = new Date(y, m - 1, d).getDay();
+    cuenta[dia] += 1; monto[dia] += v.precio || 0;
+  });
+  return [1, 2, 3, 4, 5, 6, 0].filter(d => cuenta[d] || d !== 0)
+    .map(d => ({ nombre: DIAS_CORTOS[d], cantidad: cuenta[d], monto: monto[d] }));
+}
+
+// Ingresos de `mes` hasta el día `dia` inclusive (para comparar "a esta altura del mes").
+export const ingresosHastaDia = (clientes, mes, dia) => clientes.flatMap(c => c.visitas || [])
+  .filter(v => v.fecha && v.fecha.startsWith(mes) && Number(v.fecha.slice(8, 10)) <= dia)
+  .reduce((s, v) => s + (v.precio || 0), 0);
