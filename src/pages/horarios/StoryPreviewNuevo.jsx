@@ -5,7 +5,7 @@ import { altoPorDia } from './storyLayout';
 
 const MINT = '#5FBF9B';
 const TINTA = '#13302A';
-const TEMA = { fondo:'white', etiqueta:'#1F5A45', texto:TINTA, apagado:'#8A948F', radio:18, sombra:'none' };
+const TEMA = { fondo:'white', banda:'#1F5A45', sobreBanda:'white', texto:TINTA, apagado:'#8A948F', radio:18, sombra:'none' };
 
 // Medidas fijas (px sobre 540×960) para repartir el resto entre los días, como el Clásico.
 const PAD_X = 30, ARRIBA = 36, ENCABEZADO = 128, IMG_H = 150, GAP = 10;

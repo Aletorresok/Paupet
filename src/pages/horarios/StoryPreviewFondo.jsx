@@ -4,7 +4,7 @@ import StoryDiaFlex from './StoryDiaFlex';
 import { altoPorDia } from './storyLayout';
 
 const TINTA = '#13302A';
-const TEMA = { fondo:'rgba(255,255,255,.94)', etiqueta:'#1F5A45', texto:TINTA, apagado:'#8A948F', radio:14, sombra:'0 1px 0 rgba(19,48,42,.08)' };
+const TEMA = { fondo:'rgba(255,255,255,.96)', banda:'#2E8B68', sobreBanda:'white', texto:TINTA, apagado:'#8A948F', radio:14, sombra:'0 2px 6px rgba(19,48,42,.12)' };
 
 // Imagen de horarios sobre un fondo ilustrado (540×960, se exporta a 1080×1920).
 // Todo va dentro de la zona libre del fondo; los días se reparten ese alto (como el Clásico)
