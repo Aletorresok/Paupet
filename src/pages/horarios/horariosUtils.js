@@ -60,13 +60,19 @@ export const puedeCompartirImagen = () => {
 };
 
 // Abre el menú de compartir del celular con la imagen. Si se cancela, no pasa nada.
+// Si el navegador no lo permite (p. ej. Safari cuando tardó en generarla), la descarga.
 export const compartirNodoComoPng = async (node, filename, backgroundColor = '#7ec8a0') => {
   const canvas = await nodoACanvas(node, backgroundColor);
   const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
   try {
     await navigator.share({ files: [new File([blob], filename, { type: 'image/png' })], title: 'Horarios Paupet' });
   } catch (e) {
-    if (e.name !== 'AbortError') throw e;
+    if (e.name === 'AbortError') return;
+    if (e.name !== 'NotAllowedError') throw e;
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
   }
 };
 
