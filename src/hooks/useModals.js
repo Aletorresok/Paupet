@@ -10,11 +10,13 @@ export function useModals() {
   const [modalTurno,        setModalTurno]        = useState(CLOSED_TURNO);
   const [modalNota,         setModalNota]         = useState(CLOSED_NOTA);
   const [modalCobro,        setModalCobro]        = useState(CLOSED_COBRO);
+  const [modalProponer,     setModalProponer]     = useState({open:false,pedido:null});
   return {
     modalCliente, setModalCliente,
     modalNuevoCliente, setModalNuevoCliente,
     modalTurno, setModalTurno,
     modalNota, setModalNota,
     modalCobro, setModalCobro,
+    modalProponer, setModalProponer,
   };
 }

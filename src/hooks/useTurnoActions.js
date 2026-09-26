@@ -91,20 +91,21 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
       (c.owner || '').toLowerCase().trim() === form.owner.toLowerCase().trim()
     );
     if (existe) return { clientId: existe.id, dogName: existe.dog };
-    const newC = await db.insertCliente({dog:form.dog,owner:form.owner,raza:form.raza||'',tel:form.tel||'',size:'',pelaje:'',notes:'',foto:null});
+    const newC = await db.insertCliente({dog:form.dog,owner:form.owner,raza:form.raza||'',tel:form.tel||'',size:form.size||'',pelaje:'',notes:form.notes||'',foto:null});
     if (!newC?.id) throw new Error('No se pudo crear el cliente.');
     return { clientId: newC.id, dogName: form.dog };
   };
 
   const handleSaveNewTurno = async (mode, form) => {
     try {
+      // Se valida antes de crear el cliente, para no dejar clientes sueltos si falta algo.
+      if (!form.fecha) { toast('Completá la fecha del turno', true); return; }
+      if (!form.svc)   { toast('Completá el servicio del turno', true); return; }
       const resuelto = await resolverCliente(mode, form);
       if (!resuelto) return;
       const { clientId, dogName } = resuelto;
-      if (!form.fecha) { toast('Completá la fecha del turno', true); return; }
-      if (!form.svc)   { toast('Completá el servicio del turno', true); return; }
       const c = clientes.find(x => x.id === clientId) || {};
-      await db.insertTurno({
+      const nuevo = await db.insertTurno({
         clientId,
         dogName: dogName || c.dog || '',
         servicio: form.svc,
@@ -115,9 +116,11 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
         formaPago: form.formaPago || 'efectivo',
         duracion: Number(form.duracion) || 60,
       });
+      // Si el turno sale de un pedido de /turnos, el pedido queda aceptado (falta avisarle al cliente).
+      if (form.pedidoId) await db.updatePedido(form.pedidoId, { estado: 'aceptado', turno_id: nuevo?.id ?? null });
       setModalTurno(CLOSED_TURNO);
       await loadAll();
-      toast('Turno agregado 📅');
+      toast(form.pedidoId ? 'Turno agendado · falta avisarle por WhatsApp' : 'Turno agregado 📅');
     } catch(e) { toast('Error: ' + e.message, true); }
   };
 

@@ -195,5 +195,23 @@ export function crearDatosDemo() {
     horarios_semanales: { semanaInicio: lunes.toISOString(), slots, diasActivos: [], tomados },
   }];
 
-  return { creado: hoyISO, ultimoId: id, tablas: { clientes, visitas, turnos, notas, config, fotos_cliente: [] } };
+  // Pedidos de turno hechos en /turnos (todavía no son turnos).
+  const digitos = t => (t || '').replace(/\D/g, '');
+  const hace = horas => new Date(Date.now() - horas * 3600000).toISOString();
+  const pedido = (extra) => ({ id: ++id, estado: 'nuevo', raza: '', tamanio: '', vino_antes: '', servicios: 'Baño y corte', notas: '',
+    fecha: null, hora: null, preferencia: '', fecha_prop: null, hora_prop: null, turno_id: null, avisado: false, ...extra });
+  const milo = clientes.find(c => c.dog === 'Milo'), maria = clientes.find(c => c.dog === 'Coco');
+  const pedidos_turno = [
+    pedido({ created_at: hace(2), perro: 'Milo', duenio: 'Carla', tel: digitos(milo.tel), raza: 'Yorkshire', tamanio: 'Chico',
+      vino_antes: 'Sí, ya vino', fecha: iso(lunes), hora: '16:00', notas: 'Tiene nudos' }),
+    pedido({ created_at: hace(5), perro: 'Pupa', duenio: 'Julieta Sosa', tel: '1155554444', raza: 'Caniche', tamanio: 'Chico',
+      vino_antes: 'Es la primera vez', servicios: 'Baño', preferencia: 'martes o jueves, a la tarde', notas: 'Es cachorro' }),
+    pedido({ created_at: hace(20), perro: 'Pompón', duenio: 'María', tel: digitos(maria.tel), raza: 'Caniche', tamanio: 'Chico',
+      vino_antes: 'Es la primera vez', servicios: 'Baño + Corte de uñas', fecha: iso(masDias(lunes, 3)), hora: '14:30' }),
+    pedido({ created_at: hace(30), estado: 'propuesto', perro: 'Tofu', duenio: 'Nicolás Paz', tel: '1166667777', raza: 'Mestizo',
+      tamanio: 'Mediano', vino_antes: 'Es la primera vez', servicios: 'Deslanado', fecha: iso(lunes), hora: '09:00',
+      fecha_prop: iso(masDias(lunes, 1)), hora_prop: '17:30' }),
+  ];
+
+  return { creado: hoyISO, ultimoId: id, tablas: { clientes, visitas, turnos, notas, config, fotos_cliente: [], pedidos_turno } };
 }

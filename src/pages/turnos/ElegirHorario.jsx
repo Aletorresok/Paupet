@@ -24,7 +24,7 @@ export default function ElegirHorario({ dias, cargando, aMano, onAMano, horario,
             <button type="button" className="pt-sugerido-btn" onClick={() => { onDiaVisto(sug.fecha); onHorario(sug); }}>Me sirve</button>
           </div>
         )}
-        <p className="pt-sub">{horario ? <>Elegiste el <strong>{describirHorario(horario.fecha, horario.hora)}</strong>. Pau te confirma.</> : 'O elegí otro día y horario:'}</p>
+        <p className="pt-sub">{horario ? <>Elegiste el <strong>{describirHorario(horario.fecha, horario.hora)}</strong>. Queda confirmado cuando Pau te responda.</> : 'O elegí otro día y horario:'}</p>
         <div role="group" aria-label="Días con horarios libres" className="pt-dias-scroll">
           {dias.map(({ fecha, horas }) => {
             const d = parseFecha(fecha);
@@ -47,6 +47,7 @@ export default function ElegirHorario({ dias, cargando, aMano, onAMano, horario,
             );
           })}
         </div>
+        <p className="pt-sub" style={{fontSize:13}}>Los horarios libres pueden no estar actualizados: Pau te confirma si sigue disponible.</p>
         <button type="button" className="pt-link" onClick={() => { onHorario(null); onAMano(true); }}>
           Ninguno me sirve, prefiero escribir cuándo puedo
         </button>
@@ -56,7 +57,7 @@ export default function ElegirHorario({ dias, cargando, aMano, onAMano, horario,
 
   return (
     <>
-      <p className="pt-sub">Contale a Pau qué días y horarios te quedan cómodos.</p>
+      <p className="pt-sub">{hayHorarios ? 'Contale a Pau qué días y horarios te quedan cómodos.' : 'Pau todavía no publicó los horarios de esta semana. Contale qué días y horarios te quedan cómodos y te responde por WhatsApp con los turnos disponibles.'}</p>
       <Chips opciones={FRANJAS} value={franja} onChange={onFranja} label="Franja horaria" />
       <input id="pt-pref" className="pt-input" value={preferencia} onChange={e => onPreferencia(e.target.value)}
         aria-label="Días que te quedan bien" placeholder="Ej.: martes o jueves, después de las 15" />

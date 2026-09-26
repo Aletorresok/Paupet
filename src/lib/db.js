@@ -27,7 +27,7 @@ function mergeDuplicados(clientes) {
 
 // Qué columnas/tablas nuevas existen en la base (ver supabase/migracion_02_agenda_ficha.sql).
 // Mientras no se corra la migración, la app funciona igual pero sin guardar esos datos.
-export const capacidades = { duracion: false, etiquetas: false, fotos: false };
+export const capacidades = { duracion: false, etiquetas: false, fotos: false, pedidos: false };
 
 // Supabase devuelve como máximo 1000 filas por consulta: se piden por tandas hasta traer todo.
 // `consulta` es una función que arma la query (sin .range) para poder repetirla.
@@ -49,10 +49,10 @@ const existe = async (tabla, columna = 'id') => {
 // Capa de datos: todas las queries a Supabase.
 export const db = {
   async detectarCapacidades() {
-    const [duracion, etiquetas, fotos] = await Promise.all([
-      existe('turnos', 'duracion'), existe('clientes', 'etiquetas'), existe('fotos_cliente'),
+    const [duracion, etiquetas, fotos, pedidos] = await Promise.all([
+      existe('turnos', 'duracion'), existe('clientes', 'etiquetas'), existe('fotos_cliente'), existe('pedidos_turno'),
     ]);
-    Object.assign(capacidades, { duracion, etiquetas, fotos });
+    Object.assign(capacidades, { duracion, etiquetas, fotos, pedidos });
     return { ...capacidades };
   },
 
@@ -191,6 +191,19 @@ export const db = {
   },
   async deleteTurno(id) {
     const { error } = await supabase.from('turnos').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  // Pedidos de turno hechos en /turnos (migración 5). Los resueltos hace más de 30 días no se traen.
+  async getPedidos() {
+    if (!capacidades.pedidos) return [];
+    const desde = new Date(Date.now() - 30 * 86400000).toISOString();
+    const data = await traerTodo(() => supabase.from('pedidos_turno').select('*')
+      .order('created_at', { ascending: false }).order('id', { ascending: true }));
+    return data.filter(p => p.estado === 'nuevo' || p.estado === 'propuesto' || p.created_at >= desde);
+  },
+  async updatePedido(id, fields) {
+    const { error } = await supabase.from('pedidos_turno').update(fields).eq('id', id);
     if (error) throw error;
   },
 

@@ -21,7 +21,7 @@ const normalizarTel = tel => {
   return num;
 };
 
-const abrirChat = (tel, msg) => {
+export const abrirChat = (tel, msg) => {
   window.open(`https://wa.me/${normalizarTel(tel)}?text=${encodeURIComponent(msg)}`, '_blank');
 };
 

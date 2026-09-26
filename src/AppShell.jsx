@@ -15,6 +15,8 @@ import { useClienteActions } from './hooks/useClienteActions';
 import { useTurnoActions } from './hooks/useTurnoActions';
 import { useNotaActions } from './hooks/useNotaActions';
 import { useConfigActions } from './hooks/useConfigActions';
+import { usePedidoActions } from './hooks/usePedidoActions';
+import { pedidosPendientes } from './lib/pedidos';
 import AppPages from './AppPages';
 import AppModals from './AppModals';
 
@@ -32,6 +34,8 @@ export default function AppShell({ onLogout }) {
   const turnoActions   = useTurnoActions(ctx);
   const notaActions    = useNotaActions(ctx);
   const configActions  = useConfigActions(ctx);
+  const pedidoActions  = usePedidoActions(ctx);
+  const pedidosPend    = pedidosPendientes(data.pedidos);
 
   const pendingCount = data.turnos.filter(t=>t.estado==='pending').length;
 
@@ -42,7 +46,7 @@ export default function AppShell({ onLogout }) {
       <div style={{display:'flex',flexDirection:'column',height:'100vh',overflow:'hidden'}}>
       <BetaBanner />
       <div style={{display:'flex',flex:1,minHeight:0,overflow:'hidden'}}>
-        {!isMob && <Sidebar activePage={page} onNav={setPage} pendingCount={pendingCount} onLogout={onLogout}/>}
+        {!isMob && <Sidebar activePage={page} onNav={setPage} pendingCount={pendingCount} pedidosCount={pedidosPend.length} onLogout={onLogout}/>}
 
         <div style={{flex:1,display:'flex',flexDirection:'column',minWidth:0,overflow:'hidden'}}>
 
@@ -52,6 +56,7 @@ export default function AppShell({ onLogout }) {
                 page={page} setPage={setPage} toast={toast}
                 data={data} modals={modals}
                 turnoActions={turnoActions} notaActions={notaActions} configActions={configActions}
+                pedidos={pedidosPend} pedidoActions={pedidoActions}
               />
             )}
           </main>
@@ -61,7 +66,7 @@ export default function AppShell({ onLogout }) {
 
       {isMob && (
         <MobileNav
-          activePage={page} onNav={setPage} pendingCount={pendingCount} onLogout={onLogout}
+          activePage={page} onNav={setPage} pendingCount={pendingCount} pedidosCount={pedidosPend.length} onLogout={onLogout}
           onNuevoTurno={() => modals.setModalTurno({open:true, fecha:todayStr(), turnoEdit:null})}
         />
       )}
@@ -69,6 +74,7 @@ export default function AppShell({ onLogout }) {
       <AppModals
         modals={modals} clientes={data.clientes} turnos={data.turnos} caps={data.caps} toast={toast}
         clienteActions={clienteActions} turnoActions={turnoActions} notaActions={notaActions}
+        pedidoActions={pedidoActions} pedidos={data.pedidos} config={data.config}
         confirm={confirm} closeConfirm={closeConfirm}
       />
       <ToastContainer toasts={toasts}/>

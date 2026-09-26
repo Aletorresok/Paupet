@@ -2,6 +2,9 @@ import { WHATSAPP_PAU } from '../../lib/constants';
 import { DIAS_ES } from '../../lib/constants';
 import { parseFecha } from '../../lib/utils';
 
+// Teléfono válido para WhatsApp: entre 8 y 15 dígitos.
+export const telValido = tel => { const d = (tel || '').replace(/\D/g, ''); return d.length >= 8 && d.length <= 15; };
+
 // "2026-09-25" + "10:30" → "viernes 25/9 a las 10:30"
 export function describirHorario(fecha, hora) {
   const d = parseFecha(fecha);
@@ -39,6 +42,7 @@ export function armarMensaje(f) {
   const pendientes = [
     !f.perro.trim() && ['el nombre del perro', 'pt-perro'],
     !f.duenio.trim() && ['tu nombre', 'pt-duenio'],
+    !telValido(f.tel) && ['tu WhatsApp', 'pt-tel'],
     f.servicios.length === 0 && ['un servicio', 'pt-t-serv'],
     !cuando && ['cuándo te queda bien', 'pt-t-cuando'],
   ].filter(Boolean);

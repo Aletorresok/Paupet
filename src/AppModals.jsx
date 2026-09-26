@@ -4,9 +4,10 @@ import ModalClienteForm from './pages/clientes/ModalClienteForm';
 import ModalTurno from './pages/calendario/ModalTurno';
 import ModalCobro from './pages/calendario/ModalCobro';
 import ModalNota from './pages/notas/ModalNota';
+import ModalProponer from './pages/dashboard/ModalProponer';
 import { CLOSED_TURNO, CLOSED_NOTA, CLOSED_COBRO } from './hooks/useModals';
 
-export default function AppModals({ modals, clientes, turnos, caps, toast, clienteActions: ca, turnoActions: ta, notaActions: na, confirm, closeConfirm }) {
+export default function AppModals({ modals, clientes, turnos, caps, toast, clienteActions: ca, turnoActions: ta, notaActions: na, pedidoActions: pa, pedidos = [], config, confirm, closeConfirm }) {
   const { modalCliente, setModalCliente, modalNuevoCliente, setModalNuevoCliente, modalTurno, setModalTurno, modalNota, setModalNota, modalCobro, setModalCobro } = modals;
   const turnoCobro = modalCobro.open ? turnos.find(t => t.id === modalCobro.turnoId) : null;
   const activeCliente = clientes.find(c=>c.id===modalCliente.id);
@@ -35,12 +36,13 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
         onSave={ca.handleSaveNewClient}
       />}
       {modalTurno.open && <ModalTurno
-        key={modalTurno.turnoEdit ? `e${modalTurno.turnoEdit.id}` : `n${modalTurno.fecha}|${modalTurno.hora}|${modalTurno.clientId}|${modalTurno.servicio}`}
+        key={modalTurno.turnoEdit ? `e${modalTurno.turnoEdit.id}` : `n${modalTurno.fecha}|${modalTurno.hora}|${modalTurno.clientId}|${modalTurno.servicio}|${modalTurno.pedidoId}`}
         open={modalTurno.open}
         onClose={()=>setModalTurno(CLOSED_TURNO)}
         onSave={ta.handleSaveNewTurno} onUpdate={ta.handleUpdateTurno}
         clientes={clientes} turnos={turnos} defaultFecha={modalTurno.fecha} defaultHora={modalTurno.hora} defaultClientId={modalTurno.clientId}
         defaultServicio={modalTurno.servicio} defaultDuracion={modalTurno.duracion} turnoEdit={modalTurno.turnoEdit}
+        defaultNuevo={modalTurno.nuevo} pedidoId={modalTurno.pedidoId}
       />}
       {modalNota.open && <ModalNota
         key={modalNota.initial?.id ?? `n${modalNota.tipo}`}
@@ -58,6 +60,10 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
           onCobrar={ta.handleCobrar}
           onNoVino={ta.handleNoVino}
         />
+      )}
+      {modals.modalProponer.open && (
+        <ModalProponer pedido={modals.modalProponer.pedido} config={config} turnos={turnos} pedidos={pedidos}
+          onClose={() => modals.setModalProponer({open:false,pedido:null})} onEnviar={pa.enviarPropuesta} />
       )}
       <ConfirmDialog
         open={confirm.open} msg={confirm.msg}

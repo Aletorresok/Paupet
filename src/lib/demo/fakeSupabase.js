@@ -107,7 +107,26 @@ class Consulta {
 }
 
 // Misma regla que la función SQL (ver lib/horariosLibres.js).
-const horariosLibres = () => calcularHorariosLibres(db.tablas.config.find(c => c.id === 1), db.tablas.turnos);
+const horariosLibres = () => calcularHorariosLibres(db.tablas.config.find(c => c.id === 1), db.tablas.turnos, new Date(), db.tablas.pedidos_turno || []);
+
+// Imitación de la función SQL pedir_turno (misma validación, sin el límite por hora).
+function pedirTurno(p) {
+  const tel = String(p.p_tel || '').replace(/\D/g, '');
+  if (!String(p.p_perro || '').trim() || !String(p.p_duenio || '').trim()) return { data: null, error: { message: 'faltan_datos' } };
+  if (tel.length < 8 || tel.length > 15) return { data: null, error: { message: 'telefono_invalido' } };
+  db.tablas.pedidos_turno = db.tablas.pedidos_turno || [];
+  const repetido = db.tablas.pedidos_turno.find(x => x.tel === tel && x.perro.toLowerCase() === p.p_perro.trim().toLowerCase()
+    && (x.fecha || null) === (p.p_fecha || null) && (x.hora || null) === (p.p_hora || null) && Date.now() - new Date(x.created_at) < 1800000);
+  if (repetido) return { data: repetido.id, error: null };
+  const fila = {
+    id: ++db.ultimoId, created_at: new Date().toISOString(), estado: 'nuevo', perro: p.p_perro.trim(), duenio: p.p_duenio.trim(), tel,
+    raza: p.p_raza || '', tamanio: p.p_tamanio || '', vino_antes: p.p_vino_antes || '', servicios: p.p_servicios || '', notas: p.p_notas || '',
+    fecha: p.p_fecha || null, hora: p.p_hora || null, preferencia: p.p_preferencia || '', fecha_prop: null, hora_prop: null, turno_id: null, avisado: false,
+  };
+  db.tablas.pedidos_turno.push(fila);
+  guardar();
+  return { data: fila.id, error: null };
+}
 
 const SESION = { user: { id: 'demo', email: 'demo@paupet.local' }, access_token: 'demo' };
 
@@ -119,8 +138,9 @@ export function crearSupabaseDemo() {
 
   return {
     from: tabla => new Consulta(tabla),
-    rpc: async nombre => nombre === 'horarios_libres'
+    rpc: async (nombre, params = {}) => nombre === 'horarios_libres'
       ? { data: horariosLibres(), error: null }
+      : nombre === 'pedir_turno' ? pedirTurno(params)
       : { data: null, error: { message: `function ${nombre} does not exist` } },
     storage: {
       from: () => ({

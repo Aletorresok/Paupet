@@ -53,6 +53,7 @@ textarea.pt-input{height:auto;min-height:76px;padding:12px 14px;resize:vertical}
 .pt-sugerido-btn{font:inherit;font-size:15px;font-weight:600;height:44px;padding:0 18px;border-radius:12px;border:none;background:${C.menta};color:${C.sobreMenta};cursor:pointer}
 .pt-chip-sug{position:relative}
 .pt-chip-sug::after{content:'sugerido';position:absolute;top:-9px;right:-4px;font-size:10px;font-weight:600;background:${C.verde};color:white;border-radius:999px;padding:1px 6px}
+.pt-aviso{font-size:13px;line-height:1.45;color:${C.ambar};background:${C.ambarSuave};border-radius:12px;padding:10px 12px}
 .pt-pie{font-size:13px;color:${C.tintaSuave};line-height:1.45}
 .pt-num{color:${C.tinta};user-select:all;white-space:nowrap}
 `;

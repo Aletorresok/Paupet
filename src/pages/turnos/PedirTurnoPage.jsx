@@ -7,17 +7,19 @@ import BotonEnviar from './BotonEnviar';
 import { useHorariosLibres } from './useHorariosLibres';
 import { armarMensaje } from './mensajeTurno';
 import { ESTILOS_TURNOS } from './estilos';
+import { guardarPedido } from './guardarPedido';
 import pauSecador from '../../assets/ilustraciones/pau-secador.webp';
 import { TAMANIOS, VINO_ANTES, SERVICIOS, A_TENER_EN_CUENTA, ICONOS_SERVICIO } from './opciones';
 
 const VACIO = {
-  perro: '', duenio: '', raza: '', tamanio: '', vinoAntes: '',
+  perro: '', duenio: '', tel: '', raza: '', tamanio: '', vinoAntes: '',
   servicios: [], aTenerEnCuenta: [], comentario: '',
   horario: null, franja: '', preferencia: '',
 };
 
 // Página pública (sin usuario): la persona completa el pedido y se abre WhatsApp
-// con el mensaje listo para Pau. No guarda nada en la base.
+// con el mensaje listo para Pau. Además guarda el pedido (si existe la migración 5) para que Pau
+// lo acepte o proponga otro horario desde la app. Nada queda reservado hasta que Pau confirma.
 export default function PedirTurnoPage() {
   const [f, setF] = useState(VACIO);
   const [aMano, setAMano] = useState(false);
@@ -30,6 +32,8 @@ export default function PedirTurnoPage() {
 
   const conHorarios = dias.length > 0 && !aMano;
   const { texto, faltan, primerFaltante } = armarMensaje(conHorarios ? f : { ...f, horario: null });
+  // Al tocar Enviar: se abre WhatsApp (el link) y, en paralelo, se guarda el pedido.
+  const onEnviado = () => { setEnviado(true); guardarPedido(f, conHorarios); };
 
   // Tocar "Enviar" con datos incompletos lleva al primer campo que falta.
   const irAFaltante = () => {
@@ -51,7 +55,7 @@ export default function PedirTurnoPage() {
           <header className="pt-cabecera">
             <div>
               <h1>Pedí tu turno en Paupet</h1>
-              <p>Completá estos datos y se arma un mensaje de WhatsApp para Pau. Ella te confirma el día y el precio.</p>
+              <p>Completá estos datos y se arma un mensaje de WhatsApp para Pau. Es un pedido: el turno queda confirmado cuando Pau te responde.</p>
             </div>
           </header>
 
@@ -63,6 +67,9 @@ export default function PedirTurnoPage() {
               </label>
               <label className="pt-campo">Tu nombre
                 <input id="pt-duenio" className="pt-input" value={f.duenio} onChange={e => set('duenio', e.target.value)} autoComplete="given-name" />
+              </label>
+              <label className="pt-campo">Tu WhatsApp
+                <input id="pt-tel" className="pt-input" value={f.tel} onChange={e => set('tel', e.target.value)} inputMode="tel" autoComplete="tel" placeholder="11 2345-6789" />
               </label>
               <label className="pt-campo"><span>Raza <span className="pt-opc">(si sabés)</span></span>
                 <input id="pt-raza" className="pt-input" value={f.raza} onChange={e => set('raza', e.target.value)} autoComplete="off" />
@@ -102,12 +109,12 @@ export default function PedirTurnoPage() {
           </section>
         </div>
 
-        <VistaMensaje texto={texto} faltan={faltan} enviado={enviado} onEnviado={() => setEnviado(true)} onFaltante={irAFaltante} />
+        <VistaMensaje texto={texto} faltan={faltan} enviado={enviado} onEnviado={onEnviado} onFaltante={irAFaltante} />
       </main>
       {/* En el celular el botón queda fijo abajo, siempre a mano. */}
       <div className="pt-barra">
         {faltan.length > 0 && <p className="pt-falta">Falta: {faltan.join(', ')}.</p>}
-        <BotonEnviar texto={texto} listo={faltan.length === 0} onEnviado={() => setEnviado(true)} onFaltante={irAFaltante} />
+        <BotonEnviar texto={texto} listo={faltan.length === 0} onEnviado={onEnviado} onFaltante={irAFaltante} />
       </div>
       </div>
     </>

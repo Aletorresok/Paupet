@@ -6,7 +6,7 @@ import SidebarNavItem from './SidebarNavItem';
 const GRUPOS = [{id:'dia',label:'Día a día'},{id:'negocio',label:'Negocio'}];
 
 // Menú lateral (sólo escritorio y tablet; en el celular se usa MobileNav).
-export default function Sidebar({ activePage, onNav, pendingCount, onLogout }) {
+export default function Sidebar({ activePage, onNav, pendingCount, pedidosCount = 0, onLogout }) {
   return (
     <nav aria-label="Principal" style={{
       width:248,minWidth:248,height:'100%',boxSizing:'border-box',background:'white',
@@ -22,7 +22,8 @@ export default function Sidebar({ activePage, onNav, pendingCount, onLogout }) {
               icon={item.icon}
               label={item.label}
               active={activePage===item.page}
-              badgeCount={item.badge ? pendingCount : 0}
+              badgeCount={item.page === 'dashboard' ? pedidosCount : item.badge ? pendingCount : 0}
+              badgeLabel={item.page === 'dashboard' ? (pedidosCount === 1 ? 'pedido' : 'pedidos') : 'pend.'}
               onClick={() => onNav(item.page)}
             />
           ))}

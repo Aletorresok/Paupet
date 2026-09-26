@@ -273,6 +273,11 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Agenda semanal con duraciones y ficha de cliente nueva. Migración 2 escrita (falta correrla).
 - 2026-09-23 — Finanzas y login nuevo. Con esto están todas las pantallas de la maqueta.
 - 2026-09-23 — Copia de seguridad descargable + recordatorio semanal; lecturas paginadas (sin límite de 1000).
+- 2026-09-26 — **Pedidos de turno** (migración 5, `supabase/migracion_05_pedidos.sql`): /turnos pide el WhatsApp del
+  cliente y además de abrir WhatsApp guarda el pedido (`pedir_turno`). En "Hoy" → "Pedidos de turno": Aceptar (abre Nuevo
+  turno ya cargado), Proponer otro horario (WhatsApp + queda "esperando respuesta" → "Aceptó · agendar"), Rechazar, y
+  "Avisarle que está confirmado". Todo es pedido, nada queda reservado. /turnos sólo ofrece lo cargado en Stories (sin
+  horarios base) y excluye horarios ya pedidos/propuestos. Pendiente: notificación al celular de Pau (web push).
 - 2026-09-26 — **Unificación:** `main` = versión nueva + mejoras. Versión anterior respaldada en `backup/version-anterior`.
 - 2026-09-26 — Rama `propuesta/mejoras` (sobre ésta, sin subir): modo demo + 23 mejoras compatibles
   (Horarios↔Agenda, próximo turno al cobrar, resumen del perro al agendar, filtros de clientes, recordatorios en lote,

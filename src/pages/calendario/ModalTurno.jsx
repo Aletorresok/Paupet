@@ -12,12 +12,14 @@ import { DURACIONES, fmtDuracion } from '../../lib/duracion';
 import ClienteResumen from './ClienteResumen';
 import { serviciosFrecuentes, turnosQueSePisan, rangoTurno } from './ayudaTurno';
 
-const EMPTY_CLIENTE = {clientId:'',dog:'',owner:'',raza:'',tel:''};
+const EMPTY_CLIENTE = {clientId:'',dog:'',owner:'',raza:'',tel:'',size:'',notes:''};
 
-export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, turnos = [], defaultFecha, defaultHora, defaultClientId, defaultServicio, defaultDuracion, turnoEdit }) {
+// `defaultNuevo` = {dog, owner, raza, tel, size, notes}: perro nuevo ya cargado (p. ej. desde un pedido de /turnos).
+// `pedidoId`: al guardar, ese pedido queda aceptado.
+export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, turnos = [], defaultFecha, defaultHora, defaultClientId, defaultServicio, defaultDuracion, defaultNuevo, pedidoId, turnoEdit }) {
   const { isMob } = useResp();
   const isEdit = !!turnoEdit;
-  const [mode, setMode] = useState('exist');
+  const [mode, setMode] = useState(!isEdit && defaultNuevo ? 'new' : 'exist');
   const [saving, setSaving] = useState(false);
   // Se monta con `key` (ver AppModals): el formulario arranca de cero en cada apertura, sin efectos.
   const [form, setForm] = useState(() => isEdit ? {
@@ -31,8 +33,8 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
     estado: turnoEdit.estado   || 'confirmed',
     duracion: turnoEdit.duracion || 60,
   } : {
-    ...EMPTY_CLIENTE, clientId: defaultClientId ? String(defaultClientId) : '', fecha:defaultFecha||todayStr(), svc:defaultServicio||'',
-    hora:defaultHora||'10:00', precio:'', formaPago:'efectivo', estado:'confirmed', duracion:defaultDuracion||60,
+    ...EMPTY_CLIENTE, ...defaultNuevo, clientId: defaultClientId ? String(defaultClientId) : '', fecha:defaultFecha||todayStr(), svc:defaultServicio||'',
+    hora:defaultHora||'10:00', precio:'', formaPago:'efectivo', estado:'confirmed', duracion:defaultDuracion||60, pedidoId: pedidoId || null,
   });
 
   const set = (k,v) => setForm(f=>({...f,[k]:v}));
@@ -68,7 +70,7 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
     <Modal open={open} onClose={onClose} width={480}>
       <ModalHead
         title={isEdit ? 'Editar turno' : 'Nuevo turno'}
-        subtitle={isEdit ? `${turnoEdit?.dogName || ''} — ${fmtFecha(turnoEdit?.fecha)}` : ''}
+        subtitle={isEdit ? `${turnoEdit?.dogName || ''} — ${fmtFecha(turnoEdit?.fecha)}` : pedidoId ? 'Cargado desde el pedido · revisá, poné el precio si querés y guardá' : ''}
         onClose={onClose}
       />
       <div style={{padding:'18px 22px'}}>

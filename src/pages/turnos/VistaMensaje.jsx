@@ -13,11 +13,15 @@ export default function VistaMensaje({ texto, faltan, enviado, onEnviado, onFalt
       <BotonEnviar className="pt-enviar-lado" texto={texto} listo={listo} onEnviado={onEnviado} onFaltante={onFaltante} />
       {enviado && listo && (
         <EstadoVacio ilustracion="enviado" titulo="¡Listo! Se abrió WhatsApp"
-          texto="Tocá enviar en el chat y Pau te responde para confirmar. Si no se abrió, tocá de nuevo el botón verde." tamanio={130} />
+          texto="Tocá enviar en el chat. Todavía no es un turno confirmado: Pau te responde por WhatsApp. Si no se abrió, tocá de nuevo el botón verde." tamanio={130} />
       )}
       <p className="pt-pie">
         Se abre WhatsApp con tu pedido listo para Pau (<span className="pt-num">{WHATSAPP_PAU_VISIBLE}</span>).
-        Sólo tenés que tocar "enviar". Ella te responde para confirmar.
+        Sólo tenés que tocar "enviar".
+      </p>
+      <p className="pt-aviso">
+        <strong>El turno no está confirmado</strong> hasta que Pau te responda por WhatsApp.
+        Los horarios libres pueden no estar actualizados.
       </p>
     </aside>
   );

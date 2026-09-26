@@ -9,13 +9,13 @@ import FinanzasPage from './pages/finanzas/FinanzasPage';
 import { todayStr } from './lib/utils';
 
 // Renderiza la página activa.
-export default function AppPages({ page, setPage, data, modals, toast, turnoActions: ta, notaActions: na, configActions }) {
+export default function AppPages({ page, setPage, data, modals, toast, turnoActions: ta, notaActions: na, configActions, pedidos, pedidoActions }) {
   const { clientes, turnos, notas, config } = data;
   const { setModalCliente, setModalNuevoCliente, setModalTurno, setModalNota } = modals;
 
   switch (page) {
     case 'dashboard':
-      return <Dashboard clientes={clientes} turnos={turnos} notas={notas} onNav={setPage} onOpenClient={id=>setModalCliente({open:true,id})} onNuevoTurno={()=>setModalTurno({open:true,fecha:todayStr(),turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno}/>;
+      return <Dashboard clientes={clientes} turnos={turnos} notas={notas} onNav={setPage} onOpenClient={id=>setModalCliente({open:true,id})} onNuevoTurno={()=>setModalTurno({open:true,fecha:todayStr(),turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno} pedidos={pedidos} pedidoActions={pedidoActions}/>;
     case 'clientes':
       return <ClientesPage clientes={clientes} turnos={turnos} onOpenClient={id=>setModalCliente({open:true,id})} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>;
     case 'calendario':

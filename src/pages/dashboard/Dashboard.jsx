@@ -14,10 +14,11 @@ import ManianaCard from './ManianaCard';
 import VuelvenCard from './VuelvenCard';
 import InasistenciasCard from './InasistenciasCard';
 import RecordatorioRespaldo from './RecordatorioRespaldo';
+import PedidosCard from './PedidosCard';
 
 const saludo = h => h < 6 ? 'Buenas noches' : h < 13 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
 
-export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno }) {
+export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno, pedidos = [], pedidoActions }) {
   const { isMob, isTab } = useResp();
   const hoy = new Date();
   const hoyISO = todayStr();
@@ -51,6 +52,8 @@ export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient
       </PageHeader>
 
       <RecordatorioRespaldo onIr={() => onNav('config')} />
+
+      <PedidosCard pedidos={pedidos} clientes={clientes} turnos={turnos} acciones={pedidoActions} />
 
       <div style={{display:'grid',gridTemplateColumns:`repeat(${isMob ? 2 : 4},minmax(0,1fr))`,gap:isMob?10:16,marginBottom:20}}>
         <KpiCard label={`Ingresos de ${mes}`} valor={fmtPeso(res.ingresos)} detalle={`Efectivo ${fmtPeso(res.efectivo)} · Transf. ${fmtPeso(res.transferencia)}`} />

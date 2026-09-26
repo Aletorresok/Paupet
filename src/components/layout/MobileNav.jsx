@@ -10,7 +10,7 @@ const tabStyle = active => ({
 });
 
 // Barra inferior del celular: Hoy / Agenda / Clientes / Más, y botón flotante "Nuevo turno".
-export default function MobileNav({ activePage, onNav, pendingCount, onNuevoTurno, onLogout }) {
+export default function MobileNav({ activePage, onNav, pendingCount, pedidosCount = 0, onNuevoTurno, onLogout }) {
   const [masOpen, setMasOpen] = useState(false);
   const principales = NAV_ITEMS.filter(i => i.movil);
   const resto = NAV_ITEMS.filter(i => !i.movil);
@@ -53,6 +53,9 @@ export default function MobileNav({ activePage, onNav, pendingCount, onNuevoTurn
             {i.label}
             {i.badge && pendingCount > 0 && (
               <span style={{position:'absolute',top:2,left:'calc(50% + 6px)',background:C.rosa,color:'white',fontSize:10,fontWeight:700,borderRadius:999,padding:'1px 6px'}}>{pendingCount}</span>
+            )}
+            {i.page === 'dashboard' && pedidosCount > 0 && (
+              <span aria-label={`${pedidosCount} pedidos de turno`} style={{position:'absolute',top:2,left:'calc(50% + 6px)',background:C.verde,color:'white',fontSize:10,fontWeight:700,borderRadius:999,padding:'1px 6px'}}>{pedidosCount}</span>
             )}
           </button>
         ))}

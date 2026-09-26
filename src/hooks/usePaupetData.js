@@ -9,15 +9,17 @@ export function usePaupetData(toast) {
   const [turnos, setTurnos]   = useState([]);
   const [notas, setNotas]     = useState([]);
   const [config, setConfig]   = useState(DEFAULT_CONFIG);
-  const [caps, setCaps]       = useState({ duracion: false, etiquetas: false, fotos: false });
+  const [caps, setCaps]       = useState({ duracion: false, etiquetas: false, fotos: false, pedidos: false });
+  const [pedidos, setPedidos] = useState([]);
 
   const loadAll = useCallback(async () => {
     try {
-      const [c, t, n, cfg, cap] = await Promise.all([db.getClientes(), db.getTurnos(), db.getNotas(), db.getConfig(), db.detectarCapacidades()]);
+      const cap = await db.detectarCapacidades();
+      const [c, t, n, cfg, p] = await Promise.all([db.getClientes(), db.getTurnos(), db.getNotas(), db.getConfig(), db.getPedidos()]);
       // Los turnos de un cliente repetido se asocian al cliente que se muestra.
       const canonicoDe = new Map(c.flatMap(cl => cl.aliasIds.map(id => [id, cl.id])));
       const turnosMapeados = t.map(x => canonicoDe.has(x.clientId) ? {...x, clientId: canonicoDe.get(x.clientId)} : x);
-      setClientes(c); setTurnos(turnosMapeados); setNotas(n); setConfig(cfg); setCaps(cap);
+      setClientes(c); setTurnos(turnosMapeados); setNotas(n); setConfig(cfg); setCaps(cap); setPedidos(p);
     } catch(e) {
       toast('Error cargando datos: ' + e.message, true);
     } finally {
@@ -27,5 +29,5 @@ export function usePaupetData(toast) {
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
-  return { loading, clientes, turnos, notas, setNotas, config, setConfig, loadAll, caps };
+  return { loading, clientes, turnos, notas, setNotas, config, setConfig, loadAll, caps, pedidos };
 }

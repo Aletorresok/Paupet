@@ -162,24 +162,48 @@ test('dueños: agrupa por nombre o teléfono y busca por dueño, perro o teléfo
   assert.deepEqual(buscarDuenos(d, ''), []);
 });
 
-test('horarios libres: Stories primero, si no los horarios base de Configuración', async () => {
+test('horarios libres: sólo Stories, con duraciones y sin horarios ya pedidos', async () => {
   const { calcularHorariosLibres } = await import('../src/lib/horariosLibres.js');
   const ahora = new Date(2026, 8, 26, 9, 0);             // sábado 26/9, 9:00
   const config = {
-    anticip: 7,
-    horarios: { domingo: { open: false }, martes: { open: false } },
-    slots: { lunes: [{ hora: '09:00', duracion: 90 }, { hora: '11:00', duracion: 60 }], martes: [{ hora: '09:00' }], domingo: [{ hora: '10:00' }], sabado: ['09:30', '12:00'] },
-    horarios_semanales: { slots: { '2026-09-30': ['15:00', '16:00'] }, tomados: { '2026-09-30': ['16:00'] }, diasActivos: ['NO:2026-10-03'] },
+    slots: { lunes: [{ hora: '09:00' }] },               // horarios base de Configuración: ya NO se usan
+    horarios_semanales: {
+      slots: { '2026-09-26': ['09:30', '12:00'], '2026-09-28': ['09:00', '10:30', '12:00', '16:00'], '2026-10-03': ['10:00'], '2026-10-30': ['10:00'] },
+      tomados: { '2026-09-28': ['12:00'] }, diasActivos: ['NO:2026-10-03'],
+    },
   };
-  const turnos = [{ fecha: '2026-09-28', hora: '10:00', duracion: 60 }];
-  const libres = calcularHorariosLibres(config, turnos, ahora).map(x => `${x.fecha} ${x.hora}`);
-  assert.ok(libres.includes('2026-09-26 12:00'), 'hoy, a más de una hora');
-  assert.ok(!libres.includes('2026-09-26 09:30'), 'hoy, a menos de una hora');
-  assert.ok(!libres.some(x => x.startsWith('2026-09-27')), 'domingo cerrado');
-  assert.ok(!libres.includes('2026-09-28 09:00'), 'el de 9:00 dura 90 min y se pisa con el turno de las 10');
-  assert.ok(libres.includes('2026-09-28 11:00'));
-  assert.ok(!libres.some(x => x.startsWith('2026-09-29')), 'martes cerrado');
-  assert.ok(libres.includes('2026-09-30 15:00') && !libres.includes('2026-09-30 16:00'), 'Stories manda y respeta tomados');
-  assert.ok(!libres.some(x => x.startsWith('2026-10-03')), 'día apagado en Stories');
-  assert.ok(!libres.some(x => x > '2026-10-03 99'), 'no pasa de los días de anticipación');
+  const turnos = [{ fecha: '2026-09-28', hora: '09:30', duracion: 60 }];
+  const pedidos = [
+    { estado: 'nuevo', fecha: '2026-09-28', hora: '16:00', created_at: '2026-09-26T08:00:00' },
+    { estado: 'rechazado', fecha: '2026-09-26', hora: '12:00', created_at: '2026-09-26T08:00:00' },
+  ];
+  const libres = calcularHorariosLibres(config, turnos, ahora, pedidos).map(x => `${x.fecha} ${x.hora}`);
+  assert.deepEqual(libres, ['2026-09-26 12:00', '2026-09-28 10:30']);
+  // 09:30 de hoy: a menos de 1 hora · 28/9 09:00: se pisa con el turno de 9:30 · 12:00: tomado ·
+  // 16:00: ya pedido · 3/10: día apagado · 30/10: a más de 21 días · el rechazado no ocupa.
+  assert.deepEqual(calcularHorariosLibres({ slots: config.slots }, [], ahora), [], 'sin semana cargada no ofrece nada');
+});
+
+test('pedidos: reconoce al cliente y arma el turno', async () => {
+  const { clienteDelPedido, turnoDesdePedido, pedidosPendientes, mensajeConfirmado } = await import('../src/lib/pedidos.js');
+  const clientes = [
+    { id: 1, dog: 'Coco', owner: 'María García', tel: '11-2345-6789' },
+    { id: 2, dog: 'Luna', owner: 'Sofía', tel: '' },
+  ];
+  const base = { id: 9, perro: 'coco', duenio: 'María', tel: '541123456789', servicios: 'Baño', raza: 'Caniche', tamanio: 'Chico', notas: 'Tiene nudos', estado: 'nuevo', fecha: '2026-09-28', hora: '16:00' };
+  assert.equal(clienteDelPedido(base, clientes).tipo, 'mismo');
+  assert.equal(clienteDelPedido({ ...base, perro: 'Pompón' }, clientes).tipo, 'dueno');
+  assert.equal(clienteDelPedido({ ...base, perro: 'Luna', duenio: 'Sofía P', tel: '1199998888' }, clientes).tipo, 'mismo', 'sin teléfono: por perro y dueño');
+  assert.equal(clienteDelPedido({ ...base, perro: 'Tofu', tel: '1100000000' }, clientes).tipo, 'nuevo');
+
+  assert.equal(turnoDesdePedido(base, clientes, base.fecha, base.hora).clientId, 1);
+  const otro = turnoDesdePedido({ ...base, perro: 'Pompón' }, clientes, '2026-09-29', '10:00');
+  assert.equal(otro.nuevo.owner, 'María García', 'usa el nombre del dueño ya cargado');
+  assert.equal(otro.nuevo.size, 'Pequeño');
+  assert.equal(otro.pedidoId, 9);
+
+  const lista = [{ ...base }, { ...base, id: 2, estado: 'aceptado', avisado: false }, { ...base, id: 3, estado: 'aceptado', avisado: true }, { ...base, id: 4, estado: 'rechazado' }];
+  assert.deepEqual(pedidosPendientes(lista).map(p => p.id), [9, 2]);
+  assert.match(mensajeConfirmado(base, '2026-09-28', '16:00'), /lunes 28\/9 a las 16:00hs/);
+  assert.doesNotMatch(mensajeConfirmado(base, '2026-09-28', ''), /hs/);
 });
