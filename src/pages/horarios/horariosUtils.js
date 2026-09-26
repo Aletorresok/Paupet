@@ -42,15 +42,37 @@ export const generarSlots = (desde, hasta, dur) => {
   return gen;
 };
 
-// Renderiza un nodo del DOM a PNG con html2canvas (cargado on-demand) y lo descarga.
-export const descargarNodoComoPng = async (node, filename, backgroundColor = '#7ec8a0') => {
+// Renderiza un nodo del DOM a un canvas con html2canvas (cargado on-demand).
+const nodoACanvas = async (node, backgroundColor) => {
   if (!window.html2canvas) {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
     await new Promise((res,rej) => { script.onload=res; script.onerror=rej; document.head.appendChild(script); });
   }
   await document.fonts.ready;
-  const canvas = await window.html2canvas(node, {scale:2,useCORS:true,backgroundColor,logging:false,width:540,height:960});
+  return window.html2canvas(node, {scale:2,useCORS:true,backgroundColor,logging:false,width:540,height:960});
+};
+
+// El celular puede compartir imágenes (menú nativo → Instagram, WhatsApp…).
+export const puedeCompartirImagen = () => {
+  try { return !!navigator.canShare && navigator.canShare({ files: [new File([''], 'x.png', { type: 'image/png' })] }); }
+  catch { return false; }
+};
+
+// Abre el menú de compartir del celular con la imagen. Si se cancela, no pasa nada.
+export const compartirNodoComoPng = async (node, filename, backgroundColor = '#7ec8a0') => {
+  const canvas = await nodoACanvas(node, backgroundColor);
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+  try {
+    await navigator.share({ files: [new File([blob], filename, { type: 'image/png' })], title: 'Horarios Paupet' });
+  } catch (e) {
+    if (e.name !== 'AbortError') throw e;
+  }
+};
+
+// Renderiza un nodo del DOM a PNG y lo descarga.
+export const descargarNodoComoPng = async (node, filename, backgroundColor = '#7ec8a0') => {
+  const canvas = await nodoACanvas(node, backgroundColor);
   const link = document.createElement('a');
   link.download = filename;
   link.href = canvas.toDataURL('image/png');

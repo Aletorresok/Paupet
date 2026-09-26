@@ -4,7 +4,7 @@ import Btn from '../../components/ui/Btn';
 import PageHeader from '../../components/ui/PageHeader';
 import { MESES } from '../../lib/constants';
 import { sans, serif } from '../../lib/styles';
-import { toKey, generarSlots, descargarNodoComoPng, rangoSemana, ocupadosPorAgenda } from './horariosUtils';
+import { toKey, generarSlots, descargarNodoComoPng, compartirNodoComoPng, puedeCompartirImagen, rangoSemana, ocupadosPorAgenda } from './horariosUtils';
 import { useHorariosSemana } from './useHorariosSemana';
 import SemanaNav from './SemanaNav';
 import DiaSlotsCard from './DiaSlotsCard';
@@ -56,11 +56,11 @@ export default function HorariosPage({ horariosData, turnos = [], onSaveHorarios
     setAutoGenModal({open:false,dia:null});
   };
 
-  const descargarImagen = async () => {
+  const descargarImagen = async (compartir = false) => {
     setGenerando(true);
     try {
       const color = esFondo(diseno) ? FONDOS[diseno].color : diseno === 'nuevo' ? '#5FBF9B' : '#7ec8a0';
-      await descargarNodoComoPng(
+      await (compartir ? compartirNodoComoPng : descargarNodoComoPng)(
         previewRef.current,
         `horarios_paupet_${semanaInicio.getDate()}_${MESES[semanaInicio.getMonth()]}${diseno === 'clasico' ? '' : '_' + diseno}.png`,
         color,
@@ -80,7 +80,12 @@ export default function HorariosPage({ horariosData, turnos = [], onSaveHorarios
           <Btn size="sm" onClick={handleGuardar} disabled={guardando} variant="ghost">
             {guardando ? '⏳...' : '💾 Guardar'}
           </Btn>
-          <Btn size="sm" onClick={descargarImagen} disabled={generando} style={{background:'#25d366',border:'none'}}>
+          {puedeCompartirImagen() && (
+            <Btn size="sm" onClick={() => descargarImagen(true)} disabled={generando}>
+              {generando ? '⏳...' : '📤 Compartir'}
+            </Btn>
+          )}
+          <Btn size="sm" onClick={() => descargarImagen()} disabled={generando} style={{background:'#25d366',border:'none'}}>
             {generando ? '⏳...' : '📥 Descargar'}
           </Btn>
         </div>
