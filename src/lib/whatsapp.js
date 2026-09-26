@@ -1,4 +1,14 @@
-import { fmtFecha } from './utils';
+import { DIAS_ES, MESES } from './constants';
+import { diasDesde, fmtFecha, parseFecha } from './utils';
+
+// "mañana lunes 28 de septiembre" / "el lunes 28 de septiembre" (sin el año).
+const fechaAmigable = f => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(f || '')) return fmtFecha(f);
+  const d = parseFecha(f);
+  const txt = `${DIAS_ES[d.getDay()].toLowerCase()} ${d.getDate()} de ${MESES[d.getMonth()]}`;
+  const dias = -diasDesde(f);
+  return dias === 0 ? `hoy ${txt}` : dias === 1 ? `mañana ${txt}` : `el ${txt}`;
+};
 
 const normalizarTel = tel => {
   let num = tel.replace(/[\s\-()]/g, '');
@@ -19,7 +29,7 @@ export const abrirWhatsApp = (tel, dogName, ownerName, turno = null) => {
   if (!tel) return;
   let msg;
   if (turno) {
-    msg = `¡Hola ${ownerName}! 🐾 Te recordamos el turno de *${dogName}* para el *${fmtFecha(turno.fecha)}*${turno.hora ? ` a las *${turno.hora}hs*` : ''}. ¡Te esperamos! ✂️`;
+    msg = `¡Hola ${ownerName}! 🐾 Te recordamos el turno de *${dogName}* para *${fechaAmigable(turno.fecha)}*${turno.hora ? ` a las *${turno.hora}hs*` : ''}. ¡Te esperamos! ✂️`;
   } else {
     msg = `¡Hola ${ownerName}! Te contactamos desde Paupet Peluquería Canina 🐾`;
   }
