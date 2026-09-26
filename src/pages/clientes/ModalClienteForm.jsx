@@ -5,13 +5,17 @@ import Modal from '../../components/ui/Modal';
 import ModalHead from '../../components/ui/ModalHead';
 import { inputStyle } from '../../lib/styles';
 import FotoPicker from './FotoPicker';
+import DuenoPicker from '../../components/ui/DuenoPicker';
+import { C } from '../../lib/styles';
 
 const EMPTY = {dog:'',raza:'',size:'',pelaje:'',owner:'',tel:'',notes:'',foto:null};
 const row = {display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:10};
 
-export default function ModalClienteForm({ open, onClose, onSave, initial }) {
+// `preset` = {owner, tel} para cargar otro perro de un dueño que ya es cliente.
+export default function ModalClienteForm({ open, onClose, onSave, initial, preset, clientes = [] }) {
   // Se monta con `key` (ver AppModals): arranca de cero en cada apertura, sin efectos.
-  const [form, setForm] = useState(() => initial || EMPTY);
+  const [form, setForm] = useState(() => initial || { ...EMPTY, ...preset });
+  const [buscarDueno, setBuscarDueno] = useState(false);
   const [saving, setSaving] = useState(false);
   const [fotoFile, setFotoFile] = useState(null);
 
@@ -34,7 +38,7 @@ export default function ModalClienteForm({ open, onClose, onSave, initial }) {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalHead title={initial?'Editar Cliente':'Nuevo Cliente'} subtitle={!initial?'Registrá a un nuevo perrito y su dueño':''} onClose={onClose} />
+      <ModalHead title={initial?'Editar Cliente':'Nuevo Cliente'} subtitle={initial ? '' : preset ? `Otro perro de ${preset.owner}` : 'Registrá a un nuevo perrito y su dueño'} onClose={onClose} />
       <div style={{padding:'18px 22px'}}>
         <FotoPicker foto={form.foto} isEdit={!!initial} onFile={handleFoto} />
         <div style={row}>
@@ -49,6 +53,13 @@ export default function ModalClienteForm({ open, onClose, onSave, initial }) {
           </FormGroup>
           <FormGroup label="Color / pelaje">{field('pelaje','Blanco rizado')}</FormGroup>
         </div>
+        {!initial && !preset && (
+          <div style={{marginBottom:10}}>
+            {buscarDueno
+              ? <DuenoPicker clientes={clientes} elegido={null} onLimpiar={() => {}} onElegir={d => { setForm(f => ({...f, owner:d.owner, tel:d.tel || ''})); setBuscarDueno(false); }} />
+              : <button type="button" onClick={() => setBuscarDueno(true)} style={{border:'none',background:'none',padding:0,color:C.verde,fontWeight:600,fontFamily:'inherit',fontSize:14,cursor:'pointer'}}>¿El dueño ya es cliente? Buscarlo</button>}
+          </div>
+        )}
         <div style={row}>
           <FormGroup label="Dueño *">{field('owner','María García')}</FormGroup>
           <FormGroup label="Teléfono">{field('tel','11-2345-6789')}</FormGroup>

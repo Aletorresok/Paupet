@@ -144,3 +144,20 @@ test('stories: los recuadros crecen con menos días y la letra entra en su lugar
   assert.ok(grande > chica);
   assert.ok(grande <= 46 && chica >= 13);
 });
+
+test('dueños: agrupa por nombre o teléfono y busca por dueño, perro o teléfono', async () => {
+  const { listaDuenos, buscarDuenos } = await import('../src/lib/duenos.js');
+  const clientes = [
+    { dog: 'Coco', owner: 'María García', tel: '11-2345-6789' },
+    { dog: 'Rulo', owner: 'maria garcia ', tel: '' },
+    { dog: 'Toby', owner: 'M. García', tel: '1123456789' },
+    { dog: 'Luna', owner: 'Sofía', tel: '11-9999-0000' },
+  ];
+  const d = listaDuenos(clientes);
+  assert.equal(d.length, 2);
+  assert.deepEqual(d.find(x => x.owner === 'María García').perros, ['Coco', 'Rulo', 'Toby']);
+  assert.equal(buscarDuenos(d, 'rulo')[0].owner, 'María García');
+  assert.equal(buscarDuenos(d, '9999')[0].owner, 'Sofía');
+  assert.equal(buscarDuenos(d, 'sofia').length, 1);
+  assert.deepEqual(buscarDuenos(d, ''), []);
+});

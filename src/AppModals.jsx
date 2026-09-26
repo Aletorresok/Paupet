@@ -25,11 +25,12 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
         onDeleteVisit={ca.handleDeleteVisit}
         onDelete={ca.handleDeleteClient}
         onEdit={c=>{setModalCliente({open:false,id:null});setModalNuevoCliente({open:true,initial:c});}}
+        onAgregarPerro={c=>{setModalCliente({open:false,id:null});setModalNuevoCliente({open:true,initial:null,preset:{owner:c.owner,tel:c.tel||''}});}}
         onDecrementarInasistencia={ca.handleDecrementarInasistencia}
       />
       {modalNuevoCliente.open && <ModalClienteForm
-        key={modalNuevoCliente.initial?.id ?? 'nuevo'}
-        open={modalNuevoCliente.open} initial={modalNuevoCliente.initial}
+        key={modalNuevoCliente.initial?.id ?? `nuevo${modalNuevoCliente.preset?.owner || ''}`}
+        open={modalNuevoCliente.open} initial={modalNuevoCliente.initial} preset={modalNuevoCliente.preset} clientes={clientes}
         onClose={()=>setModalNuevoCliente({open:false,initial:null})}
         onSave={ca.handleSaveNewClient}
       />}

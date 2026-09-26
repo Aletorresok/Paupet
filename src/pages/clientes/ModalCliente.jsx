@@ -19,7 +19,7 @@ import { perrosDelDueno } from './ficha/etiquetas';
 
 // Ficha completa del perro: datos, frecuencia, etiquetas, fotos e historial.
 export default function ModalCliente({ open, cliente, clientes, turnos, caps, toast, onClose, onSelectCliente, onDarTurno,
-  onSaveVisit, onEditVisit, onDeleteVisit, onDelete, onEdit, onDecrementarInasistencia, onSaveEtiquetas }) {
+  onSaveVisit, onEditVisit, onDeleteVisit, onDelete, onEdit, onAgregarPerro, onDecrementarInasistencia, onSaveEtiquetas }) {
   const { isMob } = useResp();
   if (!open || !cliente) return null;
   const c = cliente;
@@ -41,6 +41,7 @@ export default function ModalCliente({ open, cliente, clientes, turnos, caps, to
           <div style={{marginLeft:'auto'}}>
             <MenuMas label="Más acciones del cliente" acciones={[
               { label:'Editar datos', icon:'edit', onClick:() => onEdit(c) },
+              { label:`Agregar otro perro de ${c.owner || 'este dueño'}`, icon:'plus', onClick:() => onAgregarPerro(c) },
               { label:'Eliminar cliente', icon:'trash', onClick:() => onDelete(c.id), peligro:true },
             ]} />
           </div>
