@@ -205,6 +205,30 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - Navegación: menú lateral claro en escritorio; barra inferior (Hoy/Agenda/Clientes/Más) + botón flotante en celular
 - Los datos de la maqueta son de ejemplo
 
+## Pedidos de turno y avisos al celular (2026-09-26, en producción)
+- **Migraciones corridas:** 2 (etiquetas/fotos), 3, 4 y 5 (pedidos), 6 (avisos). La 4 agregaba horarios base de
+  Configuración a /turnos; la 5 la reemplaza: **/turnos sólo ofrece lo cargado en "Horarios para Stories"**.
+- **Flujo:** /turnos (pide nombre, perro, WhatsApp, servicio y horario o preferencia) → abre WhatsApp a Pau **y** guarda
+  el pedido (`pedir_turno`, con límites: 5 por teléfono/día, 40 por hora). Todo es pedido: nada queda reservado; la
+  página lo aclara. Un horario pedido (7 días) o propuesto (14 días) deja de ofrecerse.
+- **En la app ("Hoy" → Pedidos de turno):** reconoce cliente (mismo perro / otro perro del dueño / nuevo por teléfono).
+  Aceptar → "Nuevo turno" ya cargado → al guardar queda `aceptado` → "Avisarle que está confirmado" (WhatsApp).
+  Proponer otro horario → WhatsApp + `propuesto` → "Aceptó · agendar". Rechazar (con/sin aviso). Sin horario →
+  proponer o agendar directo. Código: `lib/pedidos.js`, `hooks/usePedidoActions.js`, `pages/dashboard/PedidosCard.jsx`,
+  `ModalProponer.jsx`, `pages/turnos/guardarPedido.js`.
+- **Avisos push (funcionando en el Android de Pau):** `public/sw.js` (service worker), `lib/avisos.js`,
+  `components/ui/AvisosCard.jsx` (Configuración y recordatorio en Hoy), funciones de Vercel `api/aviso-pedido.js`
+  (la llama el webhook) y `api/probar-aviso.js`.
+  - Vercel → Environment Variables: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`.
+    Las 3 primeras están en `Documentos/paupet-claves-avisos.txt` (fuera del repo, NO subir). La pública también
+    está en `lib/avisos.js`: si se cambian las claves, hay que cambiarla ahí y cada celular debe reactivar los avisos.
+  - Supabase → Database → Webhooks: `aviso-pedido` (INSERT en `pedidos_turno` → POST
+    https://paupet.vercel.app/api/aviso-pedido con header `x-webhook-secret`).
+  - `vercel.json` excluye `/api/` del rewrite a index.html.
+  - Para diagnosticar: POST a /api/aviso-pedido sin secreto → "Secreto incorrecto" (variables OK) o "Faltan variables…".
+- Pendientes / ideas: recordatorio automático a clientes el día anterior (hoy es manual con "Recordatorios de mañana"),
+  registro de dueños propio en la base (hoy se agrupan por nombre/teléfono), stock mínimo, modo oscuro.
+
 ## Copias de seguridad
 - El plan gratis de Supabase no tiene copias restaurables → botón **Configuración → Copia de seguridad**
   (`lib/respaldo.js`): descarga un JSON con todas las tablas tal cual (clientes, visitas, turnos, notas,
@@ -277,7 +301,10 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   cliente y además de abrir WhatsApp guarda el pedido (`pedir_turno`). En "Hoy" → "Pedidos de turno": Aceptar (abre Nuevo
   turno ya cargado), Proponer otro horario (WhatsApp + queda "esperando respuesta" → "Aceptó · agendar"), Rechazar, y
   "Avisarle que está confirmado". Todo es pedido, nada queda reservado. /turnos sólo ofrece lo cargado en Stories (sin
-  horarios base) y excluye horarios ya pedidos/propuestos. Pendiente: notificación al celular de Pau (web push).
+  horarios base) y excluye horarios ya pedidos/propuestos.
+- 2026-09-26 — **Avisos al celular** (migración 6 + funciones de Vercel + webhook de Supabase). Probado OK en el Android de Pau.
+- 2026-09-26 — Stories: los 4 diseños nuevos reparten el alto como el Clásico, con el día en una franja verde arriba.
+- 2026-09-26 — Dueños con varios perros: elegir un dueño existente al dar turno / cargar cliente / desde la ficha.
 - 2026-09-26 — **Unificación:** `main` = versión nueva + mejoras. Versión anterior respaldada en `backup/version-anterior`.
 - 2026-09-26 — Rama `propuesta/mejoras` (sobre ésta, sin subir): modo demo + 23 mejoras compatibles
   (Horarios↔Agenda, próximo turno al cobrar, resumen del perro al agendar, filtros de clientes, recordatorios en lote,
