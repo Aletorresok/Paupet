@@ -1,4 +1,5 @@
 import Badge from '../../components/ui/Badge';
+import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
 import Icon from '../../components/ui/Icon';
 import EstadoVacio from '../../components/ui/EstadoVacio';
@@ -13,6 +14,7 @@ const ESTADO = {
 
 // Lista de todos los turnos de hoy, en orden de hora.
 export default function AgendaHoyCard({ turnos, clientes, onCompletar, onEditTurno, onVerAgenda }) {
+  const { isMob } = useResp();
   const lista = [...turnos].sort((a, b) => (a.hora || '').localeCompare(b.hora || ''));
   return (
     <section aria-label="Agenda de hoy" style={{...cardStyle,padding:'18px 20px'}}>
@@ -30,10 +32,11 @@ export default function AgendaHoyCard({ turnos, clientes, onCompletar, onEditTur
               <span style={{width:48,fontSize:15,fontWeight:600,flexShrink:0}}>{t.hora || '–'}</span>
               <span style={{width:4,alignSelf:'stretch',borderRadius:4,background:e.barra,flexShrink:0}}/>
               <button type="button" onClick={()=>onEditTurno(t)} style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',background:'none',border:'none',textAlign:'left',fontFamily:'inherit',cursor:'pointer',color:C.tinta,padding:0}}>
-                <span style={{fontSize:15,fontWeight:500}}>{t.dogName || c.dog} <span style={{color:C.tintaSuave,fontWeight:400}}>· {c.owner || ''}</span></span>
-                <span style={{fontSize:13,color:C.tintaSuave}}>{t.servicio} · {fmtPeso(t.precio)}</span>
+                <span style={{fontSize:15,fontWeight:500,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{t.dogName || c.dog} <span style={{color:C.tintaSuave,fontWeight:400}}>· {c.owner || ''}</span></span>
+                <span style={{fontSize:13,color:C.tintaSuave,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{t.servicio} · {fmtPeso(t.precio)}</span>
+                {isMob && <span style={{marginTop:4}}><Badge variant={e.badge}>{e.label}</Badge></span>}
               </button>
-              <Badge variant={e.badge}>{e.label}</Badge>
+              {!isMob && <Badge variant={e.badge}>{e.label}</Badge>}
               {!hecho && <Btn size="xs" variant="ghost" onClick={()=>onCompletar(t.id)} aria-label="Completar y cobrar"><Icon name="check" size={16} strokeWidth={2}/></Btn>}
             </div>
           );
