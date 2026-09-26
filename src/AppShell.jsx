@@ -5,7 +5,7 @@ import Sidebar from './components/layout/Sidebar';
 import MobileNav from './components/layout/MobileNav';
 import { todayStr } from './lib/utils';
 import BetaBanner from './components/layout/BetaBanner';
-import Spinner from './components/ui/Spinner';
+import Esqueleto from './components/ui/Esqueleto';
 import ToastContainer from './components/ui/ToastContainer';
 import { useToasts } from './hooks/useToasts';
 import { useConfirm } from './hooks/useConfirm';
@@ -47,7 +47,7 @@ export default function AppShell({ onLogout }) {
         <div style={{flex:1,display:'flex',flexDirection:'column',minWidth:0,overflow:'hidden'}}>
 
           <main style={{flex:1,overflowY:'auto',padding:isMob?'20px 16px 110px':'28px 36px',minWidth:0}}>
-            {data.loading ? <Spinner /> : (
+            {data.loading ? <Esqueleto /> : (
               <AppPages
                 page={page} setPage={setPage} toast={toast}
                 data={data} modals={modals}
