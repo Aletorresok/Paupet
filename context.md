@@ -277,6 +277,6 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Agenda semanal con duraciones y ficha de cliente nueva. Migración 2 escrita (falta correrla).
 - 2026-09-23 — Finanzas y login nuevo. Con esto están todas las pantallas de la maqueta.
 - 2026-09-23 — Copia de seguridad descargable + recordatorio semanal; lecturas paginadas (sin límite de 1000).
-- 2026-09-26 — Rama local `propuesta/mejoras` (sobre ésta, sin subir): modo demo + 17 mejoras compatibles
+- 2026-09-26 — Rama local `propuesta/mejoras` (sobre ésta, sin subir): modo demo + 23 mejoras compatibles
   (Horarios↔Agenda, próximo turno al cobrar, resumen del perro al agendar, filtros de clientes, recordatorios en lote,
-  proyección y clientela en Finanzas, PWA, etc.) y 17 propuestas más. Detalle y cómo revertir: `PROPUESTA.md`.
+  proyección y clientela en Finanzas, Horarios rediseñado, tests con `npm test`, PWA, etc.) y 13 propuestas más. Detalle y cómo revertir: `PROPUESTA.md`.

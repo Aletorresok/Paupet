@@ -30,7 +30,7 @@ gastos y horarios publicados). Todo se guarda sólo en el navegador y arriba apa
 
 ---
 
-## ✅ Hecho en la rama (18)
+## ✅ Hecho en la rama (24)
 
 ### Servicio y día a día
 
@@ -86,6 +86,22 @@ gastos y horarios publicados). Todo se guarda sólo en el navegador y arriba apa
     datos y reglas (incluye la función de horarios libres de la migración 3). Sirve para probar cambios, mostrar
     la app o hacer capturas sin tocar datos reales. **No entra en el build de Vercel** (verificado). `4e05914`
 
+### Hecho en la segunda parte de la noche
+
+19. **Horarios para Stories con el diseño nuevo** — Era la única pantalla con el estilo viejo. Ahora: tarjetas
+    por día con interruptor Trabajo / No trabajo, horarios libre (menta), tomado (rosa) o con turno en la agenda
+    (ámbar), botones grandes e íconos. Y un aviso **"Hay cambios sin guardar"**: la página /turnos sólo ve lo
+    guardado, y antes no se notaba si faltaba guardar. `3f123b9`
+20. **Precio en el tiempo en la ficha** — Mini gráfico de lo que se le cobró en el servicio que más se hace,
+    variación y "último aumento hace 3 meses" (en ámbar si pasaron más de 5). Sólo informativo. `532a8b3`
+21. **Vista Mes con nombres** — En escritorio cada día muestra "09:00 Coco" (hasta 3 y "+2 más"); en celular
+    o tablet, la cantidad y un punto por estado. Los días son botones (se usan con teclado). `ecb8d50`
+22. **Tests automáticos** — `npm test` (19 pruebas, sin dependencias nuevas): frecuencia, solapes, fecha
+    sugerida, horarios ocupados, finanzas, filtros, precios y el Supabase del modo demo. `38d544e`
+23. **Modales** — Se cierran con **Escape** (primero la confirmación si hay una encima). Los de turno, cliente y
+    nota ya no se reinician con efectos (3 de los 6 avisos de lint del plan resueltos). `07cecd4`
+24. **Sin emojis en botones** — Guardar, confirmación y días de Configuración con los íconos de línea. `e4d0866`
+
 ---
 
 ## 💡 Propuestas para charlar (no implementadas)
@@ -94,50 +110,41 @@ Ordenadas por lo que creo que más aporta. Las marcadas 🗄️ necesitan un cam
 las migraciones 2 y 3) o esperar a que la versión nueva reemplace a la anterior.
 
 ### Servicio
-19. **Confirmación del turno por el cliente** — El recordatorio de WhatsApp lleva un link
+25. **Confirmación del turno por el cliente** — El recordatorio de WhatsApp lleva un link
     `/turnos/confirmar?…` con "Confirmo" / "No puedo ir". El turno pasa a Confirmado solo, o avisa que se
     liberó el horario. Debería bajar las faltas. 🗄️ (una función segura como `horarios_libres`)
-20. **Lista de espera** — Cuando alguien pide un día lleno, queda anotado; si se cancela un turno, la app
+26. **Lista de espera** — Cuando alguien pide un día lleno, queda anotado; si se cancela un turno, la app
     sugiere a quién avisarle. 🗄️ (tabla nueva)
-21. **"No vino" como estado** en vez de borrar el turno — Queda la fecha de cada falta y se ve el historial.
+27. **"No vino" como estado** en vez de borrar el turno — Queda la fecha de cada falta y se ve el historial.
     Ya estaba postergado en el plan por compatibilidad. 🗄️
-22. **Seña para quien faltó 2+ veces** — Sólo como aviso al agendar ("pedir seña por transferencia").
+28. **Seña para quien faltó 2+ veces** — Sólo como aviso al agendar ("pedir seña por transferencia").
     Lo decide Pau.
-23. **Plantillas de WhatsApp editables** — Que Pau pueda cambiar el texto del recordatorio, "está listo" y
+29. **Plantillas de WhatsApp editables** — Que Pau pueda cambiar el texto del recordatorio, "está listo" y
     "te toca volver" desde Configuración. 🗄️ (columna nueva en `config`, la versión anterior la ignora)
-24. **Cumpleaños / edad del perro** — Campo opcional y saludo por WhatsApp el día del cumpleaños (fideliza
+30. **Cumpleaños / edad del perro** — Campo opcional y saludo por WhatsApp el día del cumpleaños (fideliza
     mucho). 🗄️ (columna nueva)
-25. **Mover turnos arrastrando** en la vista Semana, y nombres en lugar de puntitos en la vista Mes.
+31. **Mover turnos arrastrando** en la vista Semana (la vista Mes ya muestra nombres).
 
 ### Información
-26. **Historial de precios en la ficha** — Mini gráfico de cuánto se le cobró a cada perro en el tiempo, y
-    aviso suave "hace 6 meses que no se le actualiza el precio". Sólo informativo: el precio sigue a mano.
-27. **Stock con cantidad mínima** (ya en la Fase 4) — "Shampoo: quedan 2, avisar con menos de 3".
-28. **Resumen semanal automático** — Cada lunes, en el panel: turnos de la semana, a quién le toca volver y
+32. **Stock con cantidad mínima** (ya en la Fase 4) — "Shampoo: quedan 2, avisar con menos de 3".
+33. **Resumen semanal automático** — Cada lunes, en el panel: turnos de la semana, a quién le toca volver y
     cómo cerró la semana anterior.
 
 ### Técnico
-29. **Tests automáticos** de frecuencia, finanzas y horarios libres, antes de pasar la versión nueva a
-    producción (el modo demo ya da los datos de prueba).
-30. **Actualizar sin recargar todo** — Hoy cada acción vuelve a bajar todos los clientes, visitas y turnos.
+34. **Actualizar sin recargar todo** — Hoy cada acción vuelve a bajar todos los clientes, visitas y turnos.
     Con los años se va a notar: conviene actualizar sólo lo que cambió.
-31. **Restaurar la copia de seguridad desde la app** (hoy es manual) y copia automática semanal.
-32. **Deuda técnica:** los 6 avisos de lint `set-state-in-effect` (ya anotados en el plan) → abrir los modales
-    con `key`.
+35. **Restaurar la copia de seguridad desde la app** (hoy es manual) y copia automática semanal.
+36. **Deuda técnica:** quedan 3 avisos de lint (carga de datos, Configuración y Horarios sincronizan estado
+    con lo guardado); se resuelven junto con "actualizar sin recargar todo".
 
 ### Diseño
-33. **Modo oscuro** para usar de noche o con poca luz.
-34. **Terminar de reemplazar los emojis** que quedan en botones (Horarios: 🗑 💾 📥, Configuración) por los
-    íconos de línea del resto de la app.
-35. **Horarios para Stories con el diseño nuevo en todo** — La página de edición de horarios todavía usa el
-    estilo viejo (tarjetas chicas, degradados). Es la única pantalla que no se pasó a la maqueta.
-
+37. **Modo oscuro** para usar de noche o con poca luz.
 ---
 
 ## Cosas que encontré y conviene saber
 
 - **Tu copia local de `main` estaba 4 commits atrás de GitHub** (faltaba el login seguro y la paginación). No
   la actualicé. Para ponerla al día: `git checkout main` y después `git pull`.
-- En la rama nueva, `npm run lint` da **0 errores y 6 avisos** (los mismos de antes). El build anda bien.
+- En esta rama: `npm run lint` da **0 errores y 3 avisos** (antes 6), `npm test` pasa las 19 pruebas y el build anda bien.
 - Para probar con los datos reales en la versión nueva hay que hacer `npm run dev` e iniciar sesión.
   **Eso escribe en la base de producción**, por eso probé todo en modo demo.
