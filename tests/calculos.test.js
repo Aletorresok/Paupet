@@ -129,3 +129,18 @@ test('precios en la ficha: servicio más frecuente y último aumento', async () 
   assert.equal(r.ultimoAumento.fecha, '2026-03-10');
   assert.equal(resumenPrecios([{ fecha: '2026-01-01', servicio: 'Baño', precio: 5 }]), null);
 });
+
+test('stories: los recuadros crecen con menos días y la letra entra en su lugar', async () => {
+  const { altoPorDia, columnasHoras, letraHoras } = await import('../src/pages/horarios/storyLayout.js');
+  const seis = altoPorDia(600, 6, 10), dos = altoPorDia(600, 2, 10);
+  assert.ok(dos > seis, 'con 2 días cada uno es más alto que con 6');
+  assert.ok(6 * seis + 5 * 10 <= 600, 'los 6 entran en el alto disponible');
+  assert.equal(altoPorDia(600, 1, 10), 260, 'con un solo día hay tope');
+  assert.equal(altoPorDia(600, 0, 10), 0);
+  assert.equal(columnasHoras(2, 400), 2);
+  assert.equal(columnasHoras(9, 400), 4);
+  assert.equal(columnasHoras(9, 150), 2, 'si es angosto usa menos columnas');
+  const chica = letraHoras(9, 300, 60), grande = letraHoras(2, 450, 200);
+  assert.ok(grande > chica);
+  assert.ok(grande <= 46 && chica >= 13);
+});
