@@ -21,8 +21,16 @@ export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient
   const { isMob, isTab } = useResp();
   const hoy = new Date();
   const hoyISO = todayStr();
-  const manana = new Date(hoy); manana.setDate(manana.getDate() + 1);
-  const mananaISO = toISODate(manana);
+  // Próximo día con turnos (mañana, o hasta 3 días después: p. ej. el lunes si hoy es sábado).
+  let manana = new Date(hoy), mananaISO = '';
+  for (let i = 1; i <= 3; i++) {
+    manana = new Date(hoy); manana.setDate(manana.getDate() + i);
+    mananaISO = toISODate(manana);
+    if (i === 1 && manana.getDay() !== 0 && turnos.some(t => t.fecha === mananaISO)) break;
+    if (turnos.some(t => t.fecha === mananaISO && t.estado !== 'completed')) break;
+  }
+  const diasHasta = Math.round((manana - new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())) / 86400000);
+  const tituloManana = diasHasta === 1 ? 'mañana' : DIAS_ES[manana.getDay()].toLowerCase();
 
   const turnosHoy = turnos.filter(t => t.fecha === hoyISO);
   const quedan = turnosHoy.filter(t => t.estado !== 'completed').length;
@@ -62,7 +70,7 @@ export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient
         </div>
         <div style={{display:'flex',flexDirection:'column',gap:20,minWidth:0}}>
           <VuelvenCard items={vuelven} onOpenClient={onOpenClient} />
-          <ManianaCard turnos={turnosManana} clientes={clientes} />
+          <ManianaCard turnos={turnosManana} clientes={clientes} titulo={tituloManana} />
           <InasistenciasCard clientes={conInasistencias} />
         </div>
       </div>

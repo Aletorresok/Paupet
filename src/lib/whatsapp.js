@@ -19,7 +19,7 @@ export const abrirWhatsApp = (tel, dogName, ownerName, turno = null) => {
   if (!tel) return;
   let msg;
   if (turno) {
-    msg = `¡Hola ${ownerName}! 🐾 Te recordamos el turno de *${dogName}* para el *${fmtFecha(turno.fecha)}* a las *${turno.hora}hs*. ¡Te esperamos! ✂️`;
+    msg = `¡Hola ${ownerName}! 🐾 Te recordamos el turno de *${dogName}* para el *${fmtFecha(turno.fecha)}*${turno.hora ? ` a las *${turno.hora}hs*` : ''}. ¡Te esperamos! ✂️`;
   } else {
     msg = `¡Hola ${ownerName}! Te contactamos desde Paupet Peluquería Canina 🐾`;
   }
