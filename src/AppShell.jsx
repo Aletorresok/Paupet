@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useResp } from './context/resp';
 import GlobalStyles from './components/layout/GlobalStyles';
 import Sidebar from './components/layout/Sidebar';
@@ -27,6 +27,18 @@ export default function AppShell({ onLogout }) {
   const { toasts, toast } = useToasts();
   const { confirm, askConfirm, closeConfirm } = useConfirm();
   const data = usePaupetData(toast);
+  const { loadAll } = data;
+
+  // Cuando llega un aviso (pedido nuevo) con la app abierta, se recargan los datos; al tocarlo, se va a "Hoy".
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return;
+    const onMsg = e => {
+      if (e.data?.tipo === 'aviso') loadAll();
+      if (e.data?.tipo === 'abrir') { setPage('dashboard'); loadAll(); }
+    };
+    navigator.serviceWorker.addEventListener('message', onMsg);
+    return () => navigator.serviceWorker.removeEventListener('message', onMsg);
+  }, [loadAll]);
   const modals = useModals();
 
   const ctx = { ...data, toast, askConfirm, modals };

@@ -28,4 +28,14 @@ export default defineConfig([
       'react-hooks/set-state-in-effect': 'warn',
     },
   },
+  // Funciones de Vercel (api/) y tests: corren en Node.
+  {
+    files: ['api/**/*.js', 'tests/**/*.{js,mjs}'],
+    languageOptions: { globals: globals.node },
+  },
+  // Service worker.
+  {
+    files: ['public/sw.js'],
+    languageOptions: { globals: globals.serviceworker },
+  },
 ])

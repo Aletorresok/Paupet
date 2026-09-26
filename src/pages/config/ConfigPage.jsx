@@ -6,9 +6,10 @@ import PageHeader from '../../components/ui/PageHeader';
 import { DIAS_CONFIG } from '../../lib/constants';
 import ConfigGeneral from './ConfigGeneral';
 import RespaldoCard from './RespaldoCard';
+import AvisosCard from '../../components/ui/AvisosCard';
 import DiaConfigCard from './DiaConfigCard';
 
-export default function ConfigPage({ config, onSave, toast }) {
+export default function ConfigPage({ config, onSave, toast, caps }) {
   const { isMob } = useResp();
   const [nombre, setNombre] = useState(config.nombre);
   const [msg, setMsg] = useState(config.msg||'');
@@ -34,9 +35,10 @@ export default function ConfigPage({ config, onSave, toast }) {
 
   return (
     <section>
-      <PageHeader title="Configuración" subtitle="Horarios base de cada día: la página Pedí tu turno los ofrece cuando un día no está cargado en Horarios para Stories">
+      <PageHeader title="Configuración" subtitle="Datos de la peluquería, avisos, copia de seguridad y horarios base de cada día">
         <Btn onClick={()=>onSave({nombre,msg,anticip:parseInt(anticip),slots,horarios})} size={isMob?'sm':''}><Icon name="check" strokeWidth={2}/>Guardar todo</Btn>
       </PageHeader>
+      <AvisosCard habilitado={caps?.push} toast={toast} />
       <RespaldoCard toast={toast} />
       <ConfigGeneral nombre={nombre} anticip={anticip} msg={msg} onNombre={setNombre} onAnticip={setAnticip} onMsg={setMsg} />
       {DIAS_CONFIG.map(d=>{

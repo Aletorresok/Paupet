@@ -9,7 +9,7 @@ export function usePaupetData(toast) {
   const [turnos, setTurnos]   = useState([]);
   const [notas, setNotas]     = useState([]);
   const [config, setConfig]   = useState(DEFAULT_CONFIG);
-  const [caps, setCaps]       = useState({ duracion: false, etiquetas: false, fotos: false, pedidos: false });
+  const [caps, setCaps]       = useState({ duracion: false, etiquetas: false, fotos: false, pedidos: false, push: false });
   const [pedidos, setPedidos] = useState([]);
 
   const loadAll = useCallback(async () => {

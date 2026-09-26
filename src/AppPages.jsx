@@ -15,7 +15,7 @@ export default function AppPages({ page, setPage, data, modals, toast, turnoActi
 
   switch (page) {
     case 'dashboard':
-      return <Dashboard clientes={clientes} turnos={turnos} notas={notas} onNav={setPage} onOpenClient={id=>setModalCliente({open:true,id})} onNuevoTurno={()=>setModalTurno({open:true,fecha:todayStr(),turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno} pedidos={pedidos} pedidoActions={pedidoActions}/>;
+      return <Dashboard clientes={clientes} turnos={turnos} notas={notas} onNav={setPage} onOpenClient={id=>setModalCliente({open:true,id})} onNuevoTurno={()=>setModalTurno({open:true,fecha:todayStr(),turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno} pedidos={pedidos} pedidoActions={pedidoActions} caps={data.caps} toast={toast}/>;
     case 'clientes':
       return <ClientesPage clientes={clientes} turnos={turnos} onOpenClient={id=>setModalCliente({open:true,id})} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>;
     case 'calendario':
@@ -29,7 +29,7 @@ export default function AppPages({ page, setPage, data, modals, toast, turnoActi
     case 'horarios':
       return <HorariosPage horariosData={config.horariosSemanales} turnos={turnos} onSaveHorarios={configActions.handleSaveHorarios}/>;
     case 'config':
-      return <ConfigPage config={config} onSave={configActions.handleSaveConfig} toast={toast}/>;
+      return <ConfigPage config={config} onSave={configActions.handleSaveConfig} toast={toast} caps={data.caps}/>;
     default:
       return null;
   }

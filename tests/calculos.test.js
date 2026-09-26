@@ -207,3 +207,23 @@ test('pedidos: reconoce al cliente y arma el turno', async () => {
   assert.match(mensajeConfirmado(base, '2026-09-28', '16:00'), /lunes 28\/9 a las 16:00hs/);
   assert.doesNotMatch(mensajeConfirmado(base, '2026-09-28', ''), /hs/);
 });
+
+test('aviso de pedido: título y texto', async () => {
+  const { textoAvisoPedido } = await import('../src/lib/avisoPedido.js');
+  const a = textoAvisoPedido({ perro: 'Firulais', duenio: 'Ramón', servicios: 'Baño', fecha: '2026-09-28', hora: '17:30' });
+  assert.equal(a.title, 'Nuevo pedido de turno · Firulais');
+  assert.equal(a.body, 'Ramón · Baño\nlunes 28/9 17:30');
+  assert.match(textoAvisoPedido({ perro: 'X', duenio: 'Y', servicios: '', fecha: null, preferencia: 'martes' }).body, /sin horario: "martes"/);
+});
+
+test('función de Vercel aviso-pedido: pide secreto y variables', async () => {
+  const { default: handler } = await import('../api/aviso-pedido.js');
+  const res = () => { const r = { code: 0, body: null }; r.status = c => { r.code = c; return r; }; r.json = b => { r.body = b; return r; }; return r; };
+  const r1 = res(); await handler({ method: 'GET', headers: {} }, r1); assert.equal(r1.code, 405);
+  const r2 = res(); await handler({ method: 'POST', headers: {}, body: {} }, r2);
+  assert.equal(r2.code, 500); assert.match(r2.body.error, /VAPID_PUBLIC_KEY/);
+  Object.assign(process.env, { VAPID_PUBLIC_KEY: 'x', VAPID_PRIVATE_KEY: 'y', SUPABASE_SERVICE_ROLE_KEY: 'z', WEBHOOK_SECRET: 's' });
+  const r3 = res(); await handler({ method: 'POST', headers: { 'x-webhook-secret': 'mal' }, body: {} }, r3); assert.equal(r3.code, 401);
+  const r4 = res(); await handler({ method: 'POST', headers: { 'x-webhook-secret': 's' }, body: { type: 'UPDATE', table: 'pedidos_turno', record: {} } }, r4);
+  assert.deepEqual(r4.body, { ignorado: true });
+});

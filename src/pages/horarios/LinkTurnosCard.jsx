@@ -24,7 +24,7 @@ export default function LinkTurnosCard() {
       <div style={{flex:'1 1 260px',minWidth:0}}>
         <div style={{fontWeight:600,fontSize:15,color:C.verde}}>Link para pedir turno</div>
         <div style={{fontSize:13,color:C.tinta,marginTop:2,lineHeight:1.45}}>
-          Los horarios que <b>guardes</b> acá aparecen como libres, menos los tomados y los que ya tienen turno en la agenda. Los días que no cargues acá usan los horarios base de Configuración.
+          Los horarios que <b>guardes</b> acá aparecen como libres, menos los tomados y los que ya tienen turno en la agenda.
         </div>
         <div style={{fontSize:14,marginTop:6,fontWeight:500,overflowWrap:'anywhere',userSelect:'all'}}>{link}</div>
       </div>

@@ -27,7 +27,7 @@ function mergeDuplicados(clientes) {
 
 // Qué columnas/tablas nuevas existen en la base (ver supabase/migracion_02_agenda_ficha.sql).
 // Mientras no se corra la migración, la app funciona igual pero sin guardar esos datos.
-export const capacidades = { duracion: false, etiquetas: false, fotos: false, pedidos: false };
+export const capacidades = { duracion: false, etiquetas: false, fotos: false, pedidos: false, push: false };
 
 // Supabase devuelve como máximo 1000 filas por consulta: se piden por tandas hasta traer todo.
 // `consulta` es una función que arma la query (sin .range) para poder repetirla.
@@ -49,10 +49,10 @@ const existe = async (tabla, columna = 'id') => {
 // Capa de datos: todas las queries a Supabase.
 export const db = {
   async detectarCapacidades() {
-    const [duracion, etiquetas, fotos, pedidos] = await Promise.all([
-      existe('turnos', 'duracion'), existe('clientes', 'etiquetas'), existe('fotos_cliente'), existe('pedidos_turno'),
+    const [duracion, etiquetas, fotos, pedidos, push] = await Promise.all([
+      existe('turnos', 'duracion'), existe('clientes', 'etiquetas'), existe('fotos_cliente'), existe('pedidos_turno'), existe('push_suscripciones'),
     ]);
-    Object.assign(capacidades, { duracion, etiquetas, fotos, pedidos });
+    Object.assign(capacidades, { duracion, etiquetas, fotos, pedidos, push });
     return { ...capacidades };
   },
 
