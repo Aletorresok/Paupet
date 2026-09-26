@@ -1,4 +1,5 @@
 import { crearDatosDemo } from './seed';
+import { calcularHorariosLibres } from '../horariosLibres';
 
 // Imitación en memoria del cliente de Supabase, SÓLO para el modo demo (`npm run demo`).
 // Implementa lo que usa la app: from().select/insert/update/upsert/delete con eq/neq/order/
@@ -105,32 +106,8 @@ class Consulta {
   }
 }
 
-// Misma lógica que la función SQL de la migración 3.
-function horariosLibres() {
-  const h = db.tablas.config.find(c => c.id === 1)?.horarios_semanales || {};
-  const ahora = new Date();
-  const pad = n => String(n).padStart(2, '0');
-  const hoyKey = `${ahora.getFullYear()}-${pad(ahora.getMonth() + 1)}-${pad(ahora.getDate())}`;
-  const limite = new Date(ahora); limite.setDate(limite.getDate() + 21);
-  const min = s => { const [a, b] = s.split(':').map(Number); return a * 60 + b; };
-  const filas = [];
-  for (const [fecha, horas] of Object.entries(h.slots || {})) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha) || !Array.isArray(horas)) continue;
-    const [y, m, d] = fecha.split('-').map(Number);
-    if (fecha < hoyKey || new Date(y, m - 1, d) > limite) continue;
-    if ((h.diasActivos || []).includes('NO:' + fecha)) continue;
-    for (const hora of horas) {
-      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) continue;
-      const cuando = new Date(y, m - 1, d, ...hora.split(':').map(Number));
-      if (cuando - ahora < 3600000) continue;
-      if ((h.tomados?.[fecha] || []).includes(hora)) continue;
-      const pisa = db.tablas.turnos.some(t => t.fecha === fecha && /^\d{1,2}:\d{2}/.test(t.hora || '') &&
-        min(hora) >= min(t.hora) && min(hora) < min(t.hora) + (t.duracion || 60));
-      if (!pisa) filas.push({ fecha, hora });
-    }
-  }
-  return filas.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
-}
+// Misma regla que la función SQL (ver lib/horariosLibres.js).
+const horariosLibres = () => calcularHorariosLibres(db.tablas.config.find(c => c.id === 1), db.tablas.turnos);
 
 const SESION = { user: { id: 'demo', email: 'demo@paupet.local' }, access_token: 'demo' };
 

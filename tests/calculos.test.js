@@ -161,3 +161,25 @@ test('dueños: agrupa por nombre o teléfono y busca por dueño, perro o teléfo
   assert.equal(buscarDuenos(d, 'sofia').length, 1);
   assert.deepEqual(buscarDuenos(d, ''), []);
 });
+
+test('horarios libres: Stories primero, si no los horarios base de Configuración', async () => {
+  const { calcularHorariosLibres } = await import('../src/lib/horariosLibres.js');
+  const ahora = new Date(2026, 8, 26, 9, 0);             // sábado 26/9, 9:00
+  const config = {
+    anticip: 7,
+    horarios: { domingo: { open: false }, martes: { open: false } },
+    slots: { lunes: [{ hora: '09:00', duracion: 90 }, { hora: '11:00', duracion: 60 }], martes: [{ hora: '09:00' }], domingo: [{ hora: '10:00' }], sabado: ['09:30', '12:00'] },
+    horarios_semanales: { slots: { '2026-09-30': ['15:00', '16:00'] }, tomados: { '2026-09-30': ['16:00'] }, diasActivos: ['NO:2026-10-03'] },
+  };
+  const turnos = [{ fecha: '2026-09-28', hora: '10:00', duracion: 60 }];
+  const libres = calcularHorariosLibres(config, turnos, ahora).map(x => `${x.fecha} ${x.hora}`);
+  assert.ok(libres.includes('2026-09-26 12:00'), 'hoy, a más de una hora');
+  assert.ok(!libres.includes('2026-09-26 09:30'), 'hoy, a menos de una hora');
+  assert.ok(!libres.some(x => x.startsWith('2026-09-27')), 'domingo cerrado');
+  assert.ok(!libres.includes('2026-09-28 09:00'), 'el de 9:00 dura 90 min y se pisa con el turno de las 10');
+  assert.ok(libres.includes('2026-09-28 11:00'));
+  assert.ok(!libres.some(x => x.startsWith('2026-09-29')), 'martes cerrado');
+  assert.ok(libres.includes('2026-09-30 15:00') && !libres.includes('2026-09-30 16:00'), 'Stories manda y respeta tomados');
+  assert.ok(!libres.some(x => x.startsWith('2026-10-03')), 'día apagado en Stories');
+  assert.ok(!libres.some(x => x > '2026-10-03 99'), 'no pasa de los días de anticipación');
+});

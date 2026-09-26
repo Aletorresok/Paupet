@@ -48,6 +48,11 @@ textarea.pt-input{height:auto;min-height:76px;padding:12px 14px;resize:vertical}
   .pt-barra{display:flex;flex-direction:column;gap:6px;position:fixed;left:0;right:0;bottom:0;z-index:30;background:${C.fondo};border-top:1px solid ${C.linea};padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 20px rgba(31,42,38,.08)}
   .pt-barra .pt-falta{font-size:13px;margin:0;line-height:1.35}
 }
+.pt-sugerido{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:${C.mentaSuave};border:1.5px solid ${C.mentaBorde};border-radius:14px;padding:12px 14px}
+.pt-sugerido-txt{flex:1;min-width:180px;font-size:15px;line-height:1.4;color:#173F31}
+.pt-sugerido-btn{font:inherit;font-size:15px;font-weight:600;height:44px;padding:0 18px;border-radius:12px;border:none;background:${C.menta};color:${C.sobreMenta};cursor:pointer}
+.pt-chip-sug{position:relative}
+.pt-chip-sug::after{content:'sugerido';position:absolute;top:-9px;right:-4px;font-size:10px;font-weight:600;background:${C.verde};color:white;border-radius:999px;padding:1px 6px}
 .pt-pie{font-size:13px;color:${C.tintaSuave};line-height:1.45}
 .pt-num{color:${C.tinta};user-select:all;white-space:nowrap}
 `;

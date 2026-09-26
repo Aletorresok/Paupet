@@ -64,7 +64,9 @@ test('horarios_libres no ofrece tomados ni pisados por un turno', async () => {
   assert.ok(libres.length > 0);
   const { data: turnos } = await sb.from('turnos').select('*');
   for (const { fecha, hora } of libres) {
-    assert.ok(slots[fecha].includes(hora));
+    // Días cargados en Stories: sólo esos horarios; el resto sale de los horarios base de Configuración.
+    if (slots[fecha]) assert.ok(slots[fecha].includes(hora));
+    else assert.ok(cfg.slots[['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date(fecha + 'T12:00').getDay()]].some(s => s.hora === hora));
     assert.ok(!(tomados[fecha] || []).includes(hora), `${fecha} ${hora} está tomado`);
     assert.ok(!turnos.some(t => t.fecha === fecha && t.hora === hora), `${fecha} ${hora} tiene turno`);
   }

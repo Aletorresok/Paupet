@@ -34,7 +34,7 @@ export default function ConfigPage({ config, onSave, toast }) {
 
   return (
     <section>
-      <PageHeader title="Configuración" subtitle="Horarios por día (para el portal de reservas)">
+      <PageHeader title="Configuración" subtitle="Horarios base de cada día: la página Pedí tu turno los ofrece cuando un día no está cargado en Horarios para Stories">
         <Btn onClick={()=>onSave({nombre,msg,anticip:parseInt(anticip),slots,horarios})} size={isMob?'sm':''}><Icon name="check" strokeWidth={2}/>Guardar todo</Btn>
       </PageHeader>
       <RespaldoCard toast={toast} />

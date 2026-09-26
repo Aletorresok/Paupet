@@ -188,7 +188,11 @@ export function crearDatosDemo() {
   }
   const config = [{
     id: 1, nombre: 'Paupet Peluquería', msg: '¡Hola! Reservá el turno de tu peludo. 🐾', anticip: 30,
-    horarios: null, slots: {}, horarios_semanales: { semanaInicio: lunes.toISOString(), slots, diasActivos: [], tomados },
+    horarios: { domingo: { open: false, desde: '09:00', hasta: '13:00' } },
+    // Horarios base de Configuración (para los días que no están en "Horarios para Stories").
+    slots: Object.fromEntries(['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'].map(d => [d,
+      (d === 'sabado' ? ['09:00', '10:30', '12:00'] : ['09:00', '10:30', '12:00', '14:30', '16:00', '17:30']).map(hora => ({ hora, duracion: 90 }))])),
+    horarios_semanales: { semanaInicio: lunes.toISOString(), slots, diasActivos: [], tomados },
   }];
 
   return { creado: hoyISO, ultimoId: id, tablas: { clientes, visitas, turnos, notas, config, fotos_cliente: [] } };
