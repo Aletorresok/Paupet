@@ -8,7 +8,7 @@ export default function DiaConfigCard({ dia, slots, isOpen, onToggleOpen, isExp,
       <div onClick={onToggleExp} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'13px 18px',cursor:'pointer',borderBottom:isExp?'1.5px solid #E6E0D8':'1.5px solid transparent'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <Toggle on={isOpen} onChange={onToggleOpen} label={`${dia.label} abierto`} />
-          <span style={{fontSize:14,fontWeight:600}}>{dia.emoji} {dia.label}</span>
+          <span style={{fontSize:14,fontWeight:600}}>{dia.label}</span>
           <span style={{fontSize:11,color:'#5B6661'}}>{slots.length} turno{slots.length!==1?'s':''}</span>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:8}}>

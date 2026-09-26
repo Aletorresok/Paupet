@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
+import Icon from '../../components/ui/Icon';
 import FormGroup from '../../components/ui/FormGroup';
 import Modal from '../../components/ui/Modal';
 import ModalHead from '../../components/ui/ModalHead';
@@ -57,7 +58,7 @@ export default function ModalNota({ open, onClose, onSave, defaultTipo='compra',
           </>
         )}
         <Btn onClick={()=>onSave(tipo,form,isEdit?initial.id:null)} style={{width:'100%',justifyContent:'center'}}>
-          💾 {isEdit ? 'Guardar cambios' : 'Guardar'}
+          <Icon name="check" strokeWidth={2}/>{isEdit ? 'Guardar cambios' : 'Guardar'}
         </Btn>
       </div>
     </Modal>

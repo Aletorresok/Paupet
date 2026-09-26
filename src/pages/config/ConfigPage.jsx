@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
+import Icon from '../../components/ui/Icon';
 import PageHeader from '../../components/ui/PageHeader';
 import { DIAS_CONFIG } from '../../lib/constants';
 import ConfigGeneral from './ConfigGeneral';
@@ -34,7 +35,7 @@ export default function ConfigPage({ config, onSave, toast }) {
   return (
     <section>
       <PageHeader title="Configuración" subtitle="Horarios por día (para el portal de reservas)">
-        <Btn onClick={()=>onSave({nombre,msg,anticip:parseInt(anticip),slots,horarios})} size={isMob?'sm':''}>💾 Guardar todo</Btn>
+        <Btn onClick={()=>onSave({nombre,msg,anticip:parseInt(anticip),slots,horarios})} size={isMob?'sm':''}><Icon name="check" strokeWidth={2}/>Guardar todo</Btn>
       </PageHeader>
       <RespaldoCard toast={toast} />
       <ConfigGeneral nombre={nombre} anticip={anticip} msg={msg} onNombre={setNombre} onAnticip={setAnticip} onMsg={setMsg} />

@@ -1,5 +1,6 @@
 import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
+import Icon from '../../components/ui/Icon';
 import FormGroup from '../../components/ui/FormGroup';
 import { inputStyle } from '../../lib/styles';
 import PagoSelect from '../../components/ui/PagoSelect';
@@ -23,7 +24,7 @@ export default function VisitaForm({ values, onChange, isEdit, onSave, onCancel 
         <FormGroup label="Forma de pago"><PagoSelect value={values.formaPago} onChange={v=>set('formaPago',v)} /></FormGroup>
       </div>
       <div style={{display:'flex',gap:8}}>
-        <Btn size="sm" onClick={onSave}>💾 Guardar</Btn>
+        <Btn size="sm" onClick={onSave}><Icon name="check" size={16} strokeWidth={2}/>Guardar</Btn>
         <Btn size="sm" variant="ghost" onClick={onCancel}>Cancelar</Btn>
       </div>
     </div>
