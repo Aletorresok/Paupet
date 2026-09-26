@@ -261,6 +261,8 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 
 ## Cómo validar
 - `npm ci && npm run build && npm run lint`
+- **Modo demo:** `npm run demo` → datos ficticios en el navegador (`src/lib/demo/`), sin tocar Supabase.
+  Se activa con `VITE_DEMO=1` (`.env.demo`) al compilar: el build de Vercel no lo incluye. Botón "Reiniciar datos" arriba.
 - Smoke test: `npx vite preview` + Playwright, recorriendo las 7 páginas en 1280px y 390px.
 
 ## Registro de cambios
@@ -275,3 +277,6 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-23 — Agenda semanal con duraciones y ficha de cliente nueva. Migración 2 escrita (falta correrla).
 - 2026-09-23 — Finanzas y login nuevo. Con esto están todas las pantallas de la maqueta.
 - 2026-09-23 — Copia de seguridad descargable + recordatorio semanal; lecturas paginadas (sin límite de 1000).
+- 2026-09-26 — Rama local `propuesta/mejoras` (sobre ésta, sin subir): modo demo + 17 mejoras compatibles
+  (Horarios↔Agenda, próximo turno al cobrar, resumen del perro al agendar, filtros de clientes, recordatorios en lote,
+  proyección y clientela en Finanzas, PWA, etc.) y 17 propuestas más. Detalle y cómo revertir: `PROPUESTA.md`.
