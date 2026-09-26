@@ -5,7 +5,7 @@ import SlotRow from './SlotRow';
 const smallBtn = {border:'none',borderRadius:6,width:26,cursor:'pointer',fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'};
 
 // Tarjeta de edición de horarios de un día de la semana.
-export default function DiaSlotsCard({ dia, date, horas, tomados, activo, nuevoSlot, onNuevoSlot, onToggleDia, onAgregar, onQuitar, onToggleTomado, onAutoGen }) {
+export default function DiaSlotsCard({ dia, date, horas, tomados, agenda = {}, activo, nuevoSlot, onNuevoSlot, onToggleDia, onAgregar, onQuitar, onToggleTomado, onAutoGen }) {
   return (
     <div style={{background:'white',borderRadius:12,padding:'12px',boxShadow:'0 2px 8px rgba(0,0,0,.06)',opacity:activo?1:0.45,transition:'opacity .2s'}}>
       <div style={{background:activo?'linear-gradient(135deg,#dff5ec,#c8eed9)':'#f0f0f0',borderRadius:8,padding:'6px 10px',marginBottom:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
@@ -20,7 +20,7 @@ export default function DiaSlotsCard({ dia, date, horas, tomados, activo, nuevoS
             {horas.length === 0
               ? <p style={{fontSize:11,color:'#8A948F',textAlign:'center',padding:'4px 0'}}>Sin horarios</p>
               : horas.map(h => (
-                <SlotRow key={h} hora={h} tomado={tomados.includes(h)} onToggle={()=>onToggleTomado(h)} onRemove={()=>onQuitar(h)} />
+                <SlotRow key={h} hora={h} tomado={tomados.includes(h)} turnoDe={agenda[h]} onToggle={()=>onToggleTomado(h)} onRemove={()=>onQuitar(h)} />
               ))
             }
           </div>

@@ -27,7 +27,7 @@ export default function AppPages({ page, setPage, data, modals, toast, turnoActi
     case 'notas':
       return <NotasPage notas={notas} onToggleCompra={na.handleToggleCompra} onDeleteNota={na.handleDeleteNota} onEditNota={n=>setModalNota({open:true,tipo:n.tipo,initial:n})} onAgregar={tipo=>setModalNota({open:true,tipo,initial:null})}/>;
     case 'horarios':
-      return <HorariosPage horariosData={config.horariosSemanales} onSaveHorarios={configActions.handleSaveHorarios}/>;
+      return <HorariosPage horariosData={config.horariosSemanales} turnos={turnos} onSaveHorarios={configActions.handleSaveHorarios}/>;
     case 'config':
       return <ConfigPage config={config} onSave={configActions.handleSaveConfig} toast={toast}/>;
     default:

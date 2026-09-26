@@ -4,7 +4,7 @@ import Btn from '../../components/ui/Btn';
 import PageHeader from '../../components/ui/PageHeader';
 import { MESES } from '../../lib/constants';
 import { sans, serif } from '../../lib/styles';
-import { generarSlots, descargarNodoComoPng, rangoSemana } from './horariosUtils';
+import { toKey, generarSlots, descargarNodoComoPng, rangoSemana, ocupadosPorAgenda } from './horariosUtils';
 import { useHorariosSemana } from './useHorariosSemana';
 import SemanaNav from './SemanaNav';
 import DiaSlotsCard from './DiaSlotsCard';
@@ -17,10 +17,16 @@ import { FONDOS } from './fondosStory';
 import AutoGenModal from './AutoGenModal';
 import LinkTurnosCard from './LinkTurnosCard';
 
-export default function HorariosPage({ horariosData, onSaveHorarios }) {
+export default function HorariosPage({ horariosData, turnos = [], onSaveHorarios }) {
   const { isMob } = useResp();
   const semana = useHorariosSemana(horariosData);
-  const { semanaInicio, dias } = semana;
+  const { semanaInicio } = semana;
+  // Los horarios que ya tienen turno en la agenda cuentan como tomados. No se guardan:
+  // si el turno se borra o se mueve, el horario vuelve a quedar libre solo.
+  const dias = semana.dias.map(d => {
+    const agenda = ocupadosPorAgenda(turnos, toKey(d.date), d.horas);
+    return { ...d, agenda, tomados: [...new Set([...d.tomados, ...Object.keys(agenda)])] };
+  });
 
   const [nuevoSlot, setNuevoSlot] = useState({});
   const [generando, setGenerando] = useState(false);
@@ -83,6 +89,11 @@ export default function HorariosPage({ horariosData, onSaveHorarios }) {
       <LinkTurnosCard />
 
       <SemanaNav semanaInicio={semanaInicio} onChange={semana.cambiarSemana} />
+      {dias.some(d => Object.keys(d.agenda).length) && (
+        <p style={{fontSize:13,color:'#5B6661',margin:'-6px 0 12px'}}>
+          📅 Los horarios con turno en la Agenda se marcan solos como tomados (también en la imagen).
+        </p>
+      )}
 
       <div style={{display:'grid',gridTemplateColumns:`repeat(auto-fill,minmax(${isMob?'160px':'190px'},1fr))`,gap:10,marginBottom:24}}>
         {dias.map(d => (

@@ -56,3 +56,17 @@ export const descargarNodoComoPng = async (node, filename, backgroundColor = '#7
   link.href = canvas.toDataURL('image/png');
   link.click();
 };
+
+const aMin = hhmm => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + (m || 0); };
+
+// Horarios de un día que ya se pisan con un turno de la agenda (misma regla que
+// `horarios_libres()` en la base): { "10:30": "Coco", ... }.
+export const ocupadosPorAgenda = (turnos, fechaKey, horas) => {
+  const delDia = turnos.filter(t => t.fecha === fechaKey && /^\d{1,2}:\d{2}/.test(t.hora || ''));
+  const out = {};
+  for (const h of horas) {
+    const t = delDia.find(x => aMin(h) >= aMin(x.hora) && aMin(h) < aMin(x.hora) + (x.duracion || 60));
+    if (t) out[h] = t.dogName || 'turno';
+  }
+  return out;
+};
