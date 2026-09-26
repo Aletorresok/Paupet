@@ -15,7 +15,7 @@ import VuelvenCard from './VuelvenCard';
 import InasistenciasCard from './InasistenciasCard';
 import RecordatorioRespaldo from './RecordatorioRespaldo';
 
-const saludo = h => h < 13 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
+const saludo = h => h < 6 ? 'Buenas noches' : h < 13 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
 
 export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno }) {
   const { isMob, isTab } = useResp();
