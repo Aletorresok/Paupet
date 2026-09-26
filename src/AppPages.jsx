@@ -17,7 +17,7 @@ export default function AppPages({ page, setPage, data, modals, toast, turnoActi
     case 'dashboard':
       return <Dashboard clientes={clientes} turnos={turnos} notas={notas} onNav={setPage} onOpenClient={id=>setModalCliente({open:true,id})} onNuevoTurno={()=>setModalTurno({open:true,fecha:todayStr(),turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno}/>;
     case 'clientes':
-      return <ClientesPage clientes={clientes} onOpenClient={id=>setModalCliente({open:true,id})} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>;
+      return <ClientesPage clientes={clientes} turnos={turnos} onOpenClient={id=>setModalCliente({open:true,id})} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>;
     case 'calendario':
       return <CalendarioPage clientes={clientes} turnos={turnos} onAddTurno={(fecha,hora)=>setModalTurno({open:true,fecha,hora,turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onDelete={ta.handleDeleteTurno} onConfirmar={ta.handleConfirmar} onEditTurno={ta.handleEditTurno}/>;
     case 'finanzas':
