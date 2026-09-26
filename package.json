@@ -8,7 +8,8 @@
     "demo": "vite --mode demo",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --import ./tests/registrar.mjs --test \"tests/*.test.js\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
