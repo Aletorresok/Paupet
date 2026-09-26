@@ -129,9 +129,13 @@ export function crearDatosDemo() {
   // Agenda: hoy, mañana y las próximas dos semanas (lunes a sábado).
   // Los "vencidos" (i % 5 === 2) quedan sin turno para que aparezcan en "Ya les toca volver".
   const libres = clientes.slice(0, PERROS.length).filter((c, i) => i % 5 !== 2);
+  // Los perros de hoy no tienen otro turno futuro (así "Completar y cobrar" sugiere el próximo).
   let turnoIdx = 0;
+  const deHoy = new Set();
   const agendar = (fecha, hora, estado, duracion = 60, sinHora = false) => {
-    const c = libres[(turnoIdx++ * 7) % libres.length];
+    let c = libres[(turnoIdx++ * 7) % libres.length];
+    if (iso(fecha) === hoyISO) deHoy.add(c.id);
+    else while (deHoy.has(c.id)) c = libres[(turnoIdx++ * 7) % libres.length];
     const servicio = pesado(SERVICIOS[c.size]);
     turnos.push({
       id: ++id, cliente_id: c.id, dog_name: c.dog, servicio, fecha: iso(fecha), hora: sinHora ? '' : hora,

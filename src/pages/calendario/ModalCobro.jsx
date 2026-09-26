@@ -8,23 +8,28 @@ import PetAvatar from '../../components/ui/PetAvatar';
 import { calcFrecuencia, fmtCada } from '../../lib/frecuencia';
 import { C, inputStyle } from '../../lib/styles';
 import { fmtFecha, fmtPeso } from '../../lib/utils';
+import { fechaSugerida } from './ayudaTurno';
 
 const MEDIOS = [{id:'efectivo',label:'Efectivo'},{id:'transferencia',label:'Transferencia'}];
 
 // "Completar y cobrar": se confirma qué se hizo, cuánto se cobró (a mano) y cómo pagó.
 // Se monta con `key` = id del turno, así el formulario arranca de cero en cada turno.
-export default function ModalCobro({ turno: t, cliente: c, onClose, onCobrar, onNoVino }) {
+// `tieneProximo`: el cliente ya tiene otro turno agendado (entonces no se sugiere uno nuevo).
+export default function ModalCobro({ turno: t, cliente: c, tieneProximo = false, onClose, onCobrar, onNoVino }) {
   const [servicio, setServicio] = useState(t.servicio || '');
   const [monto, setMonto] = useState(t.precio ? String(t.precio) : '');
   const [medio, setMedio] = useState(t.forma_pago || 'efectivo');
   const [guardando, setGuardando] = useState(false);
   const frec = calcFrecuencia(c.visitas);
+  // Próxima vuelta sugerida: según su frecuencia, o a 4 semanas si todavía no hay datos.
+  const proxima = fechaSugerida(t.fecha, frec ? frec.cadaDias : 28);
+  const [agendar, setAgendar] = useState(!!frec && !tieneProximo && !!t.clientId);
   const precio = parseFloat(String(monto).replace(/\./g, '').replace(',', '.')) || 0;
 
   const cobrar = async () => {
     if (guardando) return;
     setGuardando(true);
-    await onCobrar(t.id, { servicio: servicio.trim() || t.servicio, precio, formaPago: medio });
+    await onCobrar(t.id, { servicio: servicio.trim() || t.servicio, precio, formaPago: medio, agendarProximo: agendar ? proxima : null });
     setGuardando(false);
   };
 
@@ -68,6 +73,12 @@ export default function ModalCobro({ turno: t, cliente: c, onClose, onCobrar, on
             <Icon name="repeat" />
             <span><strong>{t.dogName || c.dog} viene cada {fmtCada(frec.cadaDias)}.</strong> Te aviso en el panel cuando se acerque su próxima vuelta.</span>
           </div>
+        )}
+        {t.clientId && !tieneProximo && (
+          <label style={{display:'flex',gap:10,alignItems:'center',fontSize:14,cursor:'pointer'}}>
+            <input type="checkbox" checked={agendar} onChange={e=>setAgendar(e.target.checked)} style={{width:20,height:20,accentColor:C.mentaBorde,WebkitAppearance:'checkbox'}} />
+            <span>Después, agendar el próximo turno: <strong>{fmtFecha(proxima)}</strong>{!frec && ' (a 4 semanas)'}</span>
+          </label>
         )}
       </div>
       <div style={{display:'flex',gap:10,padding:'14px 22px 20px',borderTop:`1px solid ${C.linea}`,flexWrap:'wrap'}}>

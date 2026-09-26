@@ -8,7 +8,7 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
   const handleCompletar = (id) => modals.setModalCobro({ open: true, turnoId: id });
 
   // Completa el turno con lo que efectivamente se cobró y lo guarda en el historial.
-  const handleCobrar = async (id, { servicio, precio, formaPago }) => {
+  const handleCobrar = async (id, { servicio, precio, formaPago, agendarProximo = null }) => {
     const t = turnos.find(x=>x.id===id); if (!t) return;
     if (t.estado === 'completed') { modals.setModalCobro(CLOSED_COBRO); return; }
     try {
@@ -26,6 +26,10 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
       }
       await loadAll();
       toast(`Cobrado ${'$'}${Number(precio).toLocaleString('es-AR')} · guardado en el historial`);
+      // Deja abierto "Nuevo turno" con los datos del que se acaba de cobrar (se puede cambiar o cerrar).
+      if (agendarProximo && t.clientId) {
+        setModalTurno({open:true, turnoEdit:null, fecha:agendarProximo, hora:t.hora || undefined, clientId:t.clientId, servicio, duracion:t.duracion});
+      }
     } catch(e) { toast(e.message, true); }
   };
 

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
 import FormGroup from '../../components/ui/FormGroup';
@@ -6,6 +7,13 @@ import { inputStyle } from '../../lib/styles';
 // Bloque "¿Cliente nuevo o existente?" del modal de turno.
 export default function ClienteSelector({ isEdit, mode, onMode, form, set, clientes }) {
   const { isMob } = useResp();
+  const [q, setQ] = useState('');
+  // Filtra por perro, dueño o teléfono; el elegido siempre queda en la lista.
+  const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const visibles = q.trim()
+    ? clientes.filter(c => String(c.id) === String(form.clientId) || norm(`${c.dog} ${c.owner} ${c.tel}`).includes(norm(q.trim())))
+    : clientes;
+  const elegir = v => { set('clientId', v); };
   const field = (k, placeholder) => (
     <input value={form[k]} onChange={e=>set(k,e.target.value)} placeholder={placeholder} style={inputStyle} />
   );
@@ -22,9 +30,16 @@ export default function ClienteSelector({ isEdit, mode, onMode, form, set, clien
       )}
       {(mode==='exist' || isEdit) && (
         <FormGroup label="Seleccionar cliente">
-          <select value={form.clientId} onChange={e=>set('clientId',e.target.value)} style={inputStyle}>
-            <option value="">{isEdit ? '— Sin cambios —' : '— Seleccionar —'}</option>
-            {clientes.map(c=><option key={c.id} value={c.id}>{c.dog} ({c.owner})</option>)}
+          <input type="search" value={q} placeholder="Buscar perro, dueño o teléfono…" aria-label="Buscar cliente" style={{...inputStyle,marginBottom:6}}
+            onChange={e => {
+              setQ(e.target.value);
+              const n = norm(e.target.value.trim());
+              const hits = n ? clientes.filter(c => norm(`${c.dog} ${c.owner} ${c.tel}`).includes(n)) : [];
+              if (hits.length === 1) elegir(String(hits[0].id));
+            }} />
+          <select value={form.clientId} onChange={e=>elegir(e.target.value)} style={inputStyle}>
+            <option value="">{isEdit ? '— Sin cambios —' : visibles.length === clientes.length ? '— Seleccionar —' : `— ${visibles.length} coinciden —`}</option>
+            {visibles.map(c=><option key={c.id} value={c.id}>{c.dog} ({c.owner})</option>)}
           </select>
         </FormGroup>
       )}

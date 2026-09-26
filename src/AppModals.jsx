@@ -36,7 +36,8 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
         open={modalTurno.open}
         onClose={()=>setModalTurno(CLOSED_TURNO)}
         onSave={ta.handleSaveNewTurno} onUpdate={ta.handleUpdateTurno}
-        clientes={clientes} defaultFecha={modalTurno.fecha} defaultHora={modalTurno.hora} defaultClientId={modalTurno.clientId} turnoEdit={modalTurno.turnoEdit}
+        clientes={clientes} turnos={turnos} defaultFecha={modalTurno.fecha} defaultHora={modalTurno.hora} defaultClientId={modalTurno.clientId}
+        defaultServicio={modalTurno.servicio} defaultDuracion={modalTurno.duracion} turnoEdit={modalTurno.turnoEdit}
       />
       <ModalNota
         open={modalNota.open} defaultTipo={modalNota.tipo} initial={modalNota.initial}
@@ -48,6 +49,7 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
           key={turnoCobro.id}
           turno={turnoCobro}
           cliente={clientes.find(c => c.id === turnoCobro.clientId) || {}}
+          tieneProximo={turnos.some(x => x.id !== turnoCobro.id && x.clientId === turnoCobro.clientId && x.estado !== 'completed' && x.fecha >= turnoCobro.fecha)}
           onClose={()=>setModalCobro(CLOSED_COBRO)}
           onCobrar={ta.handleCobrar}
           onNoVino={ta.handleNoVino}
