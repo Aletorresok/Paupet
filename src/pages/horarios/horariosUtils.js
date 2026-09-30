@@ -12,7 +12,7 @@ export const proximoLunes = () => {
   return d;
 };
 
-const OFFSETS = {lunes:0,martes:1,miercoles:2,jueves:3,viernes:4,sabado:5};
+const OFFSETS = {lunes:0,martes:1,miercoles:2,jueves:3,viernes:4,sabado:5, domingo:6};
 export const getDiaDate = (semanaInicio, dia) => {
   const d = new Date(semanaInicio);
   d.setDate(d.getDate() + (OFFSETS[dia]||0));
@@ -21,10 +21,10 @@ export const getDiaDate = (semanaInicio, dia) => {
 
 const MES_CORTO = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
-// Rango de la semana (lunes a sábado) para mostrar en la imagen: "29 sep – 4 oct".
+// Rango de la semana (lunes a domingo) para mostrar en la imagen: "29 sep – 5 oct".
 export const rangoSemana = (semanaInicio) => {
   const fin = new Date(semanaInicio);
-  fin.setDate(fin.getDate() + 5);
+  fin.setDate(fin.getDate() + 6);
   return `${semanaInicio.getDate()} ${MES_CORTO[semanaInicio.getMonth()]} – ${fin.getDate()} ${MES_CORTO[fin.getMonth()]}`;
 };
 

@@ -10,8 +10,8 @@ export const DIAS_CONFIG = [
   {key:'sabado',   label:'Sábado',   emoji:'🌸'},
   {key:'domingo',  label:'Domingo',  emoji:'☀️'},
 ];
-export const DIAS_SEMANA_HOD = ['lunes','martes','miercoles','jueves','viernes','sabado'];
-export const DIAS_HOD_LABELS = {lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado'};
+export const DIAS_SEMANA_HOD = ['lunes','martes','miercoles','jueves','viernes','sabado', 'domingo'];
+export const DIAS_HOD_LABELS = {lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado', domingo:'Domingo'};
 export const PELUQUERA_IMG = 'https://qelrwbavnrxdlxfckehz.supabase.co/storage/v1/object/public/Fotos/WhatsApp_Image_2026-03-06_at_19.29.42-removebg-preview.png';
 
 // WhatsApp de Pau (el del perfil de Paupet): a este número llegan los pedidos de turno.
