@@ -3,7 +3,7 @@ import Btn from '../../components/ui/Btn';
 import Icon from '../../components/ui/Icon';
 import PageHeader from '../../components/ui/PageHeader';
 import { DIAS_ES, MESES } from '../../lib/constants';
-import { clientesParaVolver } from '../../lib/frecuencia';
+import { clientesParaVolver, enPausa } from '../../lib/frecuencia';
 import { C } from '../../lib/styles';
 import { fmtPeso, toISODate, todayStr } from '../../lib/utils';
 import { calcResumenMes, proximoTurno } from './dashboardStats';
@@ -19,7 +19,7 @@ import AvisosCard from '../../components/ui/AvisosCard';
 
 const saludo = h => h < 6 ? 'Buenas noches' : h < 13 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
 
-export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno, pedidos = [], pedidoActions, caps = {}, toast }) {
+export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno, pedidos = [], pedidoActions, caps = {}, toast, onPausarVuelta }) {
   const { isMob, isTab } = useResp();
   const hoy = new Date();
   const hoyISO = todayStr();
@@ -40,7 +40,9 @@ export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient
   const pendientes = turnos.filter(t => t.estado === 'pending' && t.fecha >= hoyISO).length;
   const proximo = proximoTurno(turnosHoy, hoy);
   const res = calcResumenMes(clientes, notas, hoy);
-  const vuelven = clientesParaVolver(clientes, turnos);
+  const paraVolver = clientesParaVolver(clientes, turnos);
+  const vuelven = paraVolver.filter(x => !enPausa(x.cliente));
+  const vuelvenOcultos = paraVolver.filter(x => enPausa(x.cliente));
   const conInasistencias = clientes.filter(c => c.inasistencias > 0).sort((a,b) => b.inasistencias-a.inasistencias);
   const mes = MESES[hoy.getMonth()];
 
@@ -74,7 +76,7 @@ export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient
           <AgendaHoyCard turnos={turnosHoy} clientes={clientes} onCompletar={onCompletar} onEditTurno={onEditTurno} onVerAgenda={()=>onNav('calendario')} />
         </div>
         <div style={{display:'flex',flexDirection:'column',gap:20,minWidth:0}}>
-          <VuelvenCard items={vuelven} onOpenClient={onOpenClient} />
+          <VuelvenCard items={vuelven} ocultos={vuelvenOcultos} onOpenClient={onOpenClient} onPausar={caps.vueltaPausa ? onPausarVuelta : null} />
           <ManianaCard turnos={turnosManana} clientes={clientes} titulo={tituloManana} />
           <InasistenciasCard clientes={conInasistencias} />
         </div>

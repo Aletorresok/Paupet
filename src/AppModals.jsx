@@ -20,6 +20,7 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
         onSelectCliente={id=>setModalCliente({open:true,id})}
         onDarTurno={(clientId, fecha)=>{setModalCliente({open:false,id:null});setModalTurno({open:true,fecha,clientId,turnoEdit:null});}}
         onSaveEtiquetas={ca.handleSaveEtiquetas}
+        onPausarVuelta={ca.handlePausarVuelta}
         onClose={()=>setModalCliente({open:false,id:null})}
         onSaveVisit={ca.handleSaveVisit}
         onEditVisit={ca.handleEditVisit}

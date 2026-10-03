@@ -56,3 +56,12 @@ export function clientesParaVolver(clientes, turnos) {
     .filter(x => x.frec && x.frec.estado !== 'al_dia')
     .sort((a, b) => a.frec.diasRestantes - b.frec.diasRestantes);
 }
+
+// "Ya les toca volver" pausado a mano por Pau (columna clientes.vuelta_pausa, migración 7).
+export const PAUSA_SIEMPRE = '9999-12-31';
+export const enPausa = (c, hoy = todayStr()) => !!c.vuelta_pausa && c.vuelta_pausa > hoy;
+export const pausaHasta = dias => {
+  if (dias == null) return PAUSA_SIEMPRE;
+  const d = new Date(); d.setDate(d.getDate() + dias);
+  return toISODate(d);
+};

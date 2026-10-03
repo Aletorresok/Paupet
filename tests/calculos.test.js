@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { toISODate, diasDesde, parseFecha } from '../src/lib/utils.js';
-import { calcFrecuencia, clientesParaVolver } from '../src/lib/frecuencia.js';
+import { calcFrecuencia, clientesParaVolver, enPausa, pausaHasta, PAUSA_SIEMPRE } from '../src/lib/frecuencia.js';
 import { turnosQueSePisan, fechaSugerida, serviciosFrecuentes, ultimaVisita } from '../src/pages/calendario/ayudaTurno.js';
 import { ocupadosPorAgenda, generarSlots } from '../src/pages/horarios/horariosUtils.js';
 import { agendadoPorCobrar, ingresosHastaDia, serviciosPorDia, calcResumenMes } from '../src/pages/finanzas/finanzasCalc.js';
@@ -226,4 +226,16 @@ test('función de Vercel aviso-pedido: pide secreto y variables', async () => {
   const r3 = res(); await handler({ method: 'POST', headers: { 'x-webhook-secret': 'mal' }, body: {} }, r3); assert.equal(r3.code, 401);
   const r4 = res(); await handler({ method: 'POST', headers: { 'x-webhook-secret': 's' }, body: { type: 'UPDATE', table: 'pedidos_turno', record: {} } }, r4);
   assert.deepEqual(r4.body, { ignorado: true });
+});
+
+test('pausa de "Ya les toca volver": temporal, para siempre y vencida', () => {
+  assert.equal(enPausa({}), false);
+  assert.equal(enPausa({ vuelta_pausa: pausaHasta(15) }), true);
+  assert.equal(enPausa({ vuelta_pausa: pausaHasta(null) }), true);
+  assert.equal(pausaHasta(null), PAUSA_SIEMPRE);
+  assert.equal(enPausa({ vuelta_pausa: dia(0) }), false, 'el día que vence vuelve a aparecer');
+  const filtro = FILTROS.find(f => f.id === 'volver').test;
+  const [pausado, normal] = conFrecuencia([{ id: 1, visitas: visitas(100, 70, 40), vuelta_pausa: pausaHasta(7) }, { id: 2, visitas: visitas(100, 70, 40) }]);
+  assert.equal(filtro(pausado), false);
+  assert.equal(filtro(normal), true);
 });

@@ -19,7 +19,7 @@ import { perrosDelDueno } from './ficha/etiquetas';
 
 // Ficha completa del perro: datos, frecuencia, etiquetas, fotos e historial.
 export default function ModalCliente({ open, cliente, clientes, turnos, caps, toast, onClose, onSelectCliente, onDarTurno,
-  onSaveVisit, onEditVisit, onDeleteVisit, onDelete, onEdit, onAgregarPerro, onDecrementarInasistencia, onSaveEtiquetas }) {
+  onSaveVisit, onEditVisit, onDeleteVisit, onDelete, onEdit, onAgregarPerro, onDecrementarInasistencia, onSaveEtiquetas, onPausarVuelta }) {
   const { isMob } = useResp();
   if (!open || !cliente) return null;
   const c = cliente;
@@ -59,7 +59,8 @@ export default function ModalCliente({ open, cliente, clientes, turnos, caps, to
           </div>
         )}
 
-        <FrecuenciaCard cliente={c} proximoTurno={proximo} onAgendar={fecha => onDarTurno(c.id, fecha)} />
+        <FrecuenciaCard cliente={c} proximoTurno={proximo} onAgendar={fecha => onDarTurno(c.id, fecha)}
+          onQuitarPausa={caps.vueltaPausa ? () => onPausarVuelta(c.id, null, `${c.dog} vuelve a la lista de "Ya les toca volver"`) : null} />
 
         <div style={{display:'grid',gridTemplateColumns:isMob?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1.15fr)',gap:16,alignItems:'start'}}>
           <div style={{display:'flex',flexDirection:'column',gap:16,minWidth:0}}>

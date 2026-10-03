@@ -1,5 +1,5 @@
 import Icon from '../../../components/ui/Icon';
-import { calcFrecuencia, fmtCada, fmtRestantes } from '../../../lib/frecuencia';
+import { PAUSA_SIEMPRE, calcFrecuencia, enPausa, fmtCada, fmtRestantes } from '../../../lib/frecuencia';
 import { C } from '../../../lib/styles';
 import { fmtFecha, todayStr } from '../../../lib/utils';
 
@@ -9,8 +9,31 @@ const TONOS = {
   vencido: { bg: C.rosaSuave,  fg: '#7A2240' },
 };
 
+// Aviso de que Pau sacó al perro de "Ya les toca volver", con opción de deshacerlo.
+function AvisoPausa({ hasta, onQuitar }) {
+  return (
+    <div style={{display:'flex',gap:10,alignItems:'center',background:'#F3F1EE',color:'#46524D',borderRadius:12,padding:'8px 14px',fontSize:14,flexWrap:'wrap'}}>
+      <span style={{flex:1,minWidth:200}}>
+        {hasta === PAUSA_SIEMPRE ? 'No se te recuerda que tiene que volver.' : `No aparece en "Ya les toca volver" hasta el ${fmtFecha(hasta)}.`}
+      </span>
+      <button type="button" onClick={onQuitar} style={{minHeight:36,border:'none',background:'none',color:C.verde,fontWeight:600,fontFamily:'inherit',fontSize:14,cursor:'pointer'}}>Volver a mostrar</button>
+    </div>
+  );
+}
+
 // Frecuencia de vuelta + próximo turno (si ya tiene uno) o botón para agendarlo.
-export default function FrecuenciaCard({ cliente, proximoTurno, onAgendar }) {
+export default function FrecuenciaCard({ cliente, proximoTurno, onAgendar, onQuitarPausa }) {
+  const tarjeta = <FrecuenciaInfo cliente={cliente} proximoTurno={proximoTurno} onAgendar={onAgendar} />;
+  if (!onQuitarPausa || !enPausa(cliente)) return tarjeta;
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      {tarjeta}
+      <AvisoPausa hasta={cliente.vuelta_pausa} onQuitar={onQuitarPausa} />
+    </div>
+  );
+}
+
+function FrecuenciaInfo({ cliente, proximoTurno, onAgendar }) {
   const f = calcFrecuencia(cliente.visitas);
   if (proximoTurno) {
     return (

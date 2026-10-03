@@ -81,5 +81,14 @@ export function useClienteActions({ clientes, loadAll, toast, askConfirm, modals
     } catch(e) { toast(e.message, true); }
   };
 
-  return { handleSaveEtiquetas, handleSaveVisit, handleEditVisit, handleDeleteVisit, handleDeleteClient, handleSaveNewClient, handleDecrementarInasistencia };
+  // Saca al perro de "Ya les toca volver" hasta `hasta` (fecha, o PAUSA_SIEMPRE); null lo vuelve a mostrar.
+  const handlePausarVuelta = async (id, hasta, msg) => {
+    try {
+      await db.updateCliente(id, { vuelta_pausa: hasta });
+      await loadAll();
+      if (msg) toast(msg);
+    } catch(e) { toast(e.message, true); }
+  };
+
+  return { handlePausarVuelta, handleSaveEtiquetas,handleSaveVisit, handleEditVisit, handleDeleteVisit, handleDeleteClient, handleSaveNewClient, handleDecrementarInasistencia };
 }

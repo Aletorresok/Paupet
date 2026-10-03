@@ -67,7 +67,7 @@ export default function AppShell({ onLogout }) {
               <AppPages
                 page={page} setPage={setPage} toast={toast}
                 data={data} modals={modals}
-                turnoActions={turnoActions} notaActions={notaActions} configActions={configActions}
+                clienteActions={clienteActions} turnoActions={turnoActions} notaActions={notaActions} configActions={configActions}
                 pedidos={pedidosPend} pedidoActions={pedidoActions}
               />
             )}

@@ -27,7 +27,7 @@ function mergeDuplicados(clientes) {
 
 // Qué columnas/tablas nuevas existen en la base (ver supabase/migracion_02_agenda_ficha.sql).
 // Mientras no se corra la migración, la app funciona igual pero sin guardar esos datos.
-export const capacidades = { duracion: false, etiquetas: false, fotos: false, pedidos: false, push: false };
+export const capacidades = { duracion: false, etiquetas: false, fotos: false, pedidos: false, push: false, vueltaPausa: false };
 
 // Supabase devuelve como máximo 1000 filas por consulta: se piden por tandas hasta traer todo.
 // `consulta` es una función que arma la query (sin .range) para poder repetirla.
@@ -49,10 +49,11 @@ const existe = async (tabla, columna = 'id') => {
 // Capa de datos: todas las queries a Supabase.
 export const db = {
   async detectarCapacidades() {
-    const [duracion, etiquetas, fotos, pedidos, push] = await Promise.all([
+    const [duracion, etiquetas, fotos, pedidos, push, vueltaPausa] = await Promise.all([
       existe('turnos', 'duracion'), existe('clientes', 'etiquetas'), existe('fotos_cliente'), existe('pedidos_turno'), existe('push_suscripciones'),
+      existe('clientes', 'vuelta_pausa'),
     ]);
-    Object.assign(capacidades, { duracion, etiquetas, fotos, pedidos, push });
+    Object.assign(capacidades, { duracion, etiquetas, fotos, pedidos, push, vueltaPausa });
     return { ...capacidades };
   },
 
@@ -93,7 +94,7 @@ export const db = {
     return { ...data, visitas: [] };
   },
   async updateCliente(id, fields) {
-    const allowed = ['dog','owner','raza','size','pelaje','tel','notes','foto','inasistencias', ...(capacidades.etiquetas ? ['etiquetas'] : [])];
+    const allowed = ['dog','owner','raza','size','pelaje','tel','notes','foto','inasistencias', ...(capacidades.etiquetas ? ['etiquetas'] : []), ...(capacidades.vueltaPausa ? ['vuelta_pausa'] : [])];
     const update = Object.fromEntries(Object.entries(fields).filter(([k]) => allowed.includes(k)));
     const { error } = await supabase.from('clientes').update(update).eq('id', id);
     if (error) throw error;
