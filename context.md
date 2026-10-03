@@ -183,7 +183,7 @@ Reglas del refactor:
   - [ ] Sugerir el próximo turno al completar uno
   - [ ] Ajustar el umbral de aviso (hoy 7 días) según lo que diga la dueña
   - [x] Sacar a un perro de "Ya les toca volver" (menú ⋯: "Ya le escribí" 7 días, 15 o 30 días, "No mostrar más").
-        Se guarda en `clientes.vuelta_pausa` (**migración 7, falta correrla**; sin ella no aparece el menú). Abajo de la
+        Se guarda en `clientes.vuelta_pausa` (migración 7, corrida el 2026-10-03). Abajo de la
         tarjeta "Ver N ocultos" → Mostrar; en la ficha, aviso + "Volver a mostrar". El filtro "Les toca volver" también los saca.
 - [ ] Finanzas: ganancia neta, gráfico mensual, export CSV
 - [ ] Stock con cantidad mínima
