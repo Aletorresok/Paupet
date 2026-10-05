@@ -1,49 +1,98 @@
 import Icon from '../../components/ui/Icon';
-import { useResp } from '../../context/resp';
-import { C, serif } from '../../lib/styles';
+import MenuMas from '../../components/ui/MenuMas';
 import PetAvatar from '../../components/ui/PetAvatar';
+import { useResp } from '../../context/resp';
+import { C, cardStyle } from '../../lib/styles';
+import { fmtPeso } from '../../lib/utils';
 import { abrirWhatsApp, abrirWhatsAppListo } from '../../lib/whatsapp';
+import { rangoTurno, ultimaVisita } from '../calendario/ayudaTurno';
+import { colorEtiqueta } from '../clientes/ficha/etiquetas';
 
-const btnClaro = {display:'flex',alignItems:'center',justifyContent:'center',gap:8,height:46,padding:'0 18px',borderRadius:12,border:'none',background:'white',color:C.verdeProfundo,fontFamily:'inherit',fontSize:15,fontWeight:600,cursor:'pointer'};
-const btnBorde = {display:'flex',alignItems:'center',justifyContent:'center',gap:6,height:46,padding:'0 14px',borderRadius:12,border:'1px solid #4E6B60',background:'transparent',color:'white',fontFamily:'inherit',fontSize:14,cursor:'pointer',flex:1,minWidth:0,whiteSpace:'nowrap'};
+const MES_CORTO = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const fechaCorta = f => { const [, m, d] = f.split('-'); return `${parseInt(d)} ${MES_CORTO[parseInt(m) - 1]}`; };
 
-// Tarjeta destacada con el próximo turno del día y sus acciones principales.
-export default function ProximoTurnoCard({ proximo, cliente: c, onCompletar, onNoVino, onEditTurno }) {
+const boton = {height:52,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',gap:8,fontFamily:'inherit',fontSize:16,fontWeight:600,cursor:'pointer',padding:'0 18px'};
+
+// "AHORA · 10:00–11:30", "EN 20 MIN · …", "ATRASADO · …".
+function titulo(etiqueta, t) {
+  const rango = t.hora ? rangoTurno(t) : 'sin hora';
+  if (etiqueta === 'Ahora' || etiqueta === 'Atrasado') return `${etiqueta} · ${rango}`;
+  const enMin = etiqueta.match(/en (\d+ min)/);
+  return `${enMin ? `En ${enMin[1]}` : 'Próximo'} · ${rango}`;
+}
+
+// El turno en curso (o el próximo): quién es, sus cuidados y las dos acciones del momento.
+// Tocar el perro abre su ficha (después, el Modo mesa).
+export default function ProximoTurnoCard({ proximo, cliente: c, onAbrir, onCobrar, onEditTurno, onNoVino }) {
   const { isMob } = useResp();
-  if (!proximo) {
-    return (
-      <section aria-label="Próximo turno" style={{background:C.mentaSuave,color:'#173F31',borderRadius:20,padding:'22px 24px',display:'flex',alignItems:'center',gap:14}}>
-        <Icon name="check" size={26} strokeWidth={2} />
-        <span style={{fontSize:16,fontWeight:500}}>No quedan turnos por hoy.</span>
-      </section>
-    );
-  }
   const { turno: t, etiqueta } = proximo;
-  // Si el turno ya está en curso, el aviso útil es "ya está listo", no el recordatorio.
   const enCurso = etiqueta === 'Ahora' || etiqueta === 'Atrasado';
+  const etiquetas = (c.etiquetas || []).map(e => e?.trim()).filter(e => e && e !== 'Alergia:');
+  const alertas = etiquetas.filter(e => colorEtiqueta(e).bg !== C.mentaSuave);
+  const otras = etiquetas.filter(e => colorEtiqueta(e).bg === C.mentaSuave);
+  const ultima = !isMob && ultimaVisita(c);
+  const nombre = t.dogName || c.dog;
+  const detalle = [c.raza, t.servicio, c.owner, !isMob && c.tel].filter(Boolean).join(' · ');
+  const acciones = [
+    { label: 'Editar turno', icon: 'edit', onClick: () => onEditTurno(t) },
+    { label: 'No vino', icon: 'x', onClick: () => onNoVino(t.id), peligro: true },
+  ];
+
+  const botones = (
+    <div style={{display:'grid',gridTemplateColumns:c.tel ? 'repeat(2,minmax(0,1fr))' : '1fr',gap:8,flex:isMob ? 'none' : '0 0 300px'}}>
+      {c.tel && (enCurso ? (
+        <button type="button" onClick={() => abrirWhatsAppListo(c.tel, nombre, c.owner)} title="Avisar por WhatsApp que ya está listo para retirar"
+          style={{...boton,border:'1px solid #D9D5CE',background:'white',color:C.tinta}}>
+          <Icon name="chat" />Está listo
+        </button>
+      ) : (
+        <button type="button" onClick={() => abrirWhatsApp(c.tel, nombre, c.owner, t)} title="Mandar el recordatorio del turno por WhatsApp"
+          style={{...boton,border:'1px solid #D9D5CE',background:'white',color:C.tinta}}>
+          <Icon name="chat" />Recordar
+        </button>
+      ))}
+      <button type="button" onClick={() => onCobrar(t.id)} style={{...boton,border:'none',background:C.menta,color:C.sobreMenta}}>
+        <Icon name="check" strokeWidth={2.2} />Cobrar
+      </button>
+    </div>
+  );
+
   return (
-    <section aria-label="Próximo turno" style={{background:C.verdeProfundo,color:'white',borderRadius:20,padding:isMob?18:'22px 24px',display:'flex',flexDirection:isMob?'column':'row',flexWrap:'wrap',gap:isMob?14:20,alignItems:isMob?'stretch':'center'}}>
-      <div style={{display:'flex',gap:16,alignItems:'center',flex:'1 1 280px',minWidth:0}}>
-        <PetAvatar cliente={c} size={isMob?56:80} style={{border:'3px solid rgba(255,255,255,.85)'}} />
-        <div style={{display:'flex',flexDirection:'column',gap:4,minWidth:0}}>
-          <span style={{fontSize:12,fontWeight:600,letterSpacing:'.08em',textTransform:'uppercase',color:'#A9D8C3'}}>{etiqueta}</span>
-          <span style={{fontFamily:serif,fontSize:isMob?22:26,fontWeight:600,lineHeight:1.15}}>
-            {t.dogName || c.dog} {c.raza && <span style={{fontFamily:'inherit',fontSize:15,fontWeight:400,color:'#CFE3DA'}}>· {c.raza}{c.size ? ` ${c.size.toLowerCase()}` : ''}</span>}
+    <section aria-label="Turno en curso" style={{...cardStyle,borderRadius:20,padding:isMob ? 18 : '22px 24px',display:'flex',flexDirection:'column',gap:isMob ? 14 : 16}}>
+      <div style={{display:'flex',gap:isMob ? 14 : 18,alignItems:'center',flexWrap:'wrap'}}>
+        <button type="button" onClick={onAbrir} style={{flex:'1 1 220px',minWidth:0,display:'flex',gap:isMob ? 14 : 18,alignItems:'center',background:'none',border:'none',padding:0,textAlign:'left',fontFamily:'inherit',color:C.tinta,cursor:'pointer'}}>
+          <PetAvatar cliente={c} size={isMob ? 64 : 96} />
+          <span style={{display:'flex',flexDirection:'column',gap:2,minWidth:0}}>
+            <span style={{fontSize:12,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:etiqueta === 'Atrasado' ? C.rosa : C.verde}}>{titulo(etiqueta, t)}</span>
+            <span style={{fontSize:isMob ? 22 : 30,fontWeight:600,lineHeight:1.15}}>{nombre}</span>
+            <span style={{fontSize:isMob ? 14 : 15,color:C.tintaSuave}}>{detalle}</span>
           </span>
-          <span style={{fontSize:15,color:'#E6F0EB'}}>{t.hora} · {t.servicio}{c.owner ? ` · ${c.owner}` : ''}</span>
-          {c.notes && <span style={{alignSelf:'flex-start',marginTop:4,fontSize:12,fontWeight:600,background:C.ambarSuave,color:C.ambar,borderRadius:999,padding:'3px 10px',maxWidth:'100%',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.notes}</span>}
-        </div>
+        </button>
+        {!isMob && botones}
+        <div style={{alignSelf:'flex-start'}}><MenuMas acciones={acciones} label="Más acciones del turno" /></div>
       </div>
-      <div style={{display:'flex',flexDirection:'column',gap:8,flex:isMob?'none':'1 0 220px',maxWidth:isMob?'none':320}}>
-        <button type="button" onClick={()=>onCompletar(t.id)} style={btnClaro}><Icon name="check" strokeWidth={2}/>Completar y cobrar</button>
-        <div style={{display:'flex',gap:8}}>
-          {c.tel && (enCurso
-            ? <button type="button" onClick={()=>abrirWhatsAppListo(c.tel, t.dogName||c.dog, c.owner)} style={btnBorde} title="Avisar que ya está listo para retirar"><Icon name="chat"/>Está listo</button>
-            : <button type="button" onClick={()=>abrirWhatsApp(c.tel, t.dogName||c.dog, c.owner, t)} style={btnBorde} title="Mandar recordatorio del turno"><Icon name="chat"/>Avisar</button>)}
-          <button type="button" onClick={()=>onEditTurno(t)} style={{...btnBorde,flex:'0 0 46px',padding:0}} aria-label="Editar turno"><Icon name="edit"/></button>
-          <button type="button" onClick={()=>onNoVino(t.id)} style={btnBorde}>No vino</button>
+
+      {alertas.map(e => {
+        const k = colorEtiqueta(e);
+        return (
+          <div key={e} style={{display:'flex',gap:8,alignItems:'center',background:k.bg,color:k.fg,borderRadius:12,padding:'10px 12px',fontSize:isMob ? 14 : 15,fontWeight:600}}>
+            <Icon name="alert" size={18} strokeWidth={2} />{e}
+          </div>
+        );
+      })}
+      {otras.length > 0 && (
+        <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+          {otras.map(e => <span key={e} style={{fontSize:13,fontWeight:600,background:C.mentaSuave,color:C.verde,borderRadius:999,padding:'4px 12px'}}>{e}</span>)}
         </div>
-      </div>
+      )}
+      {(c.notes || ultima) && (
+        <div style={{display:'flex',flexDirection:'column',gap:4,fontSize:14,color:C.tintaSuave}}>
+          {c.notes && <span>📝 {c.notes}</span>}
+          {ultima && <span><strong style={{color:C.tinta,fontWeight:600}}>La última vez:</strong> {fechaCorta(ultima.fecha)} · {ultima.servicio} · {fmtPeso(ultima.precio)}</span>}
+        </div>
+      )}
+
+      {isMob && botones}
     </section>
   );
 }

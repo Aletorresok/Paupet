@@ -239,3 +239,20 @@ test('pausa de "Ya les toca volver": temporal, para siempre y vencida', () => {
   assert.equal(filtro(pausado), false);
   assert.equal(filtro(normal), true);
 });
+
+test('huecos libres del día: juntan horarios seguidos hasta el próximo turno u horario tomado', async () => {
+  const { huecosDelDia } = await import('../src/lib/huecosLibres.js');
+  const f = dia(1);
+  const config = { horariosSemanales: { slots: { [f]: ['09:00', '10:30', '12:00', '14:30', '16:00', '17:30'] }, tomados: { [f]: ['12:00'] } } };
+  const turnos = [
+    { fecha: f, hora: '09:00', duracion: 90 },
+    { fecha: f, hora: '16:00', duracion: 60 },
+  ];
+  const huecos = huecosDelDia(config, turnos, f);
+  assert.deepEqual(huecos, [
+    { hora: '10:30', hasta: '12:00', minutos: 90 },
+    { hora: '14:30', hasta: '16:00', minutos: 90 },
+    { hora: '17:30', hasta: '18:30', minutos: 60 },
+  ], '12:00 está tomado: corta el hueco de las 10:30');
+  assert.deepEqual(huecosDelDia(config, turnos, dia(2)), [], 'sin horarios cargados no hay huecos');
+});

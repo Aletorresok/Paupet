@@ -319,3 +319,8 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   pedidos, recordatorios y "les toca volver"; su número lo calculan `lib/bandeja.js` + `hooks/useAvisados.js`. Ajustes = Configuración
   (avatar de Pau en Hoy), Stories desde Agenda; Historial/Notas desde Finanzas (provisorio). Botón + sólo en Hoy y Agenda.
   El aviso al celular de un pedido abre Avisos.
+  Punto 2: Hoy nuevo. Encabezado con saludo según la hora (avatar → Ajustes, punto ámbar si falta la copia) y lupa → Perros;
+  turno en curso en tarjeta clara (Está listo si ya empezó, si no Recordar; Cobrar; ⋯ editar / no vino; tocar → ficha hasta el
+  Modo mesa); "el resto del día" con huecos libres (`lib/huecosLibres.js`: regla única, el hueco corta en el próximo turno u
+  horario tomado); fila "N mensajes para mandar" → Avisos. PC en dos columnas con el pedido nuevo y "Para mandar". Se fueron de
+  Hoy los KPI (siguen en Finanzas), inasistencias (en la ficha y al dar turno) y el aviso de copia (queda en Ajustes).

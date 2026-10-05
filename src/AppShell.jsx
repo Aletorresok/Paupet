@@ -67,7 +67,7 @@ export default function AppShell({ onLogout }) {
 
         <div style={{flex:1,display:'flex',flexDirection:'column',minWidth:0,overflow:'hidden'}}>
 
-          <main style={{flex:1,overflowY:'auto',padding:isMob?'20px 16px 110px':'28px 36px',minWidth:0}}>
+          <main style={{flex:1,overflowY:'auto',padding:isMob?'20px 16px 170px':'28px 36px',minWidth:0}}>
             {data.loading ? <Esqueleto /> : (
               <AppPages
                 page={page} setPage={setPage} toast={toast}

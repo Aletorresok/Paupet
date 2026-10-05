@@ -7,7 +7,6 @@ import HorariosPage from './pages/horarios/HorariosPage';
 import ConfigPage from './pages/config/ConfigPage';
 import FinanzasPage from './pages/finanzas/FinanzasPage';
 import AvisosPage from './pages/avisos/AvisosPage';
-import { todayStr } from './lib/utils';
 
 // Renderiza la página activa.
 export default function AppPages({ page, setPage, data, modals, toast, clienteActions: ca, turnoActions: ta, notaActions: na, configActions, pedidos, pedidoActions, onLogout }) {
@@ -16,13 +15,13 @@ export default function AppPages({ page, setPage, data, modals, toast, clienteAc
 
   switch (page) {
     case 'dashboard':
-      return <Dashboard clientes={clientes} turnos={turnos} notas={notas} onNav={setPage} onOpenClient={id=>setModalCliente({open:true,id})} onNuevoTurno={()=>setModalTurno({open:true,fecha:todayStr(),turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno} pedidos={pedidos} pedidoActions={pedidoActions} caps={data.caps} toast={toast} onPausarVuelta={ca.handlePausarVuelta}/>;
+      return <Dashboard clientes={clientes} turnos={turnos} config={config} onNav={setPage} onOpenClient={id=>setModalCliente({open:true,id})} onNuevoTurno={(fecha,hora)=>setModalTurno({open:true,fecha,hora,turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno} pedidos={pedidos} pedidoActions={pedidoActions} caps={data.caps} toast={toast}/>;
     case 'avisos':
       return <AvisosPage clientes={clientes} turnos={turnos} pedidos={pedidos} pedidoActions={pedidoActions} caps={data.caps} onOpenClient={id=>setModalCliente({open:true,id})} onPausarVuelta={ca.handlePausarVuelta}/>;
     case 'clientes':
       return <ClientesPage clientes={clientes} turnos={turnos} onOpenClient={id=>setModalCliente({open:true,id})} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>;
     case 'calendario':
-      return <CalendarioPage clientes={clientes} turnos={turnos} onHorarios={()=>setPage('horarios')}onAddTurno={(fecha,hora)=>setModalTurno({open:true,fecha,hora,turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onDelete={ta.handleDeleteTurno} onConfirmar={ta.handleConfirmar} onEditTurno={ta.handleEditTurno}/>;
+      return <CalendarioPage clientes={clientes} turnos={turnos} onHorarios={()=>setPage('horarios')} onAddTurno={(fecha,hora)=>setModalTurno({open:true,fecha,hora,turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onDelete={ta.handleDeleteTurno} onConfirmar={ta.handleConfirmar} onEditTurno={ta.handleEditTurno}/>;
     case 'finanzas':
       return <FinanzasPage clientes={clientes} notas={notas} turnos={turnos} onNav={setPage} onNuevoGasto={()=>setModalNota({open:true,tipo:'egreso',initial:null})}/>;
     case 'historial':

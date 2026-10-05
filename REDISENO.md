@@ -74,19 +74,19 @@ Fuera de los 21 días que cubre, se usa un campo de hora.
 - [x] Se va el botón flotante sólo donde estorba; queda en Hoy y Agenda.
 
 ### 2. Hoy (`pages/dashboard/`)
-- [ ] Sacar de Hoy: la grilla de `KpiCard` (pasa a Finanzas), `InasistenciasCard` (pasa a la ficha y al dar
+- [x] Sacar de Hoy: la grilla de `KpiCard` (pasa a Finanzas), `InasistenciasCard` (pasa a la ficha y al dar
       turno), `RecordatorioRespaldo` y `AvisosCard` (pasan a Ajustes; `AvisosCard` compacta sólo si los avisos
       todavía no están activados en ese celular).
-- [ ] Encabezado: avatar de Pau (abre Ajustes) + saludo según la hora como hoy ("¡Buen día, Pau! ☀️" /
+- [x] Encabezado: avatar de Pau (abre Ajustes) + saludo según la hora como hoy ("¡Buen día, Pau! ☀️" /
       "¡Buenas tardes…" / "¡Buenas noches…") + "Quedan N turnos 🐾".
-- [ ] `ProximoTurnoCard` → tarjeta clara "AHORA · 10:00–11:30": avatar, nombre, raza · servicio · dueño, las
+- [x] `ProximoTurnoCard` → tarjeta clara "AHORA · 10:00–11:30": avatar, nombre, raza · servicio · dueño, las
       etiquetas de alergia/cuidados bien visibles, y dos botones: **Está listo** (WhatsApp `abrirWhatsAppListo`)
       y **Cobrar**. Tocar la tarjeta abre el Modo mesa (punto 3); hasta entonces, la ficha del perro.
-- [ ] `AgendaHoyCard` → "el resto del día" con avatar por fila y **los huecos libres** (regla única de arriba)
+- [x] `AgendaHoyCard` → "el resto del día" con avatar por fila y **los huecos libres** (regla única de arriba)
       como filas "Libre 1 h 30 · dar turno" (abre Nuevo turno con fecha y hora).
-- [ ] Una sola fila oscura "N mensajes para mandar" → lleva a Avisos. Se van `ManianaCard`, `VuelvenCard` y
+- [x] Una sola fila oscura "N mensajes para mandar" → lleva a Avisos. Se van `ManianaCard`, `VuelvenCard` y
       `PedidosCard` de Hoy (su lógica se reusa en Avisos).
-- [ ] PC (`PcHoy`): dos columnas — turno en curso + resto del día a la izquierda; pedido nuevo y "Para mandar 💬"
+- [x] PC (`PcHoy`): dos columnas — turno en curso + resto del día a la izquierda; pedido nuevo y "Para mandar 💬"
       a la derecha.
 
 ### 3. Modo mesa (nuevo)

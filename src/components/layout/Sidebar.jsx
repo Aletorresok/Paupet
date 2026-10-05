@@ -1,4 +1,5 @@
 import { NAV_EXTRA, NAV_ITEMS, NAV_PADRE } from '../../lib/constants';
+import { respaldoVencido } from '../../lib/respaldo';
 import { C } from '../../lib/styles';
 import pauSecador from '../../assets/ilustraciones/pau-secador.webp';
 import SidebarBrand from './SidebarBrand';
@@ -14,6 +15,7 @@ export default function Sidebar({ activePage, onNav, avisosCount = 0, onLogout }
       label={i.label}
       active={marcada===i.page}
       badgeCount={i.badge ? avisosCount : 0}
+      punto={i.page === 'config' && respaldoVencido() ? 'Falta hacer la copia de seguridad' : null}
       onClick={() => onNav(i.page)}
     />
   );

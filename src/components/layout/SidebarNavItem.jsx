@@ -1,7 +1,8 @@
 import { C } from '../../lib/styles';
 import Icon from '../ui/Icon';
 
-export default function SidebarNavItem({ icon, label, active, badgeCount, onClick }) {
+// `punto`: aviso sin número (p. ej. falta la copia de seguridad).
+export default function SidebarNavItem({ icon, label, active, badgeCount, punto, onClick }) {
   return (
     <button type="button" onClick={onClick} aria-current={active ? 'page' : undefined} style={{
       display:'flex',alignItems:'center',gap:12,height:44,padding:'0 12px',borderRadius:10,cursor:'pointer',
@@ -12,6 +13,7 @@ export default function SidebarNavItem({ icon, label, active, badgeCount, onClic
     }}>
       <Icon name={icon} size={20} />
       <span style={{flex:1}}>{label}</span>
+      {punto && <span aria-label={punto} title={punto} style={{width:10,height:10,borderRadius:'50%',background:C.ambar}} />}
       {badgeCount > 0 && (
         <span aria-label={`${badgeCount} para mandar`} style={{background:C.rosa,color:'white',fontSize:11,fontWeight:700,borderRadius:999,padding:'2px 8px'}}>{badgeCount}</span>
       )}

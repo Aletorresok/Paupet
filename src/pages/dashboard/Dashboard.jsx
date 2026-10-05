@@ -1,78 +1,113 @@
 import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
+import EstadoVacio from '../../components/ui/EstadoVacio';
 import Icon from '../../components/ui/Icon';
-import PageHeader from '../../components/ui/PageHeader';
 import PauAvatar from '../../components/ui/PauAvatar';
+import AvisosCard from '../../components/ui/AvisosCard';
+import { useAvisados } from '../../hooks/useAvisados';
+import { proximoDiaConTurnos, recordatoriosSinEnviar } from '../../lib/bandeja';
 import { DIAS_ES, MESES } from '../../lib/constants';
 import { clientesParaVolver, enPausa } from '../../lib/frecuencia';
-import { C } from '../../lib/styles';
-import { fmtPeso, todayStr } from '../../lib/utils';
-import { proximoDiaConTurnos } from '../../lib/bandeja';
-import { calcResumenMes, proximoTurno } from './dashboardStats';
-import KpiCard from './KpiCard';
+import { huecosDelDia } from '../../lib/huecosLibres';
+import { respaldoVencido } from '../../lib/respaldo';
+import { C, cardStyle, serif } from '../../lib/styles';
+import { todayStr } from '../../lib/utils';
+import { proximoTurno } from './dashboardStats';
 import ProximoTurnoCard from './ProximoTurnoCard';
-import AgendaHoyCard from './AgendaHoyCard';
-import ManianaCard from './ManianaCard';
-import VuelvenCard from './VuelvenCard';
-import InasistenciasCard from './InasistenciasCard';
-import RecordatorioRespaldo from './RecordatorioRespaldo';
-import PedidosCard from './PedidosCard';
-import AvisosCard from '../../components/ui/AvisosCard';
+import RestoDelDia from './RestoDelDia';
+import PedidoNuevoCard from './PedidoNuevoCard';
+import { ParaMandarFila, ParaMandarLista } from './ParaMandar';
 
-const saludo = h => h < 6 ? 'Buenas noches' : h < 13 ? 'Buen día' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
+// "¡Buen día, Pau! ☀️", según la hora.
+const fraseSaludo = h => h < 6 ? '¡Buenas noches, Pau! 🌙' : h < 13 ? '¡Buen día, Pau! ☀️' : h < 20 ? '¡Buenas tardes, Pau! 🌤️' : '¡Buenas noches, Pau! 🌙';
 
-export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno, pedidos = [], pedidoActions, caps = {}, toast, onPausarVuelta }) {
+export default function Dashboard({ clientes, turnos, config, pedidos = [], pedidoActions, caps = {}, toast, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno }) {
   const { isMob, isTab } = useResp();
+  const enviados = useAvisados();
   const hoy = new Date();
   const hoyISO = todayStr();
-  const { titulo: tituloManana, turnos: turnosManana } = proximoDiaConTurnos(turnos, hoy);
 
   const turnosHoy = turnos.filter(t => t.fecha === hoyISO);
   const quedan = turnosHoy.filter(t => t.estado !== 'completed').length;
-  const pendientes = turnos.filter(t => t.estado === 'pending' && t.fecha >= hoyISO).length;
   const proximo = proximoTurno(turnosHoy, hoy);
-  const res = calcResumenMes(clientes, notas, hoy);
-  const paraVolver = clientesParaVolver(clientes, turnos);
-  const vuelven = paraVolver.filter(x => !enPausa(x.cliente));
-  const vuelvenOcultos = paraVolver.filter(x => enPausa(x.cliente));
-  const conInasistencias = clientes.filter(c => c.inasistencias > 0).sort((a,b) => b.inasistencias-a.inasistencias);
-  const mes = MESES[hoy.getMonth()];
+  const resto = turnosHoy.filter(t => t.estado !== 'completed' && t.id !== proximo?.turno.id);
+  const huecos = huecosDelDia(config, turnos, hoyISO, hoy);
 
-  const titulo = quedan === 0 ? `${saludo(hoy.getHours())}.` : `${saludo(hoy.getHours())}. Hoy ${quedan === 1 ? 'queda 1 turno' : `quedan ${quedan} turnos`}.`;
+  const dia = proximoDiaConTurnos(turnos, hoy);
+  const recordatorios = recordatoriosSinEnviar(dia.turnos, clientes, enviados);
+  const pedidosParaMandar = pedidos.filter(p => p.estado !== 'propuesto');
+  const vuelven = clientesParaVolver(clientes, turnos).filter(x => !enPausa(x.cliente));
+
+  const titulo = quedan ? `${quedan === 1 ? 'Queda 1 turno' : `Quedan ${quedan} turnos`} 🐾`
+    : turnosHoy.length ? 'Terminaste por hoy ✅' : 'Hoy no hay turnos 💤';
+  const fecha = isMob ? `${DIAS_ES[hoy.getDay()]} ${hoy.getDate()}/${hoy.getMonth() + 1}` : `${DIAS_ES[hoy.getDay()]} ${hoy.getDate()} de ${MESES[hoy.getMonth()]}`;
+  const dosColumnas = !isMob && !isTab;
+
+  const turnoActual = proximo ? (
+    <ProximoTurnoCard
+      proximo={proximo}
+      cliente={clientes.find(c => c.id === proximo.turno.clientId) || {}}
+      onAbrir={() => proximo.turno.clientId ? onOpenClient(proximo.turno.clientId) : onEditTurno(proximo.turno)}
+      onCobrar={onCompletar} onEditTurno={onEditTurno} onNoVino={onNoVino}
+    />
+  ) : !turnosHoy.length ? (
+    <section style={{...cardStyle,borderRadius:20,padding:'8px 18px 18px'}}>
+      <EstadoVacio ilustracion="durmiendo" titulo="Hoy no hay turnos" texto="Buen momento para mirar a quién le toca volver." tamanio={150} />
+    </section>
+  ) : null;
+
+  const restoDelDia = (
+    <RestoDelDia turnos={resto} huecos={huecos} clientes={clientes}
+      onAbrirTurno={onEditTurno} onDarTurno={hora => onNuevoTurno(hoyISO, hora)} />
+  );
 
   return (
-    <section>
-      <PageHeader title={titulo} subtitle={`${DIAS_ES[hoy.getDay()]} ${hoy.getDate()} de ${mes}`}>
-        {isMob ? <PauAvatar onClick={() => onNav('config')} /> : <Btn onClick={onNuevoTurno}><Icon name="plus" strokeWidth={2}/>Nuevo turno</Btn>}
-      </PageHeader>
-
-      <RecordatorioRespaldo onIr={() => onNav('config')} />
+    <section style={{display:'flex',flexDirection:'column',gap:isMob ? 16 : 22}}>
+      <header style={{display:'flex',alignItems:isMob ? 'center' : 'flex-end',justifyContent:'space-between',gap:isMob ? 10 : 16,flexWrap:isMob ? 'nowrap' : 'wrap'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12,minWidth:0}}>
+          {isMob && (
+            <span style={{position:'relative',flexShrink:0}}>
+              <PauAvatar size={52} onClick={() => onNav('config')} label={respaldoVencido() ? 'Ajustes (falta hacer la copia de seguridad)' : 'Ajustes'} />
+              {respaldoVencido() && <span aria-hidden="true" style={{position:'absolute',top:2,right:2,width:12,height:12,borderRadius:'50%',background:C.ambar,border:'2px solid white'}} />}
+            </span>
+          )}
+          <div style={{display:'flex',flexDirection:'column',gap:isMob ? 2 : 4,minWidth:0}}>
+            <span style={{fontSize:isMob ? 14 : 15,color:C.tintaSuave}}>{fraseSaludo(hoy.getHours())} {fecha}</span>
+            <h1 style={{margin:0,fontFamily:serif,fontSize:isMob ? 24 : 34,fontWeight:600,lineHeight:1.15}}>{titulo}</h1>
+          </div>
+        </div>
+        {isMob ? (
+          <button type="button" onClick={() => onNav('clientes')} aria-label="Buscar perro" style={{flexShrink:0,width:44,height:44,borderRadius:14,background:'white',border:`1px solid ${C.linea}`,display:'flex',alignItems:'center',justifyContent:'center',color:C.tinta,cursor:'pointer'}}>
+            <Icon name="search" size={22} />
+          </button>
+        ) : (
+          <span style={{display:'flex',gap:10}}>
+            <Btn variant="ghost" onClick={() => onNav('clientes')}><Icon name="search" />Buscar perro</Btn>
+            <Btn onClick={() => onNuevoTurno(hoyISO)}><Icon name="plus" strokeWidth={2}/>Nuevo turno</Btn>
+          </span>
+        )}
+      </header>
 
       <AvisosCard compacto habilitado={caps.push} toast={toast} />
-      <PedidosCard pedidos={pedidos} clientes={clientes} turnos={turnos} acciones={pedidoActions} />
 
-      <div style={{display:'grid',gridTemplateColumns:`repeat(${isMob ? 2 : 4},minmax(0,1fr))`,gap:isMob?10:16,marginBottom:20}}>
-        <KpiCard label={`Ingresos de ${mes}`} valor={fmtPeso(res.ingresos)} detalle={`Efectivo ${fmtPeso(res.efectivo)} · Transf. ${fmtPeso(res.transferencia)}`} />
-        <KpiCard oscuro label="Ganancia neta" valor={fmtPeso(res.ganancia)} detalle={`Gastos ${fmtPeso(res.egresos)}`} />
-        <KpiCard label="Servicios del mes" valor={res.servicios} detalle={`Ticket promedio ${fmtPeso(res.ticket)}`} />
-        <KpiCard label="Sin confirmar" valor={pendientes} detalle={pendientes ? 'turnos pendientes' : 'todo confirmado'} tono={pendientes ? C.ambar : undefined} />
-      </div>
-
-      <div style={{display:'grid',gridTemplateColumns:isMob||isTab?'1fr':'minmax(0,1.55fr) minmax(0,1fr)',gap:20,alignItems:'start'}}>
-        <div style={{display:'flex',flexDirection:'column',gap:20,minWidth:0}}>
-          <ProximoTurnoCard
-            proximo={proximo}
-            cliente={proximo ? (clientes.find(c => c.id === proximo.turno.clientId) || {}) : {}}
-            onCompletar={onCompletar} onNoVino={onNoVino} onEditTurno={onEditTurno}
-          />
-          <AgendaHoyCard turnos={turnosHoy} clientes={clientes} onCompletar={onCompletar} onEditTurno={onEditTurno} onVerAgenda={()=>onNav('calendario')} />
+      {dosColumnas ? (
+        <div style={{display:'flex',flexWrap:'wrap',gap:20,alignItems:'flex-start'}}>
+          <div style={{flex:'2 1 480px',minWidth:0,display:'flex',flexDirection:'column',gap:20}}>
+            {turnoActual}
+            {restoDelDia}
+          </div>
+          <div style={{flex:'1 1 320px',minWidth:0,display:'flex',flexDirection:'column',gap:20}}>
+            <PedidoNuevoCard pedidos={pedidos} clientes={clientes} acciones={pedidoActions} onVerTodos={() => onNav('avisos')} />
+            <ParaMandarLista recordatorios={recordatorios} tituloDia={dia.titulo} vuelven={vuelven} clientes={clientes} onVerTodo={() => onNav('avisos')} />
+          </div>
         </div>
-        <div style={{display:'flex',flexDirection:'column',gap:20,minWidth:0}}>
-          <VuelvenCard items={vuelven} ocultos={vuelvenOcultos} onOpenClient={onOpenClient} onPausar={caps.vueltaPausa ? onPausarVuelta : null} />
-          <ManianaCard turnos={turnosManana} clientes={clientes} titulo={tituloManana} />
-          <InasistenciasCard clientes={conInasistencias} />
-        </div>
-      </div>
+      ) : (
+        <>
+          {turnoActual}
+          {restoDelDia}
+          <ParaMandarFila pedidos={pedidosParaMandar.length} recordatorios={recordatorios.length} tituloDia={dia.titulo} vuelven={vuelven.length} onIr={() => onNav('avisos')} />
+        </>
+      )}
     </section>
   );
 }
