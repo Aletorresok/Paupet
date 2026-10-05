@@ -26,6 +26,8 @@ export function reiniciarDemo() {
 }
 
 const copia = x => JSON.parse(JSON.stringify(x));
+// Como `default current_date` de fotos_cliente.fecha en la base.
+const hoyLocal = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const errorTabla = t => ({ message: `relation "public.${t}" does not exist`, code: '42P01' });
 
 // "*, visitas(*)" → embebidos ['visitas']
@@ -77,7 +79,7 @@ class Consulta {
     if (this.op === 'select') return this.armarSalida(this.filasFiltradas());
     if (this.op === 'insert') {
       const nuevas = (Array.isArray(this.payload) ? this.payload : [this.payload])
-        .map(f => ({ created_at: ahora, ...f, id: ++db.ultimoId }));
+        .map(f => ({ created_at: ahora, ...(t === 'fotos_cliente' && { fecha: hoyLocal() }), ...f, id: ++db.ultimoId }));
       db.tablas[t].push(...nuevas);
       guardar();
       return this.devolver ? this.armarSalida(nuevas) : { data: null, error: null };

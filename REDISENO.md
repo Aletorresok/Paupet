@@ -90,11 +90,11 @@ Fuera de los 21 días que cubre, se usa un campo de hora.
       a la derecha.
 
 ### 3. Modo mesa (nuevo)
-- [ ] Pantalla/modal a pantalla completa al tocar el turno en curso: avatar grande, "EN LA MESA · DESDE LAS 10:00",
+- [x] Pantalla/modal a pantalla completa al tocar el turno en curso: avatar grande, "EN LA MESA · DESDE LAS 10:00",
       alertas en grande (rosa alergias, ámbar cuidados), "Cómo lo dejamos": última visita, fotos de antes/después
       más recientes (`FotosAntesDespues`/`db.getFotos`) y las notas del perro. Abajo, fijos: **Está listo 🐾** y
       **Cobrar $X**.
-- [ ] La "receta de corte" (cuchilla, largo, estilo) necesita columna nueva → Fase 2. Por ahora se muestran las notas.
+- [x] La "receta de corte" (cuchilla, largo, estilo) necesita columna nueva → Fase 2. Por ahora se muestran las notas.
 
 ### 4. Cobrar (`pages/calendario/ModalCobro.jsx`)
 - [ ] Monto: **se escribe el monto nuevo** con un teclado numérico grande en pantalla (1–9, 000, 0, borrar),

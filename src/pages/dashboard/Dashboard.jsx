@@ -15,6 +15,7 @@ import { C, cardStyle, serif } from '../../lib/styles';
 import { toISODate } from '../../lib/utils';
 import { sinCobrarAntes, turnoActual } from './dashboardStats';
 import ProximoTurnoCard from './ProximoTurnoCard';
+import ModoMesa from '../mesa/ModoMesa';
 import RestoDelDia from './RestoDelDia';
 import PedidoNuevoCard from './PedidoNuevoCard';
 import { ParaMandarFila, ParaMandarLista } from './ParaMandar';
@@ -29,6 +30,10 @@ export default function Dashboard({ clientes, turnos, config, pedidos = [], pedi
   const [hoy, setHoy] = useState(() => new Date());
   useEffect(() => { const id = setInterval(() => setHoy(new Date()), 60000); return () => clearInterval(id); }, []);
   const hoyISO = toISODate(hoy);
+  // Modo mesa del turno tocado. Se cierra solo cuando el turno se cobra o se borra (No vino).
+  const [mesaId, setMesaId] = useState(null);
+  const turnoMesa = mesaId && turnos.find(t => t.id === mesaId && t.estado !== 'completed');
+  if (mesaId && !turnoMesa) setMesaId(null);
 
   const turnosHoy = turnos.filter(t => t.fecha === hoyISO);
   const quedan = turnosHoy.filter(t => t.estado !== 'completed').length;
@@ -51,7 +56,7 @@ export default function Dashboard({ clientes, turnos, config, pedidos = [], pedi
     <ProximoTurnoCard
       actual={actual}
       cliente={clientes.find(c => c.id === actual.turno.clientId) || {}}
-      onAbrir={() => actual.turno.clientId ? onOpenClient(actual.turno.clientId) : onEditTurno(actual.turno)}
+      onAbrir={() => setMesaId(actual.turno.id)}
       onCobrar={onCompletar} onEditTurno={onEditTurno} onNoVino={onNoVino}
     />
   ) : !turnosHoy.length ? (
@@ -65,8 +70,15 @@ export default function Dashboard({ clientes, turnos, config, pedidos = [], pedi
       onAbrirTurno={onEditTurno} onDarTurno={hora => onNuevoTurno(hoyISO, hora)} />
   );
 
+  const mesa = turnoMesa && (
+    <ModoMesa turno={turnoMesa} cliente={clientes.find(c => c.id === turnoMesa.clientId) || {}} fotosHabilitadas={caps.fotos} toast={toast}
+      onClose={() => setMesaId(null)} onCobrar={() => onCompletar(turnoMesa.id)} onEditTurno={() => onEditTurno(turnoMesa)}
+      onNoVino={() => onNoVino(turnoMesa.id)} onVerFicha={() => onOpenClient(turnoMesa.clientId)} />
+  );
+
   return (
     <section style={{display:'flex',flexDirection:'column',gap:isMob ? 16 : 22}}>
+      {mesa}
       <header style={{display:'flex',alignItems:isMob ? 'center' : 'flex-end',justifyContent:'space-between',gap:isMob ? 10 : 16,flexWrap:isMob ? 'nowrap' : 'wrap'}}>
         <div style={{display:'flex',alignItems:'center',gap:12,minWidth:0}}>
           {isMob && (

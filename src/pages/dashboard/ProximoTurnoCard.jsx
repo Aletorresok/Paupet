@@ -23,7 +23,7 @@ function titulo({ turno: t, estado, faltan }) {
 
 // El turno de ahora (o el próximo): quién es, sus cuidados y las dos acciones del momento.
 // Pau no marca el inicio: es el último que empezó y no se cobró (ver `turnoActual`).
-// Tocar el perro abre su ficha (después, el Modo mesa).
+// Tocar el perro abre el Modo mesa.
 export default function ProximoTurnoCard({ actual, cliente: c, onAbrir, onCobrar, onEditTurno, onNoVino }) {
   const { isMob } = useResp();
   const { turno: t, estado } = actual;

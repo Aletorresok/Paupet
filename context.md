@@ -326,3 +326,8 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   Hoy los KPI (siguen en Finanzas), inasistencias (en la ficha y al dar turno) y el aviso de copia (queda en Ajustes).
   Punto 2 (ajuste): Pau no marca cuándo empieza un turno. El de ahora es el último que empezó y no se cobró (`turnoActual`); si
   pasó su horario dice "Falta cobrar". Los anteriores sin cobrar quedan en "el resto del día" con botón Cobrar. Hoy se recalcula cada minuto.
+  Punto 3: **Modo mesa** (`pages/mesa/ModoMesa.jsx`), a pantalla completa al tocar el turno en curso en Hoy: avatar grande,
+  "EN LA MESA · DESDE LAS 10:00" (o "Viene a las…" si todavía no empezó), alergias en rosa y cuidados en ámbar en grande, "Cómo lo
+  dejamos" (fecha, servicio y cobro de la última visita, foto de antes y de después más recientes con "Sacar foto" si falta, notas
+  del perro) y abajo fijos Está listo 🐾 (Recordar si no empezó) y Cobrar $X. ⋯ → ver ficha, editar turno, no vino. Se cierra sola
+  al cobrar o borrar el turno. La receta de corte queda para la Fase 2. Demo: las fotos nuevas llevan la fecha de hoy, como en la base.
