@@ -104,11 +104,14 @@ export const db = {
     if (error) throw error;
   },
 
+  // Devuelve { id } de la visita creada (para poder deshacer el cobro).
   async insertVisita(clienteId, servicio, precio, fecha, formaPago = 'efectivo') {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('visitas')
-      .insert({ cliente_id: clienteId, servicio, precio, fecha, forma_pago: formaPago });
+      .insert({ cliente_id: clienteId, servicio, precio, fecha, forma_pago: formaPago })
+      .select('id').single();
     if (error) throw error;
+    return data;
   },
   async updateVisita(id, fields) {
     const { error } = await supabase.from('visitas').update(fields).eq('id', id);

@@ -8,16 +8,17 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
   const handleCompletar = (id) => modals.setModalCobro({ open: true, turnoId: id });
 
   // Completa el turno con lo que efectivamente se cobró y lo guarda en el historial.
-  const handleCobrar = async (id, { servicio, precio, formaPago, agendarProximo = null }) => {
-    const t = turnos.find(x=>x.id===id); if (!t) return;
-    if (t.estado === 'completed') { modals.setModalCobro(CLOSED_COBRO); return; }
+  // La ventana queda abierta mostrando "¡Cobrado!": devuelve lo necesario para deshacer, o null si no se cobró.
+  const handleCobrar = async (id, { servicio, precio, formaPago }) => {
+    const t = turnos.find(x=>x.id===id); if (!t) return null;
+    if (t.estado === 'completed') { modals.setModalCobro(CLOSED_COBRO); return null; }
     try {
       const marcado = await db.completarTurno(id, { servicio, precio, forma_pago: formaPago });
-      modals.setModalCobro(CLOSED_COBRO);
-      if (!marcado) { await loadAll(); return; }
+      if (!marcado) { modals.setModalCobro(CLOSED_COBRO); await loadAll(); return null; }
+      let visitaId = null;
       if (t.clientId) {
         try {
-          await db.insertVisita(t.clientId, servicio, precio, t.fecha, formaPago);
+          visitaId = (await db.insertVisita(t.clientId, servicio, precio, t.fecha, formaPago))?.id ?? null;
         } catch(e) {
           // Si no se pudo guardar la visita, el turno vuelve a quedar como estaba.
           await db.updateTurno(id, {estado: t.estado});
@@ -25,11 +26,30 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
         }
       }
       await loadAll();
-      toast(`Cobrado ${'$'}${Number(precio).toLocaleString('es-AR')} · guardado en el historial`);
-      // Deja abierto "Nuevo turno" con los datos del que se acaba de cobrar (se puede cambiar o cerrar).
-      if (agendarProximo && t.clientId) {
-        setModalTurno({open:true, turnoEdit:null, fecha:agendarProximo, hora:t.hora || undefined, clientId:t.clientId, servicio, duracion:t.duracion});
-      }
+      return { visitaId, antes: { estado: t.estado, servicio: t.servicio, precio: t.precio, formaPago: t.formaPago } };
+    } catch(e) { toast(e.message, true); return null; }
+  };
+
+  // "Deshacer" después de cobrar: borra la visita creada y el turno vuelve a como estaba (sin cambios en la base).
+  const handleDeshacerCobro = async (id, { visitaId, antes }) => {
+    try {
+      if (visitaId) await db.deleteVisita(visitaId);
+      await db.updateTurno(id, antes);
+      await loadAll();
+      toast('Cobro deshecho');
+      return true;
+    } catch(e) { toast(e.message, true); return false; }
+  };
+
+  // Próximo turno desde la ventana de cobro: "Agendar 📅" lo guarda directo; "Otro día u horario" abre Nuevo turno.
+  const handleAgendarProximo = async (t, { fecha, servicio, otro = false }) => {
+    const datos = { clientId: t.clientId, servicio, fecha, hora: t.hora || '', duracion: t.duracion || 60 };
+    modals.setModalCobro(CLOSED_COBRO);
+    if (otro) { setModalTurno({open:true, turnoEdit:null, ...datos, hora: t.hora || undefined}); return; }
+    try {
+      await db.insertTurno({ ...datos, dogName: t.dogName || '', precio: 0, estado: 'confirmed', formaPago: 'efectivo' });
+      await loadAll();
+      toast('Próximo turno agendado 📅');
     } catch(e) { toast(e.message, true); }
   };
 
@@ -124,5 +144,5 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
     } catch(e) { toast('Error: ' + e.message, true); }
   };
 
-  return { handleCompletar, handleCobrar, handleNoVino, handleConfirmar, handleEditTurno, handleUpdateTurno, handleDeleteTurno, handleSaveNewTurno };
+  return { handleCompletar, handleCobrar, handleDeshacerCobro, handleAgendarProximo, handleNoVino, handleConfirmar, handleEditTurno, handleUpdateTurno, handleDeleteTurno, handleSaveNewTurno };
 }

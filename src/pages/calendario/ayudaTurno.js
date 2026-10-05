@@ -35,3 +35,6 @@ export function fechaSugerida(desde, cadaDias) {
   if (d.getDay() === 0) d.setDate(d.getDate() + 1);
   return toISODate(d);
 }
+
+// Teclado de Cobrar: suma dígitos al monto (texto con sólo números, sin ceros adelante, hasta 7) o borra el último.
+export const teclear = (monto, tecla) => tecla === '⌫' ? monto.slice(0, -1) : (monto + tecla).replace(/^0+/, '').slice(0, 7);

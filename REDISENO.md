@@ -97,18 +97,18 @@ Fuera de los 21 días que cubre, se usa un campo de hora.
 - [x] La "receta de corte" (cuchilla, largo, estilo) necesita columna nueva → Fase 2. Por ahora se muestran las notas.
 
 ### 4. Cobrar (`pages/calendario/ModalCobro.jsx`)
-- [ ] Monto: **se escribe el monto nuevo** con un teclado numérico grande en pantalla (1–9, 000, 0, borrar),
+- [x] Monto: **se escribe el monto nuevo** con un teclado numérico grande en pantalla (1–9, 000, 0, borrar),
       arranca vacío. En PC también se puede escribir con el teclado de la compu. Chip "Igual que la última
       vez · $X" (la última visita, como en `ClienteResumen`).
-- [ ] **Tocar Efectivo o Transferencia guarda** (llama a `onCobrar`). Sin monto, no hace nada. Se va el botón
+- [x] **Tocar Efectivo o Transferencia guarda** (llama a `onCobrar`). Sin monto, no hace nada. Se va el botón
       "Cobrar $X" separado y el campo "Qué se le hizo" pasa a una línea editable chica arriba.
       Requiere cambiar `handleCobrar` (`hooks/useTurnoActions.js`): hoy cierra la ventana al guardar.
-- [ ] Después de cobrar, en la misma ventana: `banio.webp`, "¡Cobrado $X! ✅", "Deshacer" (borra la visita
+- [x] Después de cobrar, en la misma ventana: `banio.webp`, "¡Cobrado $X! ✅", "Deshacer" (borra la visita
       creada y devuelve el turno a su estado anterior; sin cambios en la base), y
       "PRÓXIMO TURNO · VIENE CADA ~N SEMANAS" con la fecha de `fechaSugerida` (sigue sin proponer domingos:
       Pau trabaja sólo algunos) y la misma hora del turno cobrado: **Agendar 📅** / Ahora no /
       Otro día u horario. Reemplaza al checkbox actual.
-- [ ] "No vino" queda como link chico abajo.
+- [x] "No vino" queda como link chico abajo.
 
 ### 5. Nuevo turno en 3 toques (`pages/calendario/ModalTurno.jsx`)
 - [ ] Orden: **1 · Perro** (buscador, ya existe en `ClienteSelector`) → **2 · Servicio** (chips con

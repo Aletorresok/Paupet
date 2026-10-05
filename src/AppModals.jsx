@@ -58,7 +58,10 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
           cliente={clientes.find(c => c.id === turnoCobro.clientId) || {}}
           tieneProximo={turnos.some(x => x.id !== turnoCobro.id && x.clientId === turnoCobro.clientId && x.estado !== 'completed' && x.fecha >= turnoCobro.fecha)}
           onClose={()=>setModalCobro(CLOSED_COBRO)}
+          turnos={turnos}
           onCobrar={ta.handleCobrar}
+          onDeshacer={ta.handleDeshacerCobro}
+          onAgendar={ta.handleAgendarProximo}
           onNoVino={ta.handleNoVino}
         />
       )}

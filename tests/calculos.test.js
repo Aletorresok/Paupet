@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { toISODate, diasDesde, parseFecha } from '../src/lib/utils.js';
 import { calcFrecuencia, clientesParaVolver, enPausa, pausaHasta, PAUSA_SIEMPRE } from '../src/lib/frecuencia.js';
-import { turnosQueSePisan, fechaSugerida, serviciosFrecuentes, ultimaVisita } from '../src/pages/calendario/ayudaTurno.js';
+import { turnosQueSePisan, fechaSugerida, serviciosFrecuentes, ultimaVisita, teclear } from '../src/pages/calendario/ayudaTurno.js';
 import { ocupadosPorAgenda, generarSlots } from '../src/pages/horarios/horariosUtils.js';
 import { agendadoPorCobrar, ingresosHastaDia, serviciosPorDia, calcResumenMes } from '../src/pages/finanzas/finanzasCalc.js';
 import { FILTROS, conFrecuencia, normalizar } from '../src/pages/clientes/filtrosClientes.js';
@@ -276,4 +276,13 @@ test('turno de ahora: Pau no marca el inicio, sigue en la mesa hasta que se cobr
   assert.equal(pasado.turno.id, 2, 'si se cobró el último, vuelve el que falta cobrar');
   assert.equal(pasado.estado, 'terminado');
   assert.equal(turnoActual(turnos.map(t => ({ ...t, estado: 'completed' })), a(12, 0)), null);
+});
+
+test('teclear arma el monto de Cobrar', () => {
+  let m = '';
+  for (const t of ['0', '1', '9', '000']) m = teclear(m, t);
+  assert.equal(m, '19000');
+  assert.equal(teclear(m, '⌫'), '1900');
+  assert.equal(teclear('', '⌫'), '');
+  assert.equal(teclear('999999', '000'), '9999990');
 });

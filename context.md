@@ -180,7 +180,7 @@ Reglas del refactor:
   - [x] Tarjeta "Ya les toca volver" en el Panel (sin turno agendado) con WhatsApp de invitación
   - [x] Badge de la tarjeta de cliente según frecuencia (verde / naranja pronto / rosa se pasó)
   - [x] Perfil: "Viene cada ~N semanas · próxima estimada · le toca en X días"
-  - [ ] Sugerir el próximo turno al completar uno
+  - [x] Sugerir el próximo turno al completar uno (en la ventana de cobro, rediseño punto 4)
   - [ ] Ajustar el umbral de aviso (hoy 7 días) según lo que diga la dueña
   - [x] Sacar a un perro de "Ya les toca volver" (menú ⋯: "Ya le escribí" 7 días, 15 o 30 días, "No mostrar más").
         Se guarda en `clientes.vuelta_pausa` (migración 7, corrida el 2026-10-03). Abajo de la
@@ -331,3 +331,11 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   dejamos" (fecha, servicio y cobro de la última visita, foto de antes y de después más recientes con "Sacar foto" si falta, notas
   del perro) y abajo fijos Está listo 🐾 (Recordar si no empezó) y Cobrar $X. ⋯ → ver ficha, editar turno, no vino. Se cierra sola
   al cobrar o borrar el turno. La receta de corte queda para la Fase 2. Demo: las fotos nuevas llevan la fecha de hoy, como en la base.
+  Punto 4: **Cobrar** nuevo (`ModalCobro` + `TecladoMonto` + `CobroHecho`). El monto arranca vacío y se escribe con el teclado
+  en pantalla (1–9, 000, 0, borrar) o, en PC, con el de la compu; chip "Igual que la última vez · $X". "Qué se le hizo" es una línea
+  editable chica arriba. Tocar Efectivo o Transferencia guarda (sin monto no hace nada) y la ventana sigue abierta: `banio.webp`,
+  "¡Cobrado $X! ✅", Deshacer (borra la visita creada y devuelve el turno a su estado, servicio, precio y forma de pago anteriores) y
+  "Próximo turno · viene cada ~N semanas" con `fechaSugerida` a la misma hora: Agendar 📅 (lo guarda directo, avisa si se pisa con
+  otro turno) / Ahora no / Otro día u horario (abre Nuevo turno cargado). Si ya tiene otro turno o no es cliente, sólo "Listo".
+  "No vino" queda como link abajo. `handleCobrar` ya no cierra la ventana; nuevos `handleDeshacerCobro` y `handleAgendarProximo`;
+  `db.insertVisita` devuelve el id de la visita.
