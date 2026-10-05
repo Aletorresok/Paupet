@@ -4,7 +4,7 @@ import { toISODate, diasDesde, parseFecha } from '../src/lib/utils.js';
 import { calcFrecuencia, clientesParaVolver, enPausa, pausaHasta, PAUSA_SIEMPRE } from '../src/lib/frecuencia.js';
 import { turnosQueSePisan, fechaSugerida, serviciosFrecuentes, ultimaVisita, teclear, duracionSugerida, libresPorDia, etiquetaDia } from '../src/pages/calendario/ayudaTurno.js';
 import { ocupadosPorAgenda, generarSlots } from '../src/pages/horarios/horariosUtils.js';
-import { agendadoPorCobrar, ingresosHastaDia, serviciosPorDia, calcResumenMes } from '../src/pages/finanzas/finanzasCalc.js';
+import { agendadoPorCobrar, ingresosHastaDia, serviciosPorDia, calcResumenMes, ritmoServicios, serviciosPorTipo } from '../src/pages/finanzas/finanzasCalc.js';
 import { FILTROS, conFrecuencia, normalizar } from '../src/pages/clientes/filtrosClientes.js';
 import { colaMensajes } from '../src/lib/bandeja.js';
 
@@ -90,6 +90,24 @@ test('finanzas: agendado, comparación por día y días de la semana', () => {
   assert.equal(porDia[0].nombre, 'Lunes');
   assert.equal(porDia.find(d => d.nombre === 'Miércoles').cantidad, 2); // 5 y 26 de agosto de 2026
   assert.ok(!porDia.some(d => d.nombre === 'Domingo'), 'domingo sólo si tiene servicios');
+});
+
+test('finanzas: servicios por semana contra el trimestre y el año pasado', () => {
+  const v = (fecha, servicio = 'Baño') => ({ fecha, servicio, precio: 10 });
+  // Junio sin datos (no cuenta). Julio (31 d) y agosto (31 d) con 31 servicios cada uno = 7 por semana.
+  const visitas = [...Array(31)].flatMap((_, i) => [v(`2026-07-${String(i + 1).padStart(2, '0')}`), v(`2026-08-${String(i + 1).padStart(2, '0')}`)]);
+  // Septiembre 2026 en curso: van 7 días con 14 servicios = 14 por semana (+100%).
+  visitas.push(...[...Array(14)].map((_, i) => v('2026-09-0' + (i % 7 + 1), i < 10 ? 'Baño' : 'Corte')));
+  // Septiembre 2025 entero (30 d): 30 servicios = 7 por semana.
+  visitas.push(...[...Array(30)].map((_, i) => v(`2025-09-${String(i + 1).padStart(2, '0')}`)));
+  const r = ritmoServicios([{ visitas }], '2026-09', '2026-09-07');
+  assert.equal(r.servicios, 14);
+  assert.equal(r.porSemana, 14);
+  assert.deepEqual(r.trimestre.meses, ['2026-07', '2026-08']);
+  assert.equal(r.trimestre.variacion, 100);
+  assert.equal(r.anioPasado.variacion, 100);
+  assert.equal(ritmoServicios([{ visitas }], '2026-06', '2026-09-07').trimestre, null);
+  assert.deepEqual(serviciosPorTipo([{ visitas }], '2026-09').map(t => [t.nombre, t.cantidad]), [['Baño', 10], ['Corte', 4]]);
 });
 
 test('resumen del mes: ingresos por medio de pago y ganancia', () => {

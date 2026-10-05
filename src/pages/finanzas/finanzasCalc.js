@@ -93,3 +93,43 @@ export function serviciosPorDia(clientes, mes) {
 export const ingresosHastaDia = (clientes, mes, dia) => clientes.flatMap(c => c.visitas || [])
   .filter(v => v.fecha && v.fecha.startsWith(mes) && Number(v.fecha.slice(8, 10)) <= dia)
   .reduce((s, v) => s + (v.precio || 0), 0);
+
+// Cobros del mes, del más nuevo al más viejo, con el perro al que corresponden (para ver de qué está hecho cada número).
+export const cobrosDelMes = (clientes, mes) => clientes
+  .flatMap(c => (c.visitas || []).map(v => ({ ...v, clienteId: c.id, dog: c.dog, owner: c.owner })))
+  .filter(v => v.fecha && v.fecha.startsWith(mes))
+  .sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+export const gastosDelMes = (notas, mes) => notas
+  .filter(n => n.tipo === 'egreso' && n.fecha && n.fecha.startsWith(mes))
+  .sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+const diasDelMes = mes => { const [y, m] = mes.split('-').map(Number); return new Date(y, m, 0).getDate(); };
+const serviciosEn = (clientes, mes) => clientes.reduce((s, c) => s + (c.visitas || []).filter(v => v.fecha && v.fecha.startsWith(mes)).length, 0);
+
+// Servicios del mes y su ritmo por semana, comparado con los 3 meses anteriores y con el mismo mes del año pasado.
+// Se compara por semana porque el mes en curso va por la mitad: si van 5 días, sus servicios se reparten en
+// 5 días (no en 31), y así se puede poner al lado de un trimestre entero. Los meses sin ningún servicio no
+// cuentan (todavía no se usaba la app) para no bajar el promedio.
+export function ritmoServicios(clientes, mes, hoy) {
+  const dias = hoy.startsWith(mes) ? Number(hoy.slice(8, 10)) : diasDelMes(mes);
+  const servicios = serviciosEn(clientes, mes);
+  const porSemana = servicios / dias * 7;
+  const ritmo = meses => {
+    const conDatos = meses.map(m => ({ m, n: serviciosEn(clientes, m) })).filter(x => x.n);
+    if (!conDatos.length) return null;
+    const n = conDatos.reduce((s, x) => s + x.n, 0);
+    const d = conDatos.reduce((s, x) => s + diasDelMes(x.m), 0);
+    const ps = n / d * 7;
+    return { meses: conDatos.map(x => x.m), porSemana: ps, variacion: Math.round((porSemana - ps) / ps * 100) };
+  };
+  return {
+    servicios, dias, porSemana,
+    trimestre: ritmo([moverMes(mes, -3), moverMes(mes, -2), moverMes(mes, -1)]),
+    anioPasado: ritmo([moverMes(mes, -12)]),
+  };
+}
+
+// Cuántos servicios de cada tipo hubo en el mes (de más a menos).
+export const serviciosPorTipo = (clientes, mes) =>
+  topServicios(clientes, mes, Infinity).sort((a, b) => b.cantidad - a.cantidad || b.monto - a.monto);

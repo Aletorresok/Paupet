@@ -1,21 +1,21 @@
 import { C } from '../../lib/styles';
+import Icon from '../../components/ui/Icon';
+import { GRUPOS_CLIENTELA } from './estadoClientes';
 
-// Cuatro números de la clientela, con una línea que explica cada uno.
-export default function ClientelaStats({ e }) {
-  const items = [
-    { n: e.activos, label: 'Activos', det: 'vinieron en los últimos 3 meses', color: C.verde },
-    { n: e.nuevos, label: 'Nuevos', det: 'primera visita este mes', color: C.verde },
-    { n: e.vencidos, label: 'Se pasaron', det: 'ya les tocaba volver', color: C.ambar },
-    { n: e.perdidos, label: 'Sin venir', det: 'hace más de 4 meses', color: C.rosa },
-  ];
+// Cuatro números de la clientela, con una línea que explica cada uno. Tocar uno muestra quiénes son.
+export default function ClientelaStats({ e, onVer }) {
   return (
     <div style={{display:'grid',gridTemplateColumns:'repeat(2,minmax(0,1fr))',gap:10}}>
-      {items.map(i => (
-        <div key={i.label} style={{border:`1px solid ${C.linea}`,borderRadius:12,padding:'10px 12px'}}>
-          <div style={{fontSize:24,fontWeight:600,color:i.color,lineHeight:1.1}}>{i.n}</div>
+      {GRUPOS_CLIENTELA.map(i => (
+        <button key={i.id} type="button" onClick={() => onVer(i.id)} disabled={!e[i.id].length}
+          style={{border:`1px solid ${C.linea}`,borderRadius:12,padding:'10px 12px',background:'white',textAlign:'left',font:'inherit',color:C.tinta,cursor:e[i.id].length?'pointer':'default'}}>
+          <div style={{display:'flex',alignItems:'center'}}>
+            <span style={{flex:1,fontSize:24,fontWeight:600,color:i.color,lineHeight:1.1}}>{e[i.id].length}</span>
+            {!!e[i.id].length && <span style={{color:C.tintaSuave,display:'flex'}}><Icon name="right" size={16} strokeWidth={2} /></span>}
+          </div>
           <div style={{fontSize:14,fontWeight:600}}>{i.label}</div>
           <div style={{fontSize:12,color:C.tintaSuave}}>{i.det}</div>
-        </div>
+        </button>
       ))}
     </div>
   );
