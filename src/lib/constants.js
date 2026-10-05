@@ -37,16 +37,21 @@ export const DEFAULT_CONFIG = {
 };
 
 // Menú. `grupo` separa las secciones del menú lateral; `movil` = aparece en la barra inferior del celular.
+// Menú principal: los 5 van en la barra del celular y arriba en el menú lateral de PC.
 export const NAV_ITEMS = [
-  {page:'dashboard', icon:'home',     label:'Hoy',           grupo:'dia', movil:true},
-  {page:'calendario',icon:'calendar', label:'Agenda',        grupo:'dia', movil:true, badge:true},
-  {page:'clientes',  icon:'users',    label:'Clientes',      grupo:'dia', movil:true},
-  {page:'horarios',  icon:'camera',   label:'Horarios para Stories', grupo:'dia'},
-  {page:'finanzas',  icon:'chart',    label:'Finanzas',      grupo:'negocio'},
-  {page:'historial', icon:'history',  label:'Historial',     grupo:'negocio'},
-  {page:'notas',     icon:'notes',    label:'Notas y gastos',grupo:'negocio'},
-  {page:'config',    icon:'settings', label:'Configuración', grupo:'negocio'},
+  {page:'dashboard', icon:'home',     label:'Hoy'},
+  {page:'calendario',icon:'calendar', label:'Agenda'},
+  {page:'clientes',  icon:'paw',      label:'Perros'},
+  {page:'avisos',    icon:'chat',     label:'Avisos', badge:true},
+  {page:'finanzas',  icon:'wallet',   label:'Finanzas'},
 ];
+// Abajo del menú lateral de PC. En el celular: Horarios desde Agenda, Ajustes desde el avatar en Hoy.
+export const NAV_EXTRA = [
+  {page:'horarios',  icon:'camera',   label:'Horarios para Stories'},
+  {page:'config',    icon:'settings', label:'Ajustes'},
+];
+// Páginas que no están en el menú: qué ítem queda marcado mientras se ven.
+export const NAV_PADRE = { historial:'finanzas', notas:'finanzas', horarios:'calendario', config:'dashboard' };
 
 
 // Versión actual en producción. Mientras la nueva se prueba en paralelo, se muestra un aviso

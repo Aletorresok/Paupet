@@ -17,6 +17,8 @@ import { useNotaActions } from './hooks/useNotaActions';
 import { useConfigActions } from './hooks/useConfigActions';
 import { usePedidoActions } from './hooks/usePedidoActions';
 import { pedidosPendientes } from './lib/pedidos';
+import { proximoDiaConTurnos, recordatoriosSinEnviar } from './lib/bandeja';
+import { useAvisados } from './hooks/useAvisados';
 import AppPages from './AppPages';
 import AppModals from './AppModals';
 
@@ -29,12 +31,12 @@ export default function AppShell({ onLogout }) {
   const data = usePaupetData(toast);
   const { loadAll } = data;
 
-  // Cuando llega un aviso (pedido nuevo) con la app abierta, se recargan los datos; al tocarlo, se va a "Hoy".
+  // Cuando llega un aviso (pedido nuevo) con la app abierta, se recargan los datos; al tocarlo, se va a Avisos.
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
     const onMsg = e => {
       if (e.data?.tipo === 'aviso') loadAll();
-      if (e.data?.tipo === 'abrir') { setPage('dashboard'); loadAll(); }
+      if (e.data?.tipo === 'abrir') { setPage('avisos'); loadAll(); }
     };
     navigator.serviceWorker.addEventListener('message', onMsg);
     return () => navigator.serviceWorker.removeEventListener('message', onMsg);
@@ -49,7 +51,10 @@ export default function AppShell({ onLogout }) {
   const pedidoActions  = usePedidoActions(ctx);
   const pedidosPend    = pedidosPendientes(data.pedidos);
 
-  const pendingCount = data.turnos.filter(t=>t.estado==='pending').length;
+  // Número de Avisos: lo que Pau tiene que mandar. Pedidos sin responder o aceptados sin avisar (los propuestos
+  // esperan al cliente) + recordatorios del próximo día sin mandar.
+  const enviados = useAvisados();
+  const avisosCount = pedidosPend.filter(p => p.estado !== 'propuesto').length + recordatoriosSinEnviar(proximoDiaConTurnos(data.turnos).turnos, data.clientes, enviados).length;
 
   return (
     <>
@@ -58,7 +63,7 @@ export default function AppShell({ onLogout }) {
       <div style={{display:'flex',flexDirection:'column',height:'100vh',overflow:'hidden'}}>
       <BetaBanner />
       <div style={{display:'flex',flex:1,minHeight:0,overflow:'hidden'}}>
-        {!isMob && <Sidebar activePage={page} onNav={setPage} pendingCount={pendingCount} pedidosCount={pedidosPend.length} onLogout={onLogout}/>}
+        {!isMob && <Sidebar activePage={page} onNav={setPage} avisosCount={avisosCount} onLogout={onLogout}/>}
 
         <div style={{flex:1,display:'flex',flexDirection:'column',minWidth:0,overflow:'hidden'}}>
 
@@ -68,7 +73,7 @@ export default function AppShell({ onLogout }) {
                 page={page} setPage={setPage} toast={toast}
                 data={data} modals={modals}
                 clienteActions={clienteActions} turnoActions={turnoActions} notaActions={notaActions} configActions={configActions}
-                pedidos={pedidosPend} pedidoActions={pedidoActions}
+                pedidos={pedidosPend} pedidoActions={pedidoActions} onLogout={onLogout}
               />
             )}
           </main>
@@ -78,7 +83,7 @@ export default function AppShell({ onLogout }) {
 
       {isMob && (
         <MobileNav
-          activePage={page} onNav={setPage} pendingCount={pendingCount} pedidosCount={pedidosPend.length} onLogout={onLogout}
+          activePage={page} onNav={setPage} avisosCount={avisosCount}
           onNuevoTurno={() => modals.setModalTurno({open:true, fecha:todayStr(), turnoEdit:null})}
         />
       )}

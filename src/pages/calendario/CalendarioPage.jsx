@@ -16,7 +16,7 @@ import SolapesAviso from './semana/SolapesAviso';
 import DiasChips from './semana/DiasChips';
 import { diasSemana, inicioSemana, layoutDia } from './semana/agendaUtils';
 
-export default function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, onDelete, onConfirmar, onEditTurno }) {
+export default function CalendarioPage({ clientes, turnos, onAddTurno, onCompletar, onNoVino, onDelete, onConfirmar, onEditTurno, onHorarios }) {
   const { isMob } = useResp();
   const hoy = new Date();
   const [vista, setVista] = useState(isMob ? 'dia' : 'semana');
@@ -62,6 +62,7 @@ export default function CalendarioPage({ clientes, turnos, onAddTurno, onComplet
       <PageHeader title="Agenda" subtitle={vista === 'mes' ? 'Turnos del mes' : 'Tocá un horario libre para dar un turno'}>
         <div style={{display:'flex',gap:10,alignItems:'center',flexWrap:'wrap'}}>
           <VistaToggle opciones={opciones} value={vista} onChange={setVista} />
+          {isMob && <Btn variant="ghost" onClick={onHorarios} aria-label="Horarios para Stories"><Icon name="camera"/>Stories</Btn>}
           {!isMob && <Btn onClick={() => onAddTurno(selectedDay)}><Icon name="plus" strokeWidth={2}/>Nuevo turno</Btn>}
         </div>
       </PageHeader>

@@ -1,15 +1,15 @@
-import { useState } from 'react';
 import Btn from '../../components/ui/Btn';
 import Icon from '../../components/ui/Icon';
 import WhatsAppBtn from '../../components/ui/WhatsAppBtn';
-import { avisados, marcarAvisado } from '../../lib/avisados';
+import { useAvisados } from '../../hooks/useAvisados';
+import { marcarAvisado } from '../../lib/avisados';
 import { C, cardStyle, sectionTitleStyle } from '../../lib/styles';
 import { abrirWhatsApp } from '../../lib/whatsapp';
 
 // Recordatorios del próximo día con turnos (mañana, o el lunes si hoy es sábado).
 // Recuerda en este dispositivo a quién ya se le mandó, y ofrece "mandar al siguiente".
 export default function ManianaCard({ turnos, clientes, titulo = 'mañana' }) {
-  const [enviados, setEnviados] = useState(avisados);
+  const enviados = useAvisados();
   const de = titulo === 'mañana' ? 'de mañana' : `del ${titulo}`;
   const lista = [...turnos].sort((a, b) => (a.hora || '').localeCompare(b.hora || ''))
     .map(t => ({ t, c: clientes.find(x => x.id === t.clientId) || {} }));
@@ -18,7 +18,7 @@ export default function ManianaCard({ turnos, clientes, titulo = 'mañana' }) {
 
   const enviar = ({ t, c }) => {
     abrirWhatsApp(c.tel, t.dogName || c.dog, c.owner, t);
-    setEnviados(marcarAvisado(t));
+    marcarAvisado(t);
   };
 
   return (

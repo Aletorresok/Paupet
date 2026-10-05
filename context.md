@@ -315,3 +315,7 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-10-04 — Agenda semanal: el domingo se muestra siempre (en main).
 - 2026-10-04 — **Rediseño, Fase 1** (rama `rediseno/fase-1`, plan en `REDISENO.md`, maqueta en `docs/rediseno/`).
   Punto 0: datos demo con turnos hoy aunque sea domingo (y horarios de Stories para hoy); `detectarCapacidades()` una sola vez por sesión.
+  Punto 1: menú Hoy · Agenda · Perros · Avisos · Finanzas (`NAV_ITEMS`, `NAV_EXTRA`, `NAV_PADRE`). Avisos (`pages/avisos/`) junta
+  pedidos, recordatorios y "les toca volver"; su número lo calculan `lib/bandeja.js` + `hooks/useAvisados.js`. Ajustes = Configuración
+  (avatar de Pau en Hoy), Stories desde Agenda; Historial/Notas desde Finanzas (provisorio). Botón + sólo en Hoy y Agenda.
+  El aviso al celular de un pedido abre Avisos.

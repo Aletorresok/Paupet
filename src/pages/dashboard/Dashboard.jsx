@@ -2,10 +2,12 @@ import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
 import Icon from '../../components/ui/Icon';
 import PageHeader from '../../components/ui/PageHeader';
+import PauAvatar from '../../components/ui/PauAvatar';
 import { DIAS_ES, MESES } from '../../lib/constants';
 import { clientesParaVolver, enPausa } from '../../lib/frecuencia';
 import { C } from '../../lib/styles';
-import { fmtPeso, toISODate, todayStr } from '../../lib/utils';
+import { fmtPeso, todayStr } from '../../lib/utils';
+import { proximoDiaConTurnos } from '../../lib/bandeja';
 import { calcResumenMes, proximoTurno } from './dashboardStats';
 import KpiCard from './KpiCard';
 import ProximoTurnoCard from './ProximoTurnoCard';
@@ -23,20 +25,10 @@ export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient
   const { isMob, isTab } = useResp();
   const hoy = new Date();
   const hoyISO = todayStr();
-  // Próximo día con turnos (mañana, o hasta 3 días después: p. ej. el lunes si hoy es sábado).
-  let manana = new Date(hoy), mananaISO = '';
-  for (let i = 1; i <= 3; i++) {
-    manana = new Date(hoy); manana.setDate(manana.getDate() + i);
-    mananaISO = toISODate(manana);
-    if (i === 1 && manana.getDay() !== 0 && turnos.some(t => t.fecha === mananaISO)) break;
-    if (turnos.some(t => t.fecha === mananaISO && t.estado !== 'completed')) break;
-  }
-  const diasHasta = Math.round((manana - new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())) / 86400000);
-  const tituloManana = diasHasta === 1 ? 'mañana' : DIAS_ES[manana.getDay()].toLowerCase();
+  const { titulo: tituloManana, turnos: turnosManana } = proximoDiaConTurnos(turnos, hoy);
 
   const turnosHoy = turnos.filter(t => t.fecha === hoyISO);
   const quedan = turnosHoy.filter(t => t.estado !== 'completed').length;
-  const turnosManana = turnos.filter(t => t.fecha === mananaISO && t.estado !== 'completed');
   const pendientes = turnos.filter(t => t.estado === 'pending' && t.fecha >= hoyISO).length;
   const proximo = proximoTurno(turnosHoy, hoy);
   const res = calcResumenMes(clientes, notas, hoy);
@@ -51,7 +43,7 @@ export default function Dashboard({ clientes, turnos, notas, onNav, onOpenClient
   return (
     <section>
       <PageHeader title={titulo} subtitle={`${DIAS_ES[hoy.getDay()]} ${hoy.getDate()} de ${mes}`}>
-        {!isMob && <Btn onClick={onNuevoTurno}><Icon name="plus" strokeWidth={2}/>Nuevo turno</Btn>}
+        {isMob ? <PauAvatar onClick={() => onNav('config')} /> : <Btn onClick={onNuevoTurno}><Icon name="plus" strokeWidth={2}/>Nuevo turno</Btn>}
       </PageHeader>
 
       <RecordatorioRespaldo onIr={() => onNav('config')} />

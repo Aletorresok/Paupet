@@ -4,12 +4,13 @@ import Btn from '../../components/ui/Btn';
 import Icon from '../../components/ui/Icon';
 import PageHeader from '../../components/ui/PageHeader';
 import { DIAS_CONFIG } from '../../lib/constants';
+import { C } from '../../lib/styles';
 import ConfigGeneral from './ConfigGeneral';
 import RespaldoCard from './RespaldoCard';
 import AvisosCard from '../../components/ui/AvisosCard';
 import DiaConfigCard from './DiaConfigCard';
 
-export default function ConfigPage({ config, onSave, toast, caps }) {
+export default function ConfigPage({ config, onSave, toast, caps, onNav, onLogout }) {
   const { isMob } = useResp();
   const [nombre, setNombre] = useState(config.nombre);
   const [msg, setMsg] = useState(config.msg||'');
@@ -35,9 +36,12 @@ export default function ConfigPage({ config, onSave, toast, caps }) {
 
   return (
     <section>
-      <PageHeader title="Configuración" subtitle="Datos de la peluquería, avisos, copia de seguridad y horarios base de cada día">
+      <PageHeader title="Ajustes" subtitle="Avisos, copia de seguridad y datos de la peluquería">
         <Btn onClick={()=>onSave({nombre,msg,anticip:parseInt(anticip),slots,horarios})} size={isMob?'sm':''}><Icon name="check" strokeWidth={2}/>Guardar todo</Btn>
       </PageHeader>
+      {isMob && (
+        <Btn variant="ghost" onClick={() => onNav('horarios')} style={{width:'100%',justifyContent:'flex-start',marginBottom:16}}><Icon name="camera"/>Horarios para Stories</Btn>
+      )}
       <AvisosCard habilitado={caps?.push} toast={toast} />
       <RespaldoCard toast={toast} />
       <ConfigGeneral nombre={nombre} anticip={anticip} msg={msg} onNombre={setNombre} onAnticip={setAnticip} onMsg={setMsg} />
@@ -63,6 +67,9 @@ export default function ConfigPage({ config, onSave, toast, caps }) {
           />
         );
       })}
+      {isMob && (
+        <Btn variant="ghost" onClick={onLogout} style={{width:'100%',marginTop:8,color:C.rosa}}><Icon name="logout"/>Salir</Btn>
+      )}
     </section>
   );
 }

@@ -3,6 +3,8 @@
 import { todayStr } from './utils';
 
 const KEY = 'paupet_avisados';
+// Se avisa al resto de la app (p. ej. el número de Avisos del menú) cuando se marca uno.
+export const EVENTO = 'paupet-avisados';
 
 const leer = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
 
@@ -14,5 +16,6 @@ export function avisados() {
 export function marcarAvisado(turno) {
   const todos = { ...avisados(), [turno.id]: turno.fecha };
   try { localStorage.setItem(KEY, JSON.stringify(todos)); } catch { /* sin almacenamiento */ }
+  globalThis.window?.dispatchEvent(new Event(EVENTO));
   return todos;
 }

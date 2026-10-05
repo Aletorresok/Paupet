@@ -59,19 +59,19 @@ Fuera de los 21 días que cubre, se usa un campo de hora.
       `npm test` falla los domingos) y `detectarCapacidades()` una sola vez al iniciar.
 
 ### 1. Menú nuevo
-- [ ] `lib/constants.js` → `NAV_ITEMS`: **Hoy · Agenda · Perros · Avisos · Finanzas** (los 5 en la barra del
+- [x] `lib/constants.js` → `NAV_ITEMS`: **Hoy · Agenda · Perros · Avisos · Finanzas** (los 5 en la barra del
       celular; se va el "Más"). Por ahora no hay gatos: "Perros" queda así.
-- [ ] Badge de Avisos = pedidos pendientes + recordatorios sin enviar (**no** suma "les toca volver": sería un
-      número siempre alto que se deja de mirar). Se va el badge "N pend." de Agenda.
-- [ ] Avisos se crea ya en este punto con las tarjetas actuales (`PedidosCard`, `ManianaCard`, `VuelvenCard`)
+- [x] Badge de Avisos = pedidos pendientes + recordatorios sin enviar (**no** suma "les toca volver": sería un
+      número siempre alto que se deja de mirar). Se va el badge "N pend." de Agenda. Cuentan los pedidos sin responder o aceptados sin avisar (los "esperando respuesta" no: esperan al cliente).
+- [x] Avisos se crea ya en este punto con las tarjetas actuales (`PedidosCard`, `ManianaCard`, `VuelvenCard`)
       movidas tal cual; el rediseño de la bandeja es el punto 6.
-- [ ] "Historial" y "Notas y gastos" dejan de ser secciones: hasta el punto 7, accesos provisorios desde
+- [x] "Historial" y "Notas y gastos" dejan de ser secciones: hasta el punto 7, accesos provisorios desde
       Finanzas a esas pantallas como están hoy.
-- [ ] **Ajustes** (Configuración + Copia de seguridad + avisos al celular): en el celular desde el avatar de Pau
+- [x] **Ajustes** (Configuración + Copia de seguridad + avisos al celular): en el celular desde el avatar de Pau
       en Hoy; en PC abajo del menú lateral. **Horarios para Stories** se abre desde Agenda (es la fuente de los
       huecos libres) y en PC también abajo del menú lateral. En el menú lateral de PC va el avatar de Pau arriba
       y `pau-secador.webp` abajo.
-- [ ] Se va el botón flotante sólo donde estorba; queda en Hoy y Agenda.
+- [x] Se va el botón flotante sólo donde estorba; queda en Hoy y Agenda.
 
 ### 2. Hoy (`pages/dashboard/`)
 - [ ] Sacar de Hoy: la grilla de `KpiCard` (pasa a Finanzas), `InasistenciasCard` (pasa a la ficha y al dar

@@ -33,7 +33,7 @@ export default function ClientesPage({ clientes, turnos, onOpenClient, onNuevo }
 
   return (
     <section>
-      <PageHeader title="Clientes" subtitle="Perros y dueños">
+      <PageHeader title="Perros" subtitle="Perros y dueños">
         <Btn onClick={onNuevo} size={isMob?'sm':''}>+ Nuevo cliente</Btn>
       </PageHeader>
       <div style={{marginBottom:12,display:'flex',gap:12,alignItems:'center',flexWrap:isMob?'wrap':'nowrap'}}>

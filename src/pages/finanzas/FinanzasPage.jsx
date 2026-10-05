@@ -52,6 +52,12 @@ export default function FinanzasPage({ clientes, notas, turnos = [], onNuevoGast
         </div>
       </PageHeader>
 
+      {/* Provisorio hasta las pestañas Mes · Año · Historial (punto 7 de REDISENO.md). */}
+      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:16}}>
+        <Btn variant="ghost" onClick={() => onNav('historial')}><Icon name="history"/>Historial</Btn>
+        <Btn variant="ghost" onClick={() => onNav('notas')}><Icon name="notes"/>Notas y gastos</Btn>
+      </div>
+
       <div style={{display:'grid',gridTemplateColumns:`repeat(${isMob ? 2 : 4},minmax(0,1fr))`,gap:isMob?10:16,marginBottom:20}}>
         <KpiCard label="Ingresos" valor={fmtPeso(r.ingresos)} detalle={varIngresos || `${r.servicios} servicios`} />
         <KpiCard label="Gastos" valor={fmtPeso(r.egresos)} detalle={gastos[0] ? `Mayor: ${gastos[0].nombre}` : 'Sin gastos cargados'} />
