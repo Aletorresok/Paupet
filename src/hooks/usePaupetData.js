@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { db } from '../lib/db';
 import { DEFAULT_CONFIG } from '../lib/constants';
 
@@ -12,9 +12,13 @@ export function usePaupetData(toast) {
   const [caps, setCaps]       = useState({ duracion: false, etiquetas: false, fotos: false, pedidos: false, push: false });
   const [pedidos, setPedidos] = useState([]);
 
+  // Qué tiene la base se averigua una sola vez (no cambia mientras la app está abierta).
+  const capsRef = useRef(null);
+
   const loadAll = useCallback(async () => {
     try {
-      const cap = await db.detectarCapacidades();
+      capsRef.current ??= db.detectarCapacidades();
+      const cap = await capsRef.current.catch(e => { capsRef.current = null; throw e; });
       const [c, t, n, cfg, p] = await Promise.all([db.getClientes(), db.getTurnos(), db.getNotas(), db.getConfig(), db.getPedidos()]);
       // Los turnos de un cliente repetido se asocian al cliente que se muestra.
       const canonicoDe = new Map(c.flatMap(cl => cl.aliasIds.map(id => [id, cl.id])));

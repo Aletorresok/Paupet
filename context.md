@@ -312,3 +312,6 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
 - 2026-09-26 — Rama `propuesta/mejoras` (sobre ésta, sin subir): modo demo + 23 mejoras compatibles
   (Horarios↔Agenda, próximo turno al cobrar, resumen del perro al agendar, filtros de clientes, recordatorios en lote,
   proyección y clientela en Finanzas, Horarios rediseñado, tests con `npm test`, PWA, etc.) y 13 propuestas más. Detalle y cómo revertir: `PROPUESTA.md`.
+- 2026-10-04 — Agenda semanal: el domingo se muestra siempre (en main).
+- 2026-10-04 — **Rediseño, Fase 1** (rama `rediseno/fase-1`, plan en `REDISENO.md`, maqueta en `docs/rediseno/`).
+  Punto 0: datos demo con turnos hoy aunque sea domingo (y horarios de Stories para hoy); `detectarCapacidades()` una sola vez por sesión.

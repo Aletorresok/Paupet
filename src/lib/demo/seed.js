@@ -126,7 +126,7 @@ export function crearDatosDemo() {
     });
   });
 
-  // Agenda: hoy, mañana y las próximas dos semanas (lunes a sábado).
+  // Agenda: hoy (sea el día que sea), mañana y las próximas dos semanas (lunes a sábado).
   // Los "vencidos" (i % 5 === 2) quedan sin turno para que aparezcan en "Ya les toca volver".
   const libres = clientes.slice(0, PERROS.length).filter((c, i) => i % 5 !== 2);
   // Los perros de hoy no tienen otro turno futuro (así "Completar y cobrar" sugiere el próximo).
@@ -145,9 +145,9 @@ export function crearDatosDemo() {
   };
   for (let d = 0; d <= 16; d++) {
     const fecha = masDias(hoy, d);
-    if (fecha.getDay() === 0) continue;
+    if (fecha.getDay() === 0 && d > 0) continue;
     const sabado = fecha.getDay() === 6;
-    const horas = sabado ? ['09:00', '10:30', '12:00'] : ['09:00', '10:30', '12:00', '14:30', '16:00', '17:30'];
+    const horas = sabado ?['09:00', '10:30', '12:00'] : ['09:00', '10:30', '12:00', '14:30', '16:00', '17:30'];
     const cuantos = d === 0 ? 4 : d === 1 ? 3 : Math.max(1, Math.round(horas.length * (0.75 - d * 0.035)));
     horas.slice(0, cuantos).forEach((h, k) => {
       const estado = d < 3 ? (k % 3 === 2 ? 'pending' : 'confirmed') : (k % 2 ? 'pending' : 'confirmed');
@@ -179,8 +179,9 @@ export function crearDatosDemo() {
   }
 
   // Horarios para Stories: semana que viene publicada, con un par tomados.
+  // También hoy, para que se vean los huecos libres del día.
   const lunes = masDias(hoy, ((8 - hoy.getDay()) % 7) || 7);
-  const slots = {}, tomados = {};
+  const slots = { [hoyISO]: ['09:00', '10:30', '12:00', '14:30', '16:00', '17:30'] }, tomados = {};
   for (let k = 0; k < 6; k++) {
     const key = iso(masDias(lunes, k));
     slots[key] = k === 5 ? ['09:00', '10:30', '12:00'] : ['09:00', '10:30', '12:00', '14:30', '16:00', '17:30'];

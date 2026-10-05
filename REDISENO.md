@@ -54,8 +54,8 @@ Si ese día no hay horarios cargados, no se muestran huecos (no se calculan "hue
 Fuera de los 21 días que cubre, se usa un campo de hora.
 
 ### 0. Preparar
-- [ ] Commit de `REDISENO.md` y `docs/rediseno/` en la rama.
-- [ ] Adelantar dos arreglos del punto 10: el seed demo genera turnos para hoy sea el día que sea (hoy
+- [x] Commit de `REDISENO.md` y `docs/rediseno/` en la rama.
+- [x] Adelantar dos arreglos del punto 10: el seed demo genera turnos para hoy sea el día que sea (hoy
       `npm test` falla los domingos) y `detectarCapacidades()` una sola vez al iniciar.
 
 ### 1. Menú nuevo
