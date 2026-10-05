@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Agenda semanal · PC</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B50}a:hover{color:#13302A}
+.sb a{display:flex;align-items:center;gap:12px;height:46px;padding:0 12px;border-radius:12px;color:#1B2421;text-decoration:none;font-size:15px}
+.sb a.on{background:#E4F4EC;color:#13302A;font-weight:600}
+.sb .nb{margin-left:auto;background:#B83D62;color:#FFFFFF;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}
+.col{position:relative;height:504px;border-left:1px solid #E7E4DE;background-image:repeating-linear-gradient(to bottom,#E7E4DE 0,#E7E4DE 1px,transparent 1px,transparent 56px)}
+.b{position:absolute;left:4px;right:4px;border-radius:10px;padding:6px 8px;box-sizing:border-box;font-size:13px;line-height:1.25;text-decoration:none;overflow:hidden;display:flex;flex-direction:column}
+.b b{font-weight:600}
+.ok{background:#FFFFFF;border:1px solid #D9D5CE;color:#1B2421}
+.now{background:#5FBF9B;color:#13302A}
+.pend{background:#FBF0DC;color:#6E4300}
+.done{background:#EFECE7;color:#5A6460}
+.free{border:1.5px dashed #9FD6C0;color:#1F6B50;font-weight:600;justify-content:center}
+.dh{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;font-size:13px;color:#5A6460}
+.dh b{font-size:20px;color:#1B2421;font-weight:600}
+</style>
+</helmet>
+<div style="min-height: 960px; background: #F6F5F2; font-family: 'Outfit', system-ui, sans-serif; color: #1B2421; display: flex; flex-wrap: wrap">
+
+  <nav class="sb" aria-label="Principal" style="flex: 1 1 220px; max-width: 100%; box-sizing: border-box; background: #FFFFFF; border-right: 1px solid #E7E4DE; padding: 24px 16px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 0 6px 18px">
+      <img src="/_blob/07fb0904358e18e1b8f37e38ac8ebf2c" alt="" style="width: 44px; height: 44px; border-radius: 99px">
+      <span style="display: flex; flex-direction: column"><b style="font-size: 18px; font-weight: 600">Paupet</b><span style="font-size: 13px; color: #5A6460">Peluquería canina 🐾</span></span>
+    </div>
+    <a href="PcHoy.dc.html">Hoy</a>
+    <a class="on" href="PcAgenda.dc.html" aria-current="page">Agenda</a>
+    <a href="Ficha.dc.html">Perros</a>
+    <a href="Avisos.dc.html">Avisos<span class="nb">6</span></a>
+    <a href="PcFinanzas.dc.html">Finanzas</a>
+    <a href="Onboarding.dc.html">Ajustes</a>
+    <div style="flex: 1; min-height: 24px"></div>
+    <img src="/_blob/a08896d71a70aeeac8ac02409d4ba8f1" alt="Pau secando al salchicha" style="width: 100%; max-width: 220px; height: auto; align-self: center">
+  </nav>
+
+  <main style="flex: 999 1 640px; min-width: 0; padding: 32px 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+    <header style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <a href="PcAgenda.dc.html" aria-label="Semana anterior" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #D9D5CE; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #1B2421"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"></path></svg></a>
+        <h1 style="margin: 0; font-size: 28px; font-weight: 600">5 al 10 de octubre</h1>
+        <a href="PcAgenda.dc.html" aria-label="Semana siguiente" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #D9D5CE; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #1B2421"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"></path></svg></a>
+      </div>
+      <span style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+        <span style="font-size: 14px; color: #5A6460">22 turnos · 6 huecos libres</span>
+        <a href="Turno.dc.html" style="height: 48px; padding: 0 20px; border-radius: 14px; background: #5FBF9B; color: #13302A; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; text-decoration: none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Nuevo turno
+        </a>
+      </span>
+    </header>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+      <section aria-label="Semana" style="flex: 999 1 640px; min-width: 0; background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 8px 16px 16px; overflow-x: auto">
+        <div style="min-width: 720px">
+          <div style="display: grid; grid-template-columns: 52px repeat(6, minmax(0, 1fr))">
+            <span></span>
+            <span class="dh">Lun<b>5</b></span>
+            <span class="dh" style="color: #1F6B50; font-weight: 600">Hoy<b style="background: #1F2A26; color: #FFFFFF; border-radius: 10px; padding: 0 10px">6</b></span>
+            <span class="dh">Mié<b>7</b></span>
+            <span class="dh">Jue<b>8</b></span>
+            <span class="dh">Vie<b>9</b></span>
+            <span class="dh">Sáb<b>10</b></span>
+          </div>
+          <div style="display: grid; grid-template-columns: 52px repeat(6, minmax(0, 1fr))">
+            <div style="position: relative; height: 504px; font-size: 12px; color: #5A6460">
+              <span style="position: absolute; top: -7px">09:00</span><span style="position: absolute; top: 49px">10:00</span><span style="position: absolute; top: 105px">11:00</span><span style="position: absolute; top: 161px">12:00</span><span style="position: absolute; top: 217px">13:00</span><span style="position: absolute; top: 273px">14:00</span><span style="position: absolute; top: 329px">15:00</span><span style="position: absolute; top: 385px">16:00</span><span style="position: absolute; top: 441px">17:00</span>
+            </div>
+            <div class="col">
+              <a class="b done" href="PcAgenda.dc.html" style="top: 2px; height: 52px"><b>Kira ✓</b>Baño</a>
+              <a class="b done" href="PcAgenda.dc.html" style="top: 114px; height: 108px"><b>Rocco ✓</b>Deslanado</a>
+              <a class="b done" href="PcAgenda.dc.html" style="top: 282px; height: 80px"><b>Milo ✓</b>Baño y corte</a>
+            </div>
+            <div class="col" style="background-color: #FBFAF7">
+              <a class="b free" href="Turno.dc.html" style="top: 2px; height: 52px">Libre</a>
+              <a class="b now" href="Mesa.dc.html" style="top: 58px; height: 80px"><b>Coco</b>Baño y corte · ahora</a>
+              <a class="b ok" href="Mesa.dc.html" style="top: 142px; height: 52px"><b>Luna</b>Baño</a>
+              <a class="b pend" href="Mesa.dc.html" style="top: 226px; height: 28px; flex-direction: row; gap: 6px; align-items: center"><b>Pancho</b>uñas</a>
+              <a class="b free" href="Turno.dc.html" style="top: 310px; height: 80px">Libre 1 h 30</a>
+              <a class="b ok" href="Mesa.dc.html" style="top: 394px; height: 80px"><b>Toto</b>Baño y corte</a>
+            </div>
+            <div class="col">
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 2px; height: 108px"><b>Bruno</b>Deslanado</a>
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 114px; height: 80px"><b>Nala</b>Baño y corte</a>
+              <a class="b free" href="Turno.dc.html" style="top: 282px; height: 108px">Libre 2 h</a>
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 394px; height: 52px"><b>Rufo</b>Baño</a>
+            </div>
+            <div class="col">
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 58px; height: 80px"><b>Olivia</b>Baño y corte</a>
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 170px; height: 52px"><b>Tango</b>Baño</a>
+              <a class="b pend" href="Avisos.dc.html" style="top: 338px; height: 80px; border: 1.5px dashed #C98A1B"><b>Mora · pedido</b>sin responder</a>
+            </div>
+            <div class="col">
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 58px; height: 80px"><b>Simón</b>Baño y corte</a>
+              <a class="b free" href="Turno.dc.html" style="top: 142px; height: 108px">Libre 2 h</a>
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 282px; height: 52px"><b>Lola</b>Baño</a>
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 366px; height: 80px"><b>Chispa</b>Corte</a>
+            </div>
+            <div class="col">
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 2px; height: 80px"><b>Firulais</b>Baño y corte</a>
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 86px; height: 80px"><b>Uma</b>Baño y corte</a>
+              <a class="b ok" href="PcAgenda.dc.html" style="top: 170px; height: 52px"><b>Tito</b>Uñas y baño</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside aria-label="Turno elegido" style="flex: 1 1 280px; min-width: 0; background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; gap: 14px; align-items: center">
+          <img src="/_blob/10f396539a404d62944ee35672cd8ceb" alt="" style="width: 64px; height: 64px; border-radius: 99px">
+          <span style="display: flex; flex-direction: column"><b style="font-size: 22px; font-weight: 600">Coco</b><span style="font-size: 14px; color: #5A6460">Hoy 10:00–11:30 · Laura</span></span>
+        </div>
+        <span style="font-size: 15px">Baño y corte · <span style="color: #5A6460">la última vez $19.000</span></span>
+        <span style="padding: 10px 12px; border-radius: 12px; background: #FBE7EC; color: #8E2A4A; font-size: 14px; font-weight: 600">⚠️ Muerde al cortarle las uñas</span>
+        <a href="Cobro.dc.html" style="height: 50px; border-radius: 14px; background: #5FBF9B; color: #13302A; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; text-decoration: none">Cobrar</a>
+        <span style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+          <a href="Avisos.dc.html" style="height: 44px; border-radius: 12px; border: 1px solid #D9D5CE; color: #1B2421; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none">WhatsApp</a>
+          <a href="Turno.dc.html" style="height: 44px; border-radius: 12px; border: 1px solid #D9D5CE; color: #1B2421; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none">Mover</a>
+        </span>
+        <span style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: #5A6460; border-top: 1px solid #EFECE7; padding-top: 12px">
+          <span>■ <span style="color: #3FA380">en curso</span></span><span>□ confirmado</span><span style="color: #6E4300">■ sin confirmar</span><span style="color: #1F6B50">┆ libre</span>
+        </span>
+      </aside>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Auditoría de Paupet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&amp;family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B50}a:hover{color:#13302A}
+.it{display:flex;flex-direction:column;gap:4px;padding:14px 0;border-top:1px solid #EEEAE4}
+.it:first-of-type{border-top:none}
+.it b{font-size:16px;font-weight:600}
+.it span{font-size:14px;line-height:1.5;color:#4E5854}
+.tag{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600}
+</style>
+</helmet>
+<div style="width: 1280px; min-height: 4000px; box-sizing: border-box; padding: 72px 80px; background: #F6F5F2; font-family: 'Outfit', system-ui, sans-serif; color: #1B2421; display: flex; flex-direction: column; gap: 40px">
+
+  <header style="display: flex; flex-direction: column; gap: 14px; max-width: 900px">
+    <span style="font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #1F6B50">Auditoría · 4 de octubre de 2026</span>
+    <h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-size: 56px; line-height: 1.05; font-weight: 600">Paupet anda bien. Le sobra pantalla y le falta velocidad.</h1>
+    <p style="margin: 0; font-size: 18px; line-height: 1.55; color: #4E5854">Revisé todo el código (unos 180 archivos), las 7 migraciones, las funciones de avisos y corrí los tests: pasan 25 de 26. La lógica de fondo es sólida y tiene algo que ninguna agenda genérica tiene: sabe cada cuánto vuelve cada perro. El problema es de foco: muestra todo a la vez. Para un peluquero con las manos ocupadas, cada acción tiene que ser de 2 o 3 toques. Y para venderla, hoy está hecha para una sola peluquería.</p>
+  </header>
+
+  <section aria-label="Resumen" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px">
+    <sc-for list="{{resumen}}" as="r" hint-placeholder-count="5">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 16px; padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 6px">
+        <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #4E5854"><span style="width: 10px; height: 10px; border-radius: 99px; background: {{r.color}}"></span>{{r.label}}</span>
+        <span style="font-size: 40px; font-weight: 600; line-height: 1">{{r.n}}</span>
+      </div>
+    </sc-for>
+  </section>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start">
+    <section style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 26px 28px">
+      <span class="tag" style="background: #E4F4EC; color: #1F5A44">Funciona bien · mantener</span>
+      <h2 style="margin: 12px 0 6px; font-size: 24px; font-weight: 600">Lo que ya está resuelto</h2>
+      <sc-for list="{{bien}}" as="x" hint-placeholder-count="6"><div class="it"><b>{{x.t}}</b><span>{{x.d}}</span></div></sc-for>
+    </section>
+    <section style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 26px 28px">
+      <span class="tag" style="background: #FBF0DC; color: #7A4A00">Funciona, pero con ruido · simplificar</span>
+      <h2 style="margin: 12px 0 6px; font-size: 24px; font-weight: 600">Lo que molesta en el uso</h2>
+      <sc-for list="{{ruido}}" as="x" hint-placeholder-count="6"><div class="it"><b>{{x.t}}</b><span>{{x.d}}</span></div></sc-for>
+    </section>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start">
+    <section style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 26px 28px">
+      <span class="tag" style="background: #FBE7EC; color: #8E2A4A">Básico · necesita laburo</span>
+      <h2 style="margin: 12px 0 6px; font-size: 24px; font-weight: 600">Lo que está a medio camino o roto</h2>
+      <sc-for list="{{basico}}" as="x" hint-placeholder-count="8"><div class="it"><b>{{x.t}}</b><span>{{x.d}}</span></div></sc-for>
+    </section>
+    <section style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 26px 28px">
+      <span class="tag" style="background: #E3ECF8; color: #1F4A8A">Está bien · sólo falta cargar datos</span>
+      <h2 style="margin: 12px 0 6px; font-size: 24px; font-weight: 600">Lo que mejora solo con uso</h2>
+      <sc-for list="{{datos}}" as="x" hint-placeholder-count="6"><div class="it"><b>{{x.t}}</b><span>{{x.d}}</span></div></sc-for>
+    </section>
+  </div>
+
+  <section style="background: #1F2A26; color: #FFFFFF; border-radius: 20px; padding: 30px 32px; display: flex; flex-direction: column; gap: 6px">
+    <span class="tag" style="background: #3A4A44; color: #FFFFFF; align-self: flex-start">Bloqueantes para venderla</span>
+    <h2 style="margin: 12px 0 10px; font-size: 26px; font-weight: 600">Antes de la segunda peluquería</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px">
+      <sc-for list="{{venta}}" as="x" hint-placeholder-count="8">
+        <div style="display: flex; flex-direction: column; gap: 4px; padding: 14px 0; border-top: 1px solid #3A4A44">
+          <b style="font-size: 16px; font-weight: 600">{{x.t}}</b>
+          <span style="font-size: 14px; line-height: 1.5; color: #D3DCD8">{{x.d}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <div style="display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 20px; align-items: start">
+    <section style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 26px 28px">
+      <h2 style="margin: 0 0 4px; font-size: 24px; font-weight: 600">Funciones nuevas</h2>
+      <p style="margin: 0 0 14px; font-size: 14px; color: #4E5854">Ordenadas por lo que le ahorran a un peluquero en el día. Las marcadas «Ya» están dibujadas abajo, en celular y en PC.</p>
+      <div style="display: grid; grid-template-columns: 200px minmax(0, 1fr) 90px 100px; column-gap: 16px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #5A6460; padding-bottom: 8px">
+        <span>Función</span><span>Para qué</span><span>Esfuerzo</span><span>Cuándo</span>
+      </div>
+      <sc-for list="{{nuevas}}" as="x" hint-placeholder-count="10">
+        <div style="display: grid; grid-template-columns: 200px minmax(0, 1fr) 90px 100px; column-gap: 16px; align-items: center; padding: 12px 0; border-top: 1px solid #EEEAE4">
+          <b style="font-size: 15px; font-weight: 600">{{x.n}}</b>
+          <span style="font-size: 14px; line-height: 1.45; color: #4E5854">{{x.p}}</span>
+          <span style="font-size: 14px">{{x.e}}</span>
+          <span class="tag" style="justify-self: start; background: {{x.bg}}; color: {{x.fg}}">{{x.pr}}</span>
+        </div>
+      </sc-for>
+    </section>
+    <div style="display: flex; flex-direction: column; gap: 20px">
+      <section style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 26px 28px">
+        <h2 style="margin: 0 0 12px; font-size: 24px; font-weight: 600">Qué sacaría</h2>
+        <sc-for list="{{sacar}}" as="s" hint-placeholder-count="7">
+          <div style="display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid #EEEAE4; font-size: 14px; line-height: 1.45">
+            <span style="flex: none; width: 18px; height: 2px; margin-top: 10px; background: #B83D62"></span><span>{{s}}</span>
+          </div>
+        </sc-for>
+      </section>
+      <section style="background: #E4F4EC; border-radius: 20px; padding: 26px 28px; color: #13302A">
+        <h2 style="margin: 0 0 12px; font-size: 24px; font-weight: 600">Orden sugerido</h2>
+        <sc-for list="{{orden}}" as="o" hint-placeholder-count="3">
+          <div style="display: flex; gap: 12px; padding: 10px 0">
+            <span style="flex: none; width: 28px; height: 28px; border-radius: 99px; background: #5FBF9B; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px">{{o.n}}</span>
+            <span style="display: flex; flex-direction: column; gap: 2px"><b style="font-size: 15px">{{o.t}}</b><span style="font-size: 14px; line-height: 1.45">{{o.d}}</span></span>
+          </div>
+        </sc-for>
+      </section>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":4000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const T = {
+      Ya: { bg: '#E4F4EC', fg: '#1F5A44' },
+      Pronto: { bg: '#FBF0DC', fg: '#7A4A00' },
+      'Después': { bg: '#EEEAE4', fg: '#3E4743' },
+      'Para vender': { bg: '#1F2A26', fg: '#FFFFFF' },
+    };
+    const nuevas = [
+      { n: 'Modo mesa', p: 'Al tocar el turno en curso: alertas grandes, cómo se cortó la última vez, "Está listo" y "Cobrar".', e: 'Chico', pr: 'Ya' },
+      { n: 'Receta de corte', p: 'N° de cuchilla, largo, estilo y foto del después. Se repite el corte igual sin preguntar.', e: 'Chico', pr: 'Ya' },
+      { n: 'Cobro en 2 toques', p: 'Se escribe el monto nuevo con un teclado grande (o "igual que la última vez") y tocar Efectivo o Transferencia ya guarda.', e: 'Chico', pr: 'Ya' },
+      { n: 'Finanzas: año e historial', p: 'Resumen anual mes a mes y contra el año anterior, y el historial de cobros y gastos con buscador, filtros y descarga para el contador.', e: 'Medio', pr: 'Ya' },
+      { n: 'Versión PC', p: 'Misma app con más aire: Hoy en dos columnas, agenda semanal y Finanzas con tabla completa.', e: 'Medio', pr: 'Ya' },
+      { n: 'Turno en 3 toques', p: 'Perro → servicio → horario libre. Servicio y duración salen de la última visita.', e: 'Medio', pr: 'Ya' },
+      { n: 'Bandeja de avisos', p: 'Recordatorios, pedidos, "les toca volver" y "está listo" en una sola lista con "Enviar el siguiente".', e: 'Medio', pr: 'Ya' },
+      { n: '"No vino" y "Canceló"', p: 'Estados reales: historial de faltas y aviso de pedir seña a quien falta seguido.', e: 'Medio', pr: 'Ya' },
+      { n: 'Horarios automáticos', p: 'Días y horario de trabajo se cargan una vez; los huecos libres salen solos para la Story y las reservas.', e: 'Medio', pr: 'Pronto' },
+      { n: 'Confirmación por link', p: 'El recordatorio lleva "Confirmo / No puedo ir". Si cancela, el hueco se libera solo.', e: 'Medio', pr: 'Pronto' },
+      { n: 'Dueño con varios perros', p: 'Un dueño, varios perros, un turno para los dos.', e: 'Grande', pr: 'Pronto' },
+      { n: 'Funciona sin señal', p: 'Guarda en el teléfono y sincroniza cuando vuelve la conexión.', e: 'Grande', pr: 'Pronto' },
+      { n: 'Plantillas de WhatsApp', p: 'Editar los textos de los mensajes desde la app.', e: 'Chico', pr: 'Pronto' },
+      { n: 'Stock mínimo', p: '"Shampoo: quedan 2" y se suma solo a la lista de compras.', e: 'Chico', pr: 'Después' },
+      { n: 'Multi-peluquería', p: 'Todo lo del bloque "Antes de la segunda peluquería".', e: 'Grande', pr: 'Para vender' },
+    ].map(x => ({ ...x, ...T[x.pr] }));
+    return {
+      resumen: [
+        { label: 'Funciona bien', n: '8', color: '#3FA380' },
+        { label: 'Con ruido', n: '6', color: '#C2862B' },
+        { label: 'Necesita laburo', n: '11', color: '#B83D62' },
+        { label: 'Sólo datos', n: '7', color: '#2D5DA8' },
+        { label: 'Para vender', n: '8', color: '#1F2A26' },
+      ],
+      bien: [
+        { t: 'Frecuencia de vuelta', d: 'Calcula cada cuánto viene cada perro (mediana de sus últimas visitas) y avisa a quién le toca. Se puede pausar por perro. Es el diferencial de la app.' },
+        { t: 'Completar y cobrar', d: 'Monto a mano, efectivo o transferencia, y propone el próximo turno según la frecuencia. No duplica la visita si se toca dos veces.' },
+        { t: 'Pedidos de turno desde /turnos', d: 'La clienta elige un horario libre, se arma el WhatsApp y el pedido llega a la app con aviso al celular. Tiene límites contra el spam.' },
+        { t: 'Seguridad', d: 'Login con Supabase Auth, registro público cerrado y RLS en todas las tablas. La página pública sólo puede dejar pedidos.' },
+        { t: 'Agenda con duraciones', d: 'Vista día, semana y mes; cada turno ocupa según su duración y avisa cuando dos se pisan.' },
+        { t: 'Ficha con alertas y fotos', d: 'Alergias en rosa, cuidados en ámbar, fotos de antes y después, otros perros del mismo dueño y "la última vez le cobraste…".' },
+        { t: 'Identidad propia', d: 'Las ilustraciones de Pau y del salchicha, los avatares por raza y los emojis le dan personalidad. Se quedan todos: en la propuesta aparecen en Hoy, el cobro, los avisos y las pantallas vacías.' },
+        { t: 'Base técnica ordenada', d: 'Archivos chicos y separados, modo demo que no toca datos reales, 26 tests, instalable en el celular y copia de seguridad descargable.' },
+      ],
+      ruido: [
+        { t: '"Hoy" sobrecargado', d: 'Hasta 9 bloques: copia de seguridad, avisos, pedidos, 4 números de plata, próximo turno, agenda, les toca volver, mañana e inasistencias. Con un perro en la mesa, la plata del mes no sirve.' },
+        { t: '"Nuevo turno" con 8 campos', d: 'Cliente, servicio, fecha, hora, duración, precio, forma de pago y estado. Forma de pago y estado sobran al agendar; el precio se define al cobrar.' },
+        { t: '8 secciones en el menú', d: 'Historial, Finanzas y Notas y gastos están separados cuando son la misma cosa (la plata); "Horarios para Stories" es marketing pero está en "Día a día".' },
+        { t: '5 diseños de Story', d: 'Clásico, Nuevo, Menta, Crema y Salchicha, sin decidir. Elegir uno y sacar el resto.' },
+        { t: 'Ficha del perro muy larga', d: 'Una ventana de 1000 px con 6 secciones. En la mesa hacen falta 3 cosas: alertas, cómo se cortó la última vez y cobrar.' },
+        { t: 'Textos de ayuda largos', d: 'Explicaciones de varias líneas debajo de los campos que en el uso diario ya no se leen. Mejor una línea o nada.' },
+      ],
+      basico: [
+        { t: '"No vino" borra el turno', d: 'Sólo suma 1 a un contador: se pierde la fecha y el historial de faltas. Faltan los estados "no vino" y "canceló".' },
+        { t: 'Opciones de Configuración que no hacen nada', d: '"Horarios base", "días de anticipación" y "mensaje" no los usa ninguna pantalla desde la migración 5. Confunde.' },
+        { t: 'Dos sistemas de horarios', d: 'La página de reservas sólo ofrece lo cargado a mano en "Horarios para Stories". Si no se carga la semana, nadie puede elegir horario.' },
+        { t: 'Cliente = perro', d: 'El dueño se repite en cada perro y los repetidos se juntan sólo en pantalla, no en la base. No hay turno para dos perros del mismo dueño.' },
+        { t: 'Cada acción recarga todo', d: 'Después de cobrar o agendar vuelve a bajar todos los clientes, visitas, turnos, notas y pedidos, más 6 consultas de chequeo. Con años de datos o mala señal se va a notar.' },
+        { t: 'Sin señal no funciona', d: 'Es instalable pero no guarda datos en el teléfono: si se corta el wifi no se puede cobrar ni ver la agenda.' },
+        { t: 'Copias de seguridad a mano', d: 'Hay que acordarse de descargarla; el recordatorio es por dispositivo y restaurar es manual.' },
+        { t: 'Mensajes de WhatsApp fijos', d: 'Los textos están escritos en el código (con "Paupet" adentro). No se editan desde la app.' },
+        { t: 'Stock sin cantidades', d: 'La lista de compras no sabe cuánto queda ni avisa cuando algo se termina.' },
+        { t: 'Teléfonos', d: 'Supone celular argentino: un número cargado como "+54 11…" (sin el 9) abre mal el WhatsApp.' },
+        { t: 'Un test falla los domingos', d: '"Hay turnos hoy" en los datos demo depende del día. Hoy, domingo, falla.' },
+      ],
+      datos: [
+        { t: 'Frecuencia y "les toca volver"', d: 'Necesita al menos 2 visitas por perro. Cuanto más historial, más preciso.' },
+        { t: 'Alergias y cuidados', d: 'Las etiquetas existen: cargarlas en los perros que las necesitan.' },
+        { t: 'Teléfono de cada dueño', d: 'Sin teléfono no hay recordatorio, "está listo" ni invitación a volver.' },
+        { t: 'Fotos de antes y después', d: 'Funciona; casi no hay fotos. Son lo que más ayuda a repetir un corte.' },
+        { t: 'Gastos', d: 'Si no se cargan, "Ganancia neta" muestra lo mismo que los ingresos y engaña.' },
+        { t: 'Raza', d: 'Elige la ilustración del perro y ayuda a buscarlo.' },
+        { t: 'Horarios de la semana', d: 'Mientras siga como hoy, hay que cargarlos cada semana para que la página de reservas ofrezca algo.' },
+      ],
+      venta: [
+        { t: 'Es de una sola peluquería', d: 'Las tablas no tienen "negocio", la configuración es una única fila y cualquier usuario logueado ve todo. Hay que separar los datos de cada peluquería.' },
+        { t: 'Pau está escrita en el código', d: 'Su WhatsApp, "Paupet", su ilustración y los textos de reservas. Todo eso pasa a ser configuración de cada negocio.' },
+        { t: 'Alta sin ayuda', d: 'Hoy cada usuario se crea a mano en Supabase. Falta registrarse, cargar días y horario e importar clientes (contactos o Excel).' },
+        { t: 'Cobro de la suscripción', d: 'Planes, prueba gratis y débito automático (por ejemplo, Mercado Pago).' },
+        { t: 'Marca propia', d: '"Paupet" es la marca de Pau. El producto necesita nombre y dominio propios; cada peluquería, su link de reservas.' },
+        { t: 'Legales', d: 'Términos y condiciones y política de privacidad: la app guarda nombres y teléfonos de los dueños (Ley 25.326).' },
+        { t: 'Más de un peluquero', d: 'Muchas peluquerías son de 2 o 3 personas: agenda por persona y permisos (quién ve la plata).' },
+        { t: 'Infraestructura y soporte', d: 'Plan pago de Supabase con copias automáticas, avisos por negocio y un canal de soporte.' },
+      ],
+      nuevas,
+      sacar: [
+        'Los 4 números de plata en "Hoy" (pasan a Finanzas)',
+        'Historial y Notas y gastos como secciones sueltas (pasan a ser pestañas de Finanzas)',
+        'La tarjeta de inasistencias (pasa a un aviso en la ficha y al dar turno)',
+        'El recordatorio de copia de seguridad (la copia pasa a ser automática)',
+        '"Forma de pago" y "Estado" al agendar',
+        'Los diseños de Story que no se usen',
+        'Las opciones muertas de Configuración',
+      ],
+      orden: [
+        { n: '1', t: 'Limpiar (1–2 semanas)', d: 'Sacar lo de la lista, Hoy nuevo, cobro y turno rápidos, modo mesa y receta de corte.' },
+        { n: '2', t: 'Ordenar la base (2–3 semanas)', d: 'Estados de turno, dueño con varios perros, horarios automáticos, bandeja de avisos.' },
+        { n: '3', t: 'Producto (1–2 meses)', d: 'Multi-peluquería, alta, suscripción, marca y legales. Probarlo gratis con 2 o 3 peluqueros conocidos.' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

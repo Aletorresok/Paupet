@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pedí tu turno</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B50}a:hover{color:#13302A}
+.lbl{font-size:13px;font-weight:600;letter-spacing:.06em;color:#5A6460}
+.in{height:52px;border-radius:14px;border:1px solid #D9D5CE;padding:0 14px;font:400 17px 'Outfit',sans-serif;color:#1B2421;background:#FFFFFF;box-sizing:border-box;width:100%}
+.chip{height:46px;padding:0 14px;border-radius:14px;font:500 15px 'Outfit',sans-serif;cursor:pointer;white-space:nowrap;flex:none}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; font-family: 'Outfit', system-ui, sans-serif; color: #1B2421">
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 92px; overflow: auto; padding: 24px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+    <header style="display: flex; align-items: center; gap: 14px">
+      <span style="flex: none; width: 56px; height: 56px; border-radius: 18px; background: #F2C46D; color: #3A2A00; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700">C</span>
+      <span style="display: flex; flex-direction: column; gap: 1px">
+        <span style="font-size: 22px; font-weight: 600">Peluquería Canela</span>
+        <span style="font-size: 14px; color: #5A6460">Pedí tu turno · te confirmamos por WhatsApp</span>
+      </span>
+    </header>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <label style="display: flex; flex-direction: column; gap: 6px"><span class="lbl">TU PERRO</span><input class="in" placeholder="Nombre"></label>
+      <label style="display: flex; flex-direction: column; gap: 6px"><span class="lbl">TU WHATSAPP</span><input class="in" placeholder="11 2345 6789" inputmode="tel"></label>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span class="lbl">QUÉ NECESITA</span>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{servicios}}" as="s" hint-placeholder-count="4">
+          <button class="chip" type="button" aria-pressed="{{s.sel}}" onClick="{{s.pick}}" style="{{s.st}}">{{s.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span class="lbl">CUÁNDO</span>
+      <div style="display: flex; gap: 8px; overflow-x: auto">
+        <sc-for list="{{dias}}" as="d" hint-placeholder-count="5">
+          <button class="chip" type="button" aria-pressed="{{d.sel}}" onClick="{{d.pick}}" style="{{d.st}}">{{d.label}}</button>
+        </sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{horas}}" as="h" hint-placeholder-count="4">
+          <button class="chip" type="button" aria-pressed="{{h.sel}}" onClick="{{h.pick}}" style="{{h.st}}">{{h.label}}</button>
+        </sc-for>
+      </div>
+      <a href="Reserva.dc.html" style="font-size: 14px; font-weight: 600">Ningún horario me sirve</a>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px 24px; background: #FFFFFF; border-top: 1px solid #E7E4DE">
+    <button type="button" style="width: 100%; height: 56px; border-radius: 14px; border: none; background: #1F2A26; color: #FFFFFF; font: 600 17px 'Outfit',sans-serif; cursor: pointer">Pedir {{resumen}} por WhatsApp</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { svc: 'Baño y corte', dia: 'Jue 8', hora: '15:00' };
+  }
+  renderVals() {
+    const { svc, dia, hora } = this.state;
+    const on = 'background: #FBF0DC; color: #3A2A00; border: 2px solid #C98A1B; font-weight: 600';
+    const off = 'background: #FFFFFF; color: #1B2421; border: 1px solid #D9D5CE';
+    const mk = (key, val, list) => list.map(label => ({
+      label, sel: val === label ? 'true' : 'false', st: val === label ? on : off,
+      pick: () => this.setState({ [key]: label }),
+    }));
+    const libres = { 'Mañana': ['09:00', '15:00'], 'Jue 8': ['09:00', '10:30', '15:00', '16:30'], 'Vie 9': ['11:00', '14:00'], 'Sáb 10': ['09:00'] };
+    const horas = libres[dia] || [];
+    return {
+      servicios: mk('svc', svc, ['Baño', 'Baño y corte', 'Uñas', 'Deslanado']),
+      dias: mk('dia', dia, Object.keys(libres)),
+      horas: mk('hora', horas.includes(hora) ? hora : null, horas),
+      resumen: horas.includes(hora) ? `${dia.toLowerCase()} ${hora}` : 'turno',
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Hoy · PC</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B50}a:hover{color:#13302A}
+.sb a{display:flex;align-items:center;gap:12px;height:46px;padding:0 12px;border-radius:12px;color:#1B2421;text-decoration:none;font-size:15px}
+.sb a.on{background:#E4F4EC;color:#13302A;font-weight:600}
+.sb .nb{margin-left:auto;background:#B83D62;color:#FFFFFF;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}
+.card{background:#FFFFFF;border:1px solid #E7E4DE;border-radius:20px}
+.row{display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid #EFECE7;text-decoration:none;color:#1B2421}
+.kv{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.kv span{color:#5A6460;font-size:13px}
+.kv b{font-weight:600;font-size:15px}
+.snd{height:38px;padding:0 14px;border-radius:10px;border:1px solid #D9D5CE;background:#FFFFFF;font:600 14px 'Outfit',sans-serif;color:#1B2421;cursor:pointer}
+</style>
+</helmet>
+<div style="min-height: 960px; background: #F6F5F2; font-family: 'Outfit', system-ui, sans-serif; color: #1B2421; display: flex; flex-wrap: wrap">
+
+  <nav class="sb" aria-label="Principal" style="flex: 1 1 220px; max-width: 100%; box-sizing: border-box; background: #FFFFFF; border-right: 1px solid #E7E4DE; padding: 24px 16px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 0 6px 18px">
+      <img src="/_blob/07fb0904358e18e1b8f37e38ac8ebf2c" alt="" style="width: 44px; height: 44px; border-radius: 99px">
+      <span style="display: flex; flex-direction: column"><b style="font-size: 18px; font-weight: 600">Paupet</b><span style="font-size: 13px; color: #5A6460">Peluquería canina 🐾</span></span>
+    </div>
+    <a class="on" href="PcHoy.dc.html" aria-current="page">Hoy</a>
+    <a href="PcAgenda.dc.html">Agenda</a>
+    <a href="Ficha.dc.html">Perros</a>
+    <a href="Avisos.dc.html">Avisos<span class="nb">6</span></a>
+    <a href="PcFinanzas.dc.html">Finanzas</a>
+    <a href="Onboarding.dc.html">Ajustes</a>
+    <div style="flex: 1; min-height: 24px"></div>
+    <img src="/_blob/a08896d71a70aeeac8ac02409d4ba8f1" alt="Pau secando al salchicha" style="width: 100%; max-width: 220px; height: auto; align-self: center">
+  </nav>
+
+  <main style="flex: 999 1 640px; min-width: 0; padding: 32px 36px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+    <header style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 15px; color: #5A6460">¡Buen día, Pau! ☀️ Martes 6 de octubre</span>
+        <h1 style="margin: 0; font-size: 34px; font-weight: 600">Quedan 4 turnos 🐾</h1>
+      </div>
+      <span style="display: flex; gap: 10px">
+        <a href="PcHoy.dc.html" style="height: 48px; padding: 0 18px; border-radius: 14px; border: 1px solid #D9D5CE; background: #FFFFFF; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #1B2421; text-decoration: none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>Buscar perro
+        </a>
+        <a href="Turno.dc.html" style="height: 48px; padding: 0 20px; border-radius: 14px; background: #5FBF9B; color: #13302A; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; text-decoration: none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Nuevo turno
+        </a>
+      </span>
+    </header>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+      <div style="flex: 2 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+
+        <section class="card" aria-label="Turno en curso" style="padding: 22px 24px; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; gap: 18px; align-items: center; flex-wrap: wrap">
+            <img src="/_blob/10f396539a404d62944ee35672cd8ceb" alt="" style="width: 96px; height: 96px; border-radius: 99px">
+            <div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 3px">
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: .08em; color: #1F6B50">AHORA · 10:00 – 11:30</span>
+              <span style="font-size: 30px; font-weight: 600">Coco</span>
+              <span style="font-size: 15px; color: #5A6460">Caniche toy · Baño y corte · Laura · 11 2345 6789</span>
+            </div>
+            <span style="display: flex; gap: 10px">
+              <a href="Avisos.dc.html" style="height: 52px; padding: 0 18px; border-radius: 14px; border: 1px solid #D9D5CE; background: #FFFFFF; color: #1B2421; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none">Está listo 🐾</a>
+              <a href="Cobro.dc.html" style="height: 52px; padding: 0 22px; border-radius: 14px; background: #5FBF9B; color: #13302A; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none">Cobrar</a>
+            </span>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <span style="height: 36px; padding: 0 14px; border-radius: 999px; background: #FBE7EC; color: #8E2A4A; display: flex; align-items: center; font-size: 14px; font-weight: 600">⚠️ Muerde al cortarle las uñas</span>
+            <span style="height: 36px; padding: 0 14px; border-radius: 999px; background: #FBF0DC; color: #6E4300; display: flex; align-items: center; font-size: 14px; font-weight: 600">Piel sensible · shampoo hipoalergénico</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; background: #F6F5F2; border-radius: 14px; padding: 14px 16px">
+            <div class="kv"><span>Cuerpo</span><b>Cuchilla 7F</b></div>
+            <div class="kv"><span>Patas</span><b>Tijera, redondeadas</b></div>
+            <div class="kv"><span>Cara</span><b>Osito, corta</b></div>
+            <div class="kv"><span>La última vez</span><b>2 sep · $19.000</b></div>
+          </div>
+        </section>
+
+        <section class="card" aria-label="El resto del día" style="padding: 8px 24px">
+          <a class="row" href="Mesa.dc.html" style="border-top: none">
+            <span style="width: 56px; font-weight: 600">11:30</span>
+            <img src="/_blob/5a856936291990a47b86420c3a8ae31d" alt="" style="width: 40px; height: 40px; border-radius: 99px">
+            <span style="flex: 1">Luna <span style="color: #5A6460">· Golden · Baño · Martín</span></span>
+            <span style="font-size: 13px; font-weight: 600; color: #1F5A44; background: #E4F4EC; border-radius: 999px; padding: 4px 10px">Confirmado</span>
+          </a>
+          <a class="row" href="Mesa.dc.html">
+            <span style="width: 56px; font-weight: 600">13:00</span>
+            <img src="/_blob/a96722e185aa56279a27aa386e49e1e5" alt="" style="width: 40px; height: 40px; border-radius: 99px">
+            <span style="flex: 1">Pancho <span style="color: #5A6460">· Salchicha · Uñas · Sofía</span></span>
+            <span style="font-size: 13px; font-weight: 600; color: #7A4A00; background: #FBF0DC; border-radius: 999px; padding: 4px 10px">Sin confirmar</span>
+          </a>
+          <a class="row" href="Turno.dc.html">
+            <span style="width: 56px; font-weight: 600; color: #5A6460">14:30</span>
+            <span style="width: 40px; height: 40px; border-radius: 99px; border: 1.5px dashed #9FD6C0"></span>
+            <span style="flex: 1; color: #1F6B50; font-weight: 600">Libre 1 h 30 · dar turno</span>
+          </a>
+          <a class="row" href="Mesa.dc.html">
+            <span style="width: 56px; font-weight: 600">16:00</span>
+            <img src="/_blob/b9c02d68f18918035da29e250113ad50" alt="" style="width: 40px; height: 40px; border-radius: 99px">
+            <span style="flex: 1">Toto <span style="color: #5A6460">· Yorkie · Baño y corte · Andrea</span></span>
+            <span style="font-size: 13px; font-weight: 600; color: #1F5A44; background: #E4F4EC; border-radius: 999px; padding: 4px 10px">Confirmado</span>
+          </a>
+        </section>
+      </div>
+
+      <div style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+        <section class="card" aria-label="Pedido de turno" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+          <span style="font-size: 13px; font-weight: 600; letter-spacing: .06em; color: #5A6460">PEDIDO DE TURNO · NUEVO</span>
+          <span style="font-size: 16px"><b style="font-weight: 600">Mora</b> <span style="color: #5A6460">· perro nuevo · Julieta</span><br><span style="font-size: 14px; color: #3E4743">Baño y corte · jueves 8 a las 15:00</span></span>
+          <span style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+            <a href="Turno.dc.html" style="height: 44px; border-radius: 12px; border: 1px solid #D9D5CE; color: #1B2421; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none">Otro horario</a>
+            <a href="Turno.dc.html" style="height: 44px; border-radius: 12px; background: #1F2A26; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none">Aceptar</a>
+          </span>
+        </section>
+
+        <section class="card" aria-label="Mensajes para mandar" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 4px">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px">
+            <span style="font-size: 18px; font-weight: 600">Para mandar 💬</span>
+            <a href="Avisos.dc.html" style="font-size: 14px; font-weight: 600">Ver todo</a>
+          </div>
+          <div class="row" style="border-top: none"><span style="flex: 1">Bruno <span style="color: #5A6460">· recordar mañana 09:00</span></span><button class="snd" type="button">Enviar</button></div>
+          <div class="row"><span style="flex: 1">Nala <span style="color: #5A6460">· recordar mañana 11:00</span></span><button class="snd" type="button">Enviar</button></div>
+          <div class="row"><span style="flex: 1">Pancho <span style="color: #5A6460">· recordar mañana 13:00</span></span><button class="snd" type="button">Enviar</button></div>
+          <div class="row"><span style="flex: 1">Lola <span style="color: #8E2A4A">· se pasó 6 días</span></span><button class="snd" type="button">Invitar</button></div>
+          <div class="row"><span style="flex: 1">Simón <span style="color: #6E4300">· le toca en 3 días</span></span><button class="snd" type="button">Invitar</button></div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

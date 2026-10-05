@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Alta de una peluquería</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B50}a:hover{color:#13302A}
+.lbl{font-size:13px;font-weight:600;letter-spacing:.06em;color:#5A6460}
+.in{height:52px;border-radius:14px;border:1px solid #D9D5CE;padding:0 14px;font:400 17px 'Outfit',sans-serif;color:#1B2421;background:#FFFFFF;box-sizing:border-box;width:100%}
+.dy{height:48px;border-radius:14px;font:600 15px 'Outfit',sans-serif;cursor:pointer}
+.op{display:flex;align-items:center;gap:14px;min-height:64px;padding:0 16px;border-radius:16px;border:1px solid #E7E4DE;background:#FFFFFF;text-decoration:none;color:#1B2421;font-size:16px;font-weight:500}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F6F5F2; font-family: 'Outfit', system-ui, sans-serif; color: #1B2421">
+  <div style="position: absolute; inset: 0; overflow: auto; padding: 26px 20px 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+      <span style="height: 5px; border-radius: 9px; background: #3FA380"></span>
+      <span style="height: 5px; border-radius: 9px; background: {{bar2}}"></span>
+      <span style="height: 5px; border-radius: 9px; background: {{bar3}}"></span>
+    </div>
+
+    <sc-if value="{{paso2}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 18px">
+        <header style="display: flex; flex-direction: column; gap: 6px">
+          <span class="lbl">PASO 2 DE 3</span>
+          <h1 style="margin: 0; font-size: 28px; font-weight: 600; line-height: 1.15">¿Qué días y en qué horario trabajás?</h1>
+          <span style="font-size: 15px; color: #5A6460">Con esto la app calcula sola tus huecos libres para la agenda, la Story y tu link de reservas.</span>
+        </header>
+        <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+          <sc-for list="{{dias}}" as="d" hint-placeholder-count="7">
+            <button class="dy" type="button" aria-pressed="{{d.sel}}" onClick="{{d.toggle}}" style="{{d.st}}">{{d.l}}</button>
+          </sc-for>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+          <label style="display: flex; flex-direction: column; gap: 6px"><span class="lbl">DESDE</span><input class="in" value="09:00"></label>
+          <label style="display: flex; flex-direction: column; gap: 6px"><span class="lbl">HASTA</span><input class="in" value="18:00"></label>
+        </div>
+        <label style="display: flex; flex-direction: column; gap: 6px"><span class="lbl">CUÁNTOS PERROS A LA VEZ</span><input class="in" value="1"></label>
+        <div style="background: #E4F4EC; color: #13302A; border-radius: 14px; padding: 14px; font-size: 15px; line-height: 1.45">Tu link de reservas: <b style="font-weight: 600">[producto].com.ar/canela</b></div>
+        <button type="button" onClick="{{seguir}}" style="height: 56px; border-radius: 14px; border: none; background: #5FBF9B; color: #13302A; font: 600 17px 'Outfit',sans-serif; cursor: pointer">Seguir</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{paso3}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <header style="display: flex; flex-direction: column; gap: 6px">
+          <span class="lbl">PASO 3 DE 3</span>
+          <h1 style="margin: 0; font-size: 28px; font-weight: 600; line-height: 1.15">Traé a tus clientes</h1>
+          <span style="font-size: 15px; color: #5A6460">No hace falta cargar uno por uno.</span>
+        </header>
+        <a class="op" href="Hoy.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F6B50" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"></path></svg>Desde los contactos del celular</a>
+        <a class="op" href="Hoy.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F6B50" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 13h7M9 17h7"></path></svg>Desde un Excel o planilla</a>
+        <a class="op" href="Hoy.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F6B50" stroke-width="1.8" stroke-linejoin="round"><path d="M4 7h16v12H4z"></path><path d="M8 7V5h8v2"></path></svg>Sacándole fotos al cuaderno</a>
+        <a href="Hoy.dc.html" style="align-self: center; height: 44px; display: flex; align-items: center; font-size: 15px; font-weight: 600">Empezar sin clientes</a>
+        <button type="button" onClick="{{volver}}" style="align-self: center; height: 40px; border: none; background: none; font: 500 14px 'Outfit',sans-serif; color: #5A6460; cursor: pointer">Volver al paso 2</button>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { paso: 2, dias: { L: true, M: true, X: true, J: true, V: true, S: true, D: false } };
+  }
+  renderVals() {
+    const { paso, dias } = this.state;
+    const labels = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+    return {
+      paso2: paso === 2,
+      paso3: paso === 3,
+      bar2: '#3FA380',
+      bar3: paso === 3 ? '#3FA380' : '#D9D5CE',
+      dias: labels.map(l => ({
+        l,
+        sel: dias[l] ? 'true' : 'false',
+        st: dias[l] ? 'background: #1F2A26; color: #FFFFFF; border: none' : 'background: #FFFFFF; color: #1B2421; border: 1px solid #D9D5CE',
+        toggle: () => this.setState({ dias: { ...dias, [l]: !dias[l] } }),
+      })),
+      seguir: () => this.setState({ paso: 3 }),
+      volver: () => this.setState({ paso: 2 }),
+    };
+  }
+}
+</script>
+</body>
+</html>

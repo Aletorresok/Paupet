@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cobrar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B50}a:hover{color:#13302A}
+.k{height:54px;border-radius:14px;border:none;background:#F2F0EC;color:#1B2421;font:500 24px 'Outfit',sans-serif;cursor:pointer}
+.pay{height:64px;border-radius:16px;border:none;font:600 18px 'Outfit',sans-serif;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: rgba(27,36,33,.45); font-family: 'Outfit', system-ui, sans-serif; color: #1B2421">
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; top: 36px; background: #FFFFFF; border-radius: 24px 24px 0 0; padding: 10px 20px 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+    <span style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #D9D5CE; flex: none"></span>
+
+    <header style="display: flex; align-items: center; gap: 12px">
+      <img src="/_blob/10f396539a404d62944ee35672cd8ceb" alt="" style="flex: none; width: 48px; height: 48px; border-radius: 99px">
+      <div style="flex: 1; display: flex; flex-direction: column">
+        <span style="font-size: 20px; font-weight: 600">Cobrar a Coco ✂️</span>
+        <span style="font-size: 14px; color: #5A6460">Baño y corte · Laura</span>
+      </div>
+      <a href="Mesa.dc.html" aria-label="Cerrar" style="width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #1B2421">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+      </a>
+    </header>
+
+    <sc-if value="{{noPagado}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div aria-live="polite" style="height: 76px; border-radius: 16px; border: 2px solid #3FA380; display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 44px; font-weight: 600">
+          <span style="color: #5A6460; font-size: 30px">$</span><span style="{{montoStyle}}">{{montoTxt}}</span><span style="width: 2px; height: 40px; background: #3FA380"></span>
+        </div>
+        <div style="display: flex; gap: 8px">
+          <button type="button" onClick="{{usarUltima}}" style="flex: 1; height: 44px; border-radius: 999px; border: 1px solid #D9D5CE; background: #FFFFFF; font: 500 14px 'Outfit',sans-serif; color: #1B2421; cursor: pointer">Igual que la última vez · $19.000</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+          <sc-for list="{{teclas}}" as="t" hint-placeholder-count="12">
+            <button class="k" type="button" onClick="{{t.press}}" aria-label="{{t.aria}}">{{t.l}}</button>
+          </sc-for>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 2px">
+          <button class="pay" type="button" onClick="{{efectivo}}" style="background: #5FBF9B; color: #13302A">Efectivo</button>
+          <button class="pay" type="button" onClick="{{transfer}}" style="background: #1F2A26; color: #FFFFFF">Transferencia</button>
+        </div>
+        <a href="Hoy.dc.html" style="align-self: center; height: 40px; display: flex; align-items: center; font-size: 15px; font-weight: 600; color: #8E2A4A; text-decoration: none">No vino</a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{pagado}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 0">
+          <img src="/_blob/eb55fd1722cc9f7a66d92ff758b8af9c" alt="" style="width: 150px; height: auto">
+          <span style="font-size: 24px; font-weight: 600">¡Cobrado ${{montoTxt}}! ✅</span>
+          <span style="font-size: 15px; color: #5A6460">{{medioTxt}} · guardado en su historial</span>
+          <button type="button" onClick="{{deshacer}}" style="height: 40px; border: none; background: none; font: 600 14px 'Outfit',sans-serif; color: #1F6B50; cursor: pointer">Deshacer</button>
+        </div>
+        <div style="background: #F6F5F2; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+          <span style="font-size: 13px; font-weight: 600; letter-spacing: .06em; color: #5A6460">PRÓXIMO TURNO · VIENE CADA ~5 SEMANAS</span>
+          <span style="font-size: 20px; font-weight: 600">Martes 10 de noviembre · 10:00</span>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+            <a href="Hoy.dc.html" style="height: 52px; border-radius: 14px; border: 1px solid #D9D5CE; background: #FFFFFF; color: #1B2421; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; text-decoration: none">Ahora no</a>
+            <a href="Hoy.dc.html" style="height: 52px; border-radius: 14px; background: #5FBF9B; color: #13302A; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; text-decoration: none">Agendar 📅</a>
+          </div>
+          <a href="Turno.dc.html" style="align-self: center; font-size: 14px; font-weight: 600">Otro día u horario</a>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { monto: '', medio: null };
+  }
+  renderVals() {
+    const { monto, medio } = this.state;
+    const n = parseInt(monto || '0', 10);
+    const tecla = (l, aria, fn) => ({ l, aria, press: fn });
+    const add = d => () => this.setState({ monto: (monto + d).replace(/^0+/, '').slice(0, 7) });
+    const teclas = ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(d => tecla(d, d, add(d)));
+    teclas.push(tecla('000', 'tres ceros', add('000')));
+    teclas.push(tecla('0', '0', add('0')));
+    teclas.push(tecla('⌫', 'borrar', () => this.setState({ monto: monto.slice(0, -1) })));
+    return {
+      teclas,
+      montoTxt: n ? n.toLocaleString('es-AR') : '0',
+      montoStyle: n ? 'color: #1B2421' : 'color: #B5B0A8',
+      noPagado: !medio,
+      pagado: !!medio,
+      medioTxt: medio === 'transferencia' ? 'Transferencia' : 'Efectivo',
+      usarUltima: () => this.setState({ monto: '19000' }),
+      efectivo: () => { if (n) this.setState({ medio: 'efectivo' }); },
+      transfer: () => { if (n) this.setState({ medio: 'transferencia' }); },
+      deshacer: () => this.setState({ medio: null }),
+    };
+  }
+}
+</script>
+</body>
+</html>

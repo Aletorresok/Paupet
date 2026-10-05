@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Finanzas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B50}a:hover{color:#13302A}
+.nav{position:absolute;left:0;right:0;bottom:0;height:76px;background:#FFFFFF;border-top:1px solid #E7E4DE;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:6px 4px 14px;box-sizing:border-box}
+.nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;color:#5A6460;text-decoration:none;position:relative}
+.nav a.on{color:#1F6B50;font-weight:600}
+.nb{position:absolute;top:0;left:calc(50% + 6px);background:#B83D62;color:#FFFFFF;font-size:10px;font-weight:700;border-radius:999px;padding:1px 6px}
+.tab{height:40px;border-radius:10px;border:none;font:600 15px 'Outfit',sans-serif;cursor:pointer}
+.mi{display:flex;align-items:center;gap:14px;min-height:54px;border-top:1px solid #EFECE7;text-decoration:none;color:#1B2421;font-size:16px}
+.mi:first-of-type{border-top:none}
+.mi small{display:block;font-size:13px;color:#5A6460}
+.st{display:flex;flex-direction:column;gap:2px;background:#FFFFFF;border:1px solid #E7E4DE;border-radius:16px;padding:12px 14px}
+.st span{font-size:13px;color:#5A6460}
+.st b{font-size:20px;font-weight:600}
+.chip{height:38px;padding:0 14px;border-radius:999px;font:500 14px 'Outfit',sans-serif;cursor:pointer;white-space:nowrap;flex:none}
+.mv{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #EFECE7}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F6F5F2; font-family: 'Outfit', system-ui, sans-serif; color: #1B2421">
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 76px; overflow: auto; padding: 22px 16px 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+    <header style="display: flex; align-items: center; justify-content: space-between">
+      <h1 style="margin: 0; font-size: 28px; font-weight: 600">Finanzas 💸</h1>
+      <span style="font-size: 15px; color: #5A6460">{{periodo}}</span>
+    </header>
+
+    <div role="tablist" aria-label="Vista" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: #ECE9E4; border-radius: 12px; padding: 4px">
+      <button class="tab" type="button" role="tab" aria-selected="{{tMes.sel}}" onClick="{{tMes.pick}}" style="{{tMes.st}}">Mes</button>
+      <button class="tab" type="button" role="tab" aria-selected="{{tAnio.sel}}" onClick="{{tAnio.pick}}" style="{{tAnio.st}}">Año</button>
+      <button class="tab" type="button" role="tab" aria-selected="{{tHist.sel}}" onClick="{{tHist.pick}}" style="{{tHist.st}}">Historial</button>
+    </div>
+
+    <sc-if value="{{esMes}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <section aria-label="Caja del mes" style="background: #1F2A26; color: #FFFFFF; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 14px; color: #D3DCD8">Te queda en octubre</span>
+            <span style="font-size: 40px; font-weight: 600; line-height: 1.05">$348.500</span>
+            <span style="font-size: 14px; color: #D3DCD8">Cobrado $412.000 − gastos $63.500</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; height: 10px; border-radius: 99px; overflow: hidden; gap: 2px">
+              <span style="width: 58%; background: #5FBF9B"></span><span style="flex: 1; background: #8FB3E8"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: #D3DCD8"><span>Efectivo $239.000</span><span>Transferencia $173.000</span></div>
+          </div>
+          <div style="border-top: 1px solid #3A4A44; padding-top: 12px; font-size: 14px; color: #D3DCD8">Agendado por cobrar: <b style="color: #FFFFFF; font-weight: 600">$180.000</b> en 9 turnos</div>
+        </section>
+        <a href="Negocio.dc.html" style="height: 52px; border-radius: 14px; border: 1px solid #D9D5CE; background: #FFFFFF; color: #1B2421; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 600; text-decoration: none">🛒 Anotar un gasto o compra</a>
+        <nav aria-label="Ajustes" style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 2px 16px">
+          <a class="mi" href="Reserva.dc.html"><span style="flex: 1">📸 Link de reservas y Story<small>Se arma solo con tus huecos libres</small></span></a>
+          <a class="mi" href="Onboarding.dc.html"><span style="flex: 1">Días, horario y servicios</span></a>
+          <a class="mi" href="Negocio.dc.html"><span style="flex: 1">Mensajes de WhatsApp</span></a>
+          <a class="mi" href="Negocio.dc.html"><span style="flex: 1">Copia de seguridad<small>Automática · la última, hoy 03:00</small></span></a>
+        </nav>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{esAnio}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <section style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 14px; color: #5A6460">Cobrado en 2026</span>
+            <span style="font-size: 34px; font-weight: 600; line-height: 1.05">$3.648.000</span>
+            <span style="font-size: 14px; color: #1F6B50; font-weight: 600">+18% vs enero–octubre de 2025</span>
+          </div>
+          <div aria-label="Cobrado por mes" style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; align-items: end; height: 120px; border-bottom: 1px solid #C9C4BC">
+            <sc-for list="{{meses}}" as="m" hint-placeholder-count="12">
+              <span title="{{m.tip}}" style="{{m.st}}"></span>
+            </sc-for>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; font-size: 11px; color: #5A6460; text-align: center">
+            <sc-for list="{{meses}}" as="m" hint-placeholder-count="12"><span>{{m.l}}</span></sc-for>
+          </div>
+        </section>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+          <div class="st"><span>Gastos</span><b>$612.000</b></div>
+          <div class="st"><span>Te queda</span><b>$3.036.000</b></div>
+          <div class="st"><span>Mejor mes</span><b>Septiembre</b></div>
+          <div class="st"><span>Servicios</span><b>214</b></div>
+          <div class="st"><span>Ticket promedio</span><b>$17.050</b></div>
+          <div class="st"><span>Clientes nuevos</span><b>38 🐶</b></div>
+        </div>
+        <a href="Negocio.dc.html" style="height: 48px; border-radius: 14px; border: 1px solid #D9D5CE; background: #FFFFFF; color: #1B2421; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; text-decoration: none">Descargar resumen 2026 (para el contador)</a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{esHist}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; border-radius: 14px; border: 1px solid #D9D5CE; background: #FFFFFF">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5A6460" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+          <input aria-label="Buscar movimiento" placeholder="Buscar perro, dueño o gasto" style="flex: 1; border: none; outline: none; font: 400 16px 'Outfit',sans-serif; background: transparent">
+        </div>
+        <div style="display: flex; gap: 6px; overflow-x: auto">
+          <sc-for list="{{filtros}}" as="f" hint-placeholder-count="4">
+            <button class="chip" type="button" aria-pressed="{{f.sel}}" onClick="{{f.pick}}" style="{{f.st}}">{{f.label}}</button>
+          </sc-for>
+        </div>
+        <section style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 2px 16px">
+          <sc-for list="{{movs}}" as="x" hint-placeholder-count="6">
+            <div class="mv" style="{{x.first}}">
+              <span style="width: 44px; font-size: 13px; color: #5A6460">{{x.fecha}}</span>
+              <span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+                <span style="font-size: 15px; font-weight: 500">{{x.titulo}}</span>
+                <span style="font-size: 13px; color: #5A6460">{{x.det}}</span>
+              </span>
+              <b style="font-size: 15px; font-weight: 600; color: {{x.color}}">{{x.monto}}</b>
+            </div>
+          </sc-for>
+        </section>
+        <span style="text-align: center; font-size: 13px; color: #5A6460">{{totalTxt}}</span>
+      </div>
+    </sc-if>
+  </div>
+
+  <nav class="nav" aria-label="Principal">
+    <a href="Hoy.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"></path></svg>Hoy</a>
+    <a href="Agenda.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Agenda</a>
+    <a href="Ficha.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="9.5" r="1.8"></circle><circle cx="10" cy="5.8" r="1.8"></circle><circle cx="14.5" cy="5.8" r="1.8"></circle><circle cx="18" cy="9.5" r="1.8"></circle><path d="M12.2 11.5c-3 0-5.5 3.6-5.5 6.1 0 1.5 1.2 2.2 2.5 2 1.2-.2 2-.8 3-.8s1.8.6 3 .8c1.3.2 2.5-.5 2.5-2 0-2.5-2.5-6.1-5.5-6.1z"></path></svg>Perros</a>
+    <a href="Avisos.dc.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"></path></svg>Avisos<span class="nb">6</span></a>
+    <a class="on" href="Negocio.dc.html" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="6" width="18" height="14" rx="2"></rect><path d="M3 10h18M16 15h2"></path></svg>Finanzas</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'mes', filtro: 'Todo' };
+  }
+  renderVals() {
+    const { tab, filtro } = this.state;
+    const tabOn = 'background: #FFFFFF; color: #1B2421; box-shadow: 0 1px 3px rgba(0,0,0,.08)';
+    const tabOff = 'background: transparent; color: #5A6460';
+    const mkTab = id => ({ sel: tab === id ? 'true' : 'false', st: tab === id ? tabOn : tabOff, pick: () => this.setState({ tab: id }) });
+    const vals = [298, 265, 341, 356, 372, 349, 401, 418, 436, 412, 0, 0];
+    const L = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+    const N = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const meses = vals.map((v, i) => ({
+      l: L[i],
+      tip: v ? `${N[i]}: $${(v * 1000).toLocaleString('es-AR')}` : `${N[i]}: todavía no`,
+      st: v
+        ? `display: block; height: ${Math.round(v / 436 * 112)}px; background: ${i === 9 ? '#9FD6C0' : '#3FA380'}; border-radius: 4px 4px 0 0`
+        : 'display: block; height: 2px; background: #E7E4DE',
+    }));
+    const todos = [
+      { fecha: '6 oct', titulo: 'Coco', det: 'Baño y corte · Efectivo', v: 19000, tipo: 'Efectivo' },
+      { fecha: '6 oct', titulo: 'Shampoo hipoalergénico', det: 'Gasto · Insumos', v: -14500, tipo: 'Gastos' },
+      { fecha: '5 oct', titulo: 'Bruno', det: 'Deslanado · Transferencia', v: 32000, tipo: 'Transferencia' },
+      { fecha: '5 oct', titulo: 'Luna', det: 'Baño · Efectivo', v: 15000, tipo: 'Efectivo' },
+      { fecha: '4 oct', titulo: 'Toto', det: 'Baño y corte · Transferencia', v: 21000, tipo: 'Transferencia' },
+      { fecha: '3 oct', titulo: 'Luz', det: 'Gasto · Servicios', v: -28000, tipo: 'Gastos' },
+      { fecha: '3 oct', titulo: 'Pancho', det: 'Uñas · Efectivo', v: 6000, tipo: 'Efectivo' },
+    ];
+    const lista = todos.filter(x => filtro === 'Todo' || x.tipo === filtro);
+    const total = lista.reduce((a, x) => a + x.v, 0);
+    const fOn = 'background: #1F2A26; color: #FFFFFF; border: none';
+    const fOff = 'background: #FFFFFF; color: #1B2421; border: 1px solid #D9D5CE';
+    return {
+      tMes: mkTab('mes'), tAnio: mkTab('anio'), tHist: mkTab('hist'),
+      esMes: tab === 'mes', esAnio: tab === 'anio', esHist: tab === 'hist',
+      periodo: tab === 'anio' ? '2026' : 'Octubre 2026',
+      meses,
+      filtros: ['Todo', 'Efectivo', 'Transferencia', 'Gastos'].map(label => ({
+        label, sel: filtro === label ? 'true' : 'false', st: filtro === label ? fOn : fOff,
+        pick: () => this.setState({ filtro: label }),
+      })),
+      movs: lista.map((x, i) => ({
+        ...x,
+        first: i === 0 ? 'border-top: none' : '',
+        monto: (x.v < 0 ? '−$' : '$') + Math.abs(x.v).toLocaleString('es-AR'),
+        color: x.v < 0 ? '#8E2A4A' : '#1B2421',
+      })),
+      totalTxt: `${lista.length} movimientos · total ${(total < 0 ? '−$' : '$') + Math.abs(total).toLocaleString('es-AR')}`,
+    };
+  }
+}
+</script>
+</body>
+</html>

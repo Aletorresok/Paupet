@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Nuevo turno</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B50}a:hover{color:#13302A}
+.lbl{font-size:13px;font-weight:600;letter-spacing:.06em;color:#5A6460}
+.chip{height:46px;padding:0 16px;border-radius:14px;font:500 15px 'Outfit',sans-serif;cursor:pointer;white-space:nowrap;flex:none}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: rgba(27,36,33,.45); font-family: 'Outfit', system-ui, sans-serif; color: #1B2421">
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; top: 40px; background: #FFFFFF; border-radius: 24px 24px 0 0; padding: 10px 20px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; overflow: auto">
+    <span style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #D9D5CE; flex: none"></span>
+    <header style="display: flex; align-items: center; justify-content: space-between">
+      <h1 style="margin: 0; font-size: 22px; font-weight: 600">Nuevo turno</h1>
+      <a href="Hoy.dc.html" aria-label="Cerrar" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #1B2421">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+      </a>
+    </header>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label class="lbl" for="buscar">1 · PERRO</label>
+      <div style="display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 14px; border-radius: 14px; border: 1px solid #D9D5CE">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5A6460" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+        <input id="buscar" value="Pan" style="flex: 1; border: none; outline: none; font: 400 16px 'Outfit',sans-serif; color: #1B2421; background: transparent">
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #E4F4EC; border: 2px solid #3FA380">
+        <img src="/_blob/a96722e185aa56279a27aa386e49e1e5" alt="" style="flex: none; width: 44px; height: 44px; border-radius: 99px">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 1px">
+          <span style="font-size: 16px; font-weight: 600">Pancho <span style="font-weight: 400; color: #3E4743">· Sofía</span></span>
+          <span style="font-size: 13px; color: #3E4743">Última vez hace 41 días · viene cada ~6 semanas</span>
+        </span>
+      </div>
+      <span style="font-size: 13px; color: #5A6460; padding-left: 2px">También: Panchita (Lucía) · <a href="Onboarding.dc.html" style="font-weight: 600">perro nuevo</a></span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span class="lbl">2 · SERVICIO</span>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{servicios}}" as="s" hint-placeholder-count="4">
+          <button class="chip" type="button" onClick="{{s.pick}}" aria-pressed="{{s.sel}}" style="{{s.st}}">{{s.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span class="lbl">3 · CUÁNDO</span>
+      <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px">
+        <sc-for list="{{dias}}" as="d" hint-placeholder-count="5">
+          <button class="chip" type="button" onClick="{{d.pick}}" aria-pressed="{{d.sel}}" style="{{d.st}}">{{d.label}}</button>
+        </sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{horas}}" as="h" hint-placeholder-count="4">
+          <button class="chip" type="button" onClick="{{h.pick}}" aria-pressed="{{h.sel}}" style="{{h.st}}">{{h.label}}</button>
+        </sc-for>
+      </div>
+      <span style="font-size: 13px; color: #5A6460">Sólo horarios libres. Dura {{duracion}}, como la última vez.</span>
+    </div>
+
+    <div style="flex: 1"></div>
+    <a href="Hoy.dc.html" style="flex: none; height: 56px; border-radius: 14px; background: #5FBF9B; color: #13302A; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 600; text-decoration: none">Agendar {{resumen}}</a>
+    <span style="text-align: center; font-size: 13px; color: #5A6460; margin-top: -8px">Se le avisa por WhatsApp el día anterior</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { svc: 'Corte de uñas', dia: 'Jue 8', hora: '10:30' };
+  }
+  renderVals() {
+    const { svc, dia, hora } = this.state;
+    const on = 'background: #E4F4EC; color: #13302A; border: 2px solid #3FA380; font-weight: 600';
+    const off = 'background: #FFFFFF; color: #1B2421; border: 1px solid #D9D5CE';
+    const mk = (key, val, list) => list.map(label => ({
+      label, sel: val === label ? 'true' : 'false', st: val === label ? on : off,
+      pick: () => this.setState({ [key]: label }),
+    }));
+    const libres = { 'Hoy': ['14:30'], 'Mañana': ['09:00', '15:00'], 'Jue 8': ['09:00', '10:30', '15:00', '16:30'], 'Vie 9': ['11:00', '14:00'], 'Sáb 10': ['09:00'] };
+    const horas = libres[dia] || [];
+    const durs = { 'Baño': '1 h', 'Baño y corte': '1 h 30', 'Corte de uñas': '20 min', 'Deslanado': '2 h' };
+    return {
+      servicios: mk('svc', svc, ['Baño', 'Baño y corte', 'Corte de uñas', 'Deslanado']),
+      dias: mk('dia', dia, Object.keys(libres)),
+      horas: mk('hora', horas.includes(hora) ? hora : null, horas).map(h => ({ ...h, pick: () => this.setState({ hora: h.label }) })),
+      duracion: durs[svc] || '1 h',
+      resumen: horas.includes(hora) ? `· ${dia} ${hora}` : '',
+    };
+  }
+}
+</script>
+</body>
+</html>

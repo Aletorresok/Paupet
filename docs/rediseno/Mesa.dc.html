@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>En la mesa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F6B50}a:hover{color:#13302A}
+.rc{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid #EFECE7;font-size:15px}
+.rc span:first-child{color:#5A6460}
+.rc span:last-child{font-weight:600;text-align:right}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F6F5F2; font-family: 'Outfit', system-ui, sans-serif; color: #1B2421">
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: auto; padding: 14px 16px 150px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+
+    <a href="Hoy.dc.html" style="align-self: flex-start; display: flex; align-items: center; gap: 4px; height: 44px; font-size: 16px; font-weight: 500; text-decoration: none; color: #1B2421">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"></path></svg>Hoy
+    </a>
+
+    <header style="display: flex; gap: 16px; align-items: center">
+      <img src="/_blob/10f396539a404d62944ee35672cd8ceb" alt="" style="flex: none; width: 80px; height: 80px; border-radius: 99px">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: .08em; color: #1F6B50">EN LA MESA · DESDE LAS 10:00</span>
+        <h1 style="margin: 0; font-size: 30px; font-weight: 600; line-height: 1.1">Coco</h1>
+        <span style="font-size: 15px; color: #5A6460">Caniche toy · Baño y corte</span>
+      </div>
+    </header>
+
+    <section aria-label="Cuidado con" style="display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; gap: 10px; align-items: center; background: #FBE7EC; color: #8E2A4A; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 600">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.5 20h19z"></path><path d="M12 10v4M12 17.2v.1"></path></svg>
+        Muerde al cortarle las uñas
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; background: #FBF0DC; color: #6E4300; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 600">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 8v4.5M12 15.8v.1"></path></svg>
+        Piel sensible · shampoo hipoalergénico
+      </div>
+    </section>
+
+    <section aria-label="La última vez" style="background: #FFFFFF; border: 1px solid #E7E4DE; border-radius: 20px; padding: 16px 18px">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px">
+        <h2 style="margin: 0; font-size: 18px; font-weight: 600">Cómo lo dejamos</h2>
+        <span style="font-size: 13px; color: #5A6460">2 de septiembre</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px">
+        <div style="height: 120px; border-radius: 14px; background: #EFECE7; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #5A6460; font-size: 13px">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Foto antes
+        </div>
+        <div style="height: 120px; border-radius: 14px; background: #E4F4EC; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #1F5A44; font-size: 13px">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Foto después
+        </div>
+      </div>
+      <div class="rc" style="border-top: none"><span>Cuerpo</span><span>Cuchilla 7F</span></div>
+      <div class="rc"><span>Patas</span><span>Tijera, redondeadas</span></div>
+      <div class="rc"><span>Cara</span><span>Osito, corta</span></div>
+      <div class="rc"><span>Orejas</span><span>Largas, despuntar</span></div>
+      <div style="margin-top: 8px; background: #F6F5F2; border-radius: 12px; padding: 10px 12px; font-size: 14px; line-height: 1.45">Laura: “en verano lo quiere más corto”.</div>
+    </section>
+
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; border-top: 1px solid #E7E4DE; padding: 12px 16px 22px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+    <a href="Avisos.dc.html" style="height: 56px; border-radius: 14px; border: 1px solid #D9D5CE; background: #FFFFFF; color: #1B2421; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 600; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"></path></svg>Está listo 🐾
+    </a>
+    <a href="Cobro.dc.html" style="height: 56px; border-radius: 14px; background: #5FBF9B; color: #13302A; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 600; text-decoration: none">Cobrar $19.000</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
