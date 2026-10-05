@@ -34,7 +34,7 @@ export default function CalendarioPage({ clientes, turnos, onAddTurno, onComplet
   const cambiarSemana = dir => setLunes(l => { const d = new Date(l); d.setDate(d.getDate() + dir*7); return d; });
   const irHoy = () => { setLunes(inicioSemana(new Date())); setSelectedDay(todayStr()); };
 
-  const dias = diasSemana(lunes, turnos);
+  const dias = diasSemana(lunes);
   const isoDias = dias.map(toISODate);
   const solapes = isoDias.flatMap(iso => layoutDia(turnos.filter(t => t.fecha === iso)).solapes);
   const dayTurnos = selectedDay ? turnos.filter(t => t.fecha===selectedDay).sort((a,b) => (a.hora||'').localeCompare(b.hora||'')) : [];

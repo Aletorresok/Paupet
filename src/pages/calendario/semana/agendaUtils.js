@@ -1,5 +1,4 @@
 import { aMinutos } from '../../../lib/duracion';
-import { toISODate } from '../../../lib/utils';
 
 // Lunes de la semana de `fecha` (a medianoche local).
 export function inicioSemana(fecha) {
@@ -9,11 +8,9 @@ export function inicioSemana(fecha) {
   return d;
 }
 
-// Días de la semana a mostrar: lunes a sábado, y el domingo sólo si tiene turnos.
-export function diasSemana(lunes, turnos) {
-  const dias = Array.from({ length: 7 }, (_, i) => { const d = new Date(lunes); d.setDate(d.getDate() + i); return d; });
-  const domingo = toISODate(dias[6]);
-  return turnos.some(t => t.fecha === domingo) ? dias : dias.slice(0, 6);
+// Días de la semana a mostrar: lunes a domingo.
+export function diasSemana(lunes) {
+  return Array.from({ length: 7 }, (_, i) => { const d = new Date(lunes); d.setDate(d.getDate() + i); return d; });
 }
 
 const inicio = t => aMinutos(t.hora);
