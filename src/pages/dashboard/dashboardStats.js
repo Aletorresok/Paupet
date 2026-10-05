@@ -1,3 +1,5 @@
+import { aMinutos } from '../../lib/duracion';
+
 // Resumen del mes actual. Los ingresos salen de las VISITAS (cada turno completado crea una),
 // los gastos de las notas de tipo "egreso".
 // `mes`: Date (se usa su mes) o "YYYY-MM".
@@ -22,16 +24,26 @@ export function calcResumenMes(clientes, notas, mesODate) {
   };
 }
 
-const minutos = hhmm => { const [h, m] = (hhmm || '0:0').split(':').map(Number); return h * 60 + (m || 0); };
-
-// Próximo turno de hoy sin completar (o el primero atrasado). Devuelve {turno, etiqueta} o null.
-export function proximoTurno(turnosHoy, ahora = new Date()) {
-  const pendientes = turnosHoy.filter(t => t.estado !== 'completed').sort((a, b) => minutos(a.hora) - minutos(b.hora));
-  if (!pendientes.length) return null;
+// El turno de ahora. Pau no marca cuándo empieza: es el último que ya empezó y todavía no se cobró
+// (cobrar es lo que lo cierra). Si ninguno empezó, el próximo. Devuelve { turno, estado, faltan } o null:
+// estado 'enCurso' (dentro de su horario), 'terminado' (ya pasó su horario y falta cobrar) o 'proximo'
+// (`faltan` = minutos hasta que empiece; null si no tiene hora).
+export function turnoActual(turnosHoy, ahora = new Date()) {
+  const sinCobrar = turnosHoy.filter(t => t.estado !== 'completed');
+  const conHora = sinCobrar.filter(t => t.hora).sort((a, b) => aMinutos(a.hora) - aMinutos(b.hora));
   const now = ahora.getHours() * 60 + ahora.getMinutes();
-  const futuro = pendientes.find(t => minutos(t.hora) >= now - 15);
-  const turno = futuro || pendientes[0];
-  const diff = minutos(turno.hora) - now;
-  const etiqueta = diff > 60 ? `Próximo · a las ${turno.hora}` : diff > 0 ? `Próximo · en ${diff} min` : diff >= -15 ? 'Ahora' : 'Atrasado';
-  return { turno, etiqueta };
+  const empezados = conHora.filter(t => aMinutos(t.hora) <= now);
+  if (empezados.length) {
+    const turno = empezados[empezados.length - 1];
+    const fin = aMinutos(turno.hora) + (turno.duracion || 60);
+    return { turno, estado: now < fin ? 'enCurso' : 'terminado', faltan: 0 };
+  }
+  if (conHora.length) return { turno: conHora[0], estado: 'proximo', faltan: aMinutos(conHora[0].hora) - now };
+  return sinCobrar.length ? { turno: sinCobrar[0], estado: 'proximo', faltan: null } : null;
 }
+
+// Turnos que ya empezaron, no son el de ahora y quedaron sin cobrar.
+export const sinCobrarAntes = (turnosHoy, actual, ahora = new Date()) => {
+  const now = ahora.getHours() * 60 + ahora.getMinutes();
+  return turnosHoy.filter(t => t.estado !== 'completed' && t.hora && t.id !== actual?.turno.id && aMinutos(t.hora) <= now);
+};

@@ -13,20 +13,21 @@ const fechaCorta = f => { const [, m, d] = f.split('-'); return `${parseInt(d)} 
 
 const boton = {height:52,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',gap:8,fontFamily:'inherit',fontSize:16,fontWeight:600,cursor:'pointer',padding:'0 18px'};
 
-// "AHORA · 10:00–11:30", "EN 20 MIN · …", "ATRASADO · …".
-function titulo(etiqueta, t) {
+// "AHORA · 10:00–11:30", "FALTA COBRAR · …", "EN 20 MIN · …", "PRÓXIMO · …".
+function titulo({ turno: t, estado, faltan }) {
   const rango = t.hora ? rangoTurno(t) : 'sin hora';
-  if (etiqueta === 'Ahora' || etiqueta === 'Atrasado') return `${etiqueta} · ${rango}`;
-  const enMin = etiqueta.match(/en (\d+ min)/);
-  return `${enMin ? `En ${enMin[1]}` : 'Próximo'} · ${rango}`;
+  if (estado === 'enCurso') return `Ahora · ${rango}`;
+  if (estado === 'terminado') return `Falta cobrar · ${rango}`;
+  return `${faltan !== null && faltan <= 60 ? `En ${faltan} min` : 'Próximo'} · ${rango}`;
 }
 
-// El turno en curso (o el próximo): quién es, sus cuidados y las dos acciones del momento.
+// El turno de ahora (o el próximo): quién es, sus cuidados y las dos acciones del momento.
+// Pau no marca el inicio: es el último que empezó y no se cobró (ver `turnoActual`).
 // Tocar el perro abre su ficha (después, el Modo mesa).
-export default function ProximoTurnoCard({ proximo, cliente: c, onAbrir, onCobrar, onEditTurno, onNoVino }) {
+export default function ProximoTurnoCard({ actual, cliente: c, onAbrir, onCobrar, onEditTurno, onNoVino }) {
   const { isMob } = useResp();
-  const { turno: t, etiqueta } = proximo;
-  const enCurso = etiqueta === 'Ahora' || etiqueta === 'Atrasado';
+  const { turno: t, estado } = actual;
+  const enCurso = estado !== 'proximo';
   const etiquetas = (c.etiquetas || []).map(e => e?.trim()).filter(e => e && e !== 'Alergia:');
   const alertas = etiquetas.filter(e => colorEtiqueta(e).bg !== C.mentaSuave);
   const otras = etiquetas.filter(e => colorEtiqueta(e).bg === C.mentaSuave);
@@ -63,7 +64,7 @@ export default function ProximoTurnoCard({ proximo, cliente: c, onAbrir, onCobra
         <button type="button" onClick={onAbrir} style={{flex:'1 1 220px',minWidth:0,display:'flex',gap:isMob ? 14 : 18,alignItems:'center',background:'none',border:'none',padding:0,textAlign:'left',fontFamily:'inherit',color:C.tinta,cursor:'pointer'}}>
           <PetAvatar cliente={c} size={isMob ? 64 : 96} />
           <span style={{display:'flex',flexDirection:'column',gap:2,minWidth:0}}>
-            <span style={{fontSize:12,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:etiqueta === 'Atrasado' ? C.rosa : C.verde}}>{titulo(etiqueta, t)}</span>
+            <span style={{fontSize:12,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:estado === 'terminado' ? C.ambar : C.verde}}>{titulo(actual)}</span>
             <span style={{fontSize:isMob ? 22 : 30,fontWeight:600,lineHeight:1.15}}>{nombre}</span>
             <span style={{fontSize:isMob ? 14 : 15,color:C.tintaSuave}}>{detalle}</span>
           </span>

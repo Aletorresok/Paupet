@@ -256,3 +256,24 @@ test('huecos libres del día: juntan horarios seguidos hasta el próximo turno u
   ], '12:00 está tomado: corta el hueco de las 10:30');
   assert.deepEqual(huecosDelDia(config, turnos, dia(2)), [], 'sin horarios cargados no hay huecos');
 });
+
+test('turno de ahora: Pau no marca el inicio, sigue en la mesa hasta que se cobra', async () => {
+  const { turnoActual, sinCobrarAntes } = await import('../src/pages/dashboard/dashboardStats.js');
+  const a = (h, m) => { const d = new Date(); d.setHours(h, m, 0, 0); return d; };
+  const turnos = [
+    { id: 1, hora: '09:00', duracion: 60, estado: 'confirmed' },
+    { id: 2, hora: '10:00', duracion: 90, estado: 'confirmed' },
+    { id: 3, hora: '11:30', duracion: 60, estado: 'pending' },
+  ];
+  assert.deepEqual(turnoActual(turnos, a(8, 40)), { turno: turnos[0], estado: 'proximo', faltan: 20 });
+  const enCurso = turnoActual(turnos, a(10, 40));
+  assert.equal(enCurso.turno.id, 2, 'a las 10:40 el de las 10:00 sigue siendo el de ahora');
+  assert.equal(enCurso.estado, 'enCurso');
+  assert.deepEqual(sinCobrarAntes(turnos, enCurso, a(10, 40)).map(t => t.id), [1], 'el de las 9 quedó sin cobrar');
+  assert.equal(turnoActual(turnos, a(11, 40)).turno.id, 3, 'empezó el siguiente');
+  const cobrados = turnos.map(t => t.id === 3 ? { ...t, estado: 'completed' } : t);
+  const pasado = turnoActual(cobrados, a(12, 45));
+  assert.equal(pasado.turno.id, 2, 'si se cobró el último, vuelve el que falta cobrar');
+  assert.equal(pasado.estado, 'terminado');
+  assert.equal(turnoActual(turnos.map(t => ({ ...t, estado: 'completed' })), a(12, 0)), null);
+});

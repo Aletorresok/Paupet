@@ -324,3 +324,5 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   Modo mesa); "el resto del día" con huecos libres (`lib/huecosLibres.js`: regla única, el hueco corta en el próximo turno u
   horario tomado); fila "N mensajes para mandar" → Avisos. PC en dos columnas con el pedido nuevo y "Para mandar". Se fueron de
   Hoy los KPI (siguen en Finanzas), inasistencias (en la ficha y al dar turno) y el aviso de copia (queda en Ajustes).
+  Punto 2 (ajuste): Pau no marca cuándo empieza un turno. El de ahora es el último que empezó y no se cobró (`turnoActual`); si
+  pasó su horario dice "Falta cobrar". Los anteriores sin cobrar quedan en "el resto del día" con botón Cobrar. Hoy se recalcula cada minuto.

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useResp } from '../../context/resp';
 import Btn from '../../components/ui/Btn';
 import EstadoVacio from '../../components/ui/EstadoVacio';
@@ -11,8 +12,8 @@ import { clientesParaVolver, enPausa } from '../../lib/frecuencia';
 import { huecosDelDia } from '../../lib/huecosLibres';
 import { respaldoVencido } from '../../lib/respaldo';
 import { C, cardStyle, serif } from '../../lib/styles';
-import { todayStr } from '../../lib/utils';
-import { proximoTurno } from './dashboardStats';
+import { toISODate } from '../../lib/utils';
+import { sinCobrarAntes, turnoActual } from './dashboardStats';
 import ProximoTurnoCard from './ProximoTurnoCard';
 import RestoDelDia from './RestoDelDia';
 import PedidoNuevoCard from './PedidoNuevoCard';
@@ -24,13 +25,16 @@ const fraseSaludo = h => h < 6 ? '¡Buenas noches, Pau! 🌙' : h < 13 ? '¡Buen
 export default function Dashboard({ clientes, turnos, config, pedidos = [], pedidoActions, caps = {}, toast, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno }) {
   const { isMob, isTab } = useResp();
   const enviados = useAvisados();
-  const hoy = new Date();
-  const hoyISO = todayStr();
+  // Se vuelve a calcular cada minuto: el turno de ahora y los huecos cambian con la hora.
+  const [hoy, setHoy] = useState(() => new Date());
+  useEffect(() => { const id = setInterval(() => setHoy(new Date()), 60000); return () => clearInterval(id); }, []);
+  const hoyISO = toISODate(hoy);
 
   const turnosHoy = turnos.filter(t => t.fecha === hoyISO);
   const quedan = turnosHoy.filter(t => t.estado !== 'completed').length;
-  const proximo = proximoTurno(turnosHoy, hoy);
-  const resto = turnosHoy.filter(t => t.estado !== 'completed' && t.id !== proximo?.turno.id);
+  const actual = turnoActual(turnosHoy, hoy);
+  const resto = turnosHoy.filter(t => t.estado !== 'completed' && t.id !== actual?.turno.id);
+  const sinCobrar = sinCobrarAntes(turnosHoy, actual, hoy).map(t => t.id);
   const huecos = huecosDelDia(config, turnos, hoyISO, hoy);
 
   const dia = proximoDiaConTurnos(turnos, hoy);
@@ -43,11 +47,11 @@ export default function Dashboard({ clientes, turnos, config, pedidos = [], pedi
   const fecha = isMob ? `${DIAS_ES[hoy.getDay()]} ${hoy.getDate()}/${hoy.getMonth() + 1}` : `${DIAS_ES[hoy.getDay()]} ${hoy.getDate()} de ${MESES[hoy.getMonth()]}`;
   const dosColumnas = !isMob && !isTab;
 
-  const turnoActual = proximo ? (
+  const tarjetaActual = actual ? (
     <ProximoTurnoCard
-      proximo={proximo}
-      cliente={clientes.find(c => c.id === proximo.turno.clientId) || {}}
-      onAbrir={() => proximo.turno.clientId ? onOpenClient(proximo.turno.clientId) : onEditTurno(proximo.turno)}
+      actual={actual}
+      cliente={clientes.find(c => c.id === actual.turno.clientId) || {}}
+      onAbrir={() => actual.turno.clientId ? onOpenClient(actual.turno.clientId) : onEditTurno(actual.turno)}
       onCobrar={onCompletar} onEditTurno={onEditTurno} onNoVino={onNoVino}
     />
   ) : !turnosHoy.length ? (
@@ -57,7 +61,7 @@ export default function Dashboard({ clientes, turnos, config, pedidos = [], pedi
   ) : null;
 
   const restoDelDia = (
-    <RestoDelDia turnos={resto} huecos={huecos} clientes={clientes}
+    <RestoDelDia turnos={resto} huecos={huecos} clientes={clientes} sinCobrar={sinCobrar} onCobrar={onCompletar}
       onAbrirTurno={onEditTurno} onDarTurno={hora => onNuevoTurno(hoyISO, hora)} />
   );
 
@@ -93,7 +97,7 @@ export default function Dashboard({ clientes, turnos, config, pedidos = [], pedi
       {dosColumnas ? (
         <div style={{display:'flex',flexWrap:'wrap',gap:20,alignItems:'flex-start'}}>
           <div style={{flex:'2 1 480px',minWidth:0,display:'flex',flexDirection:'column',gap:20}}>
-            {turnoActual}
+            {tarjetaActual}
             {restoDelDia}
           </div>
           <div style={{flex:'1 1 320px',minWidth:0,display:'flex',flexDirection:'column',gap:20}}>
@@ -103,7 +107,7 @@ export default function Dashboard({ clientes, turnos, config, pedidos = [], pedi
         </div>
       ) : (
         <>
-          {turnoActual}
+          {tarjetaActual}
           {restoDelDia}
           <ParaMandarFila pedidos={pedidosParaMandar.length} recordatorios={recordatorios.length} tituloDia={dia.titulo} vuelven={vuelven.length} onIr={() => onNav('avisos')} />
         </>
