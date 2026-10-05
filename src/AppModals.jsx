@@ -41,7 +41,7 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
         open={modalTurno.open}
         onClose={()=>setModalTurno(CLOSED_TURNO)}
         onSave={ta.handleSaveNewTurno} onUpdate={ta.handleUpdateTurno}
-        clientes={clientes} turnos={turnos} defaultFecha={modalTurno.fecha} defaultHora={modalTurno.hora} defaultClientId={modalTurno.clientId}
+        clientes={clientes} turnos={turnos} config={config} defaultFecha={modalTurno.fecha} defaultHora={modalTurno.hora} defaultClientId={modalTurno.clientId}
         defaultServicio={modalTurno.servicio} defaultDuracion={modalTurno.duracion} turnoEdit={modalTurno.turnoEdit}
         defaultNuevo={modalTurno.nuevo} pedidoId={modalTurno.pedidoId}
       />}

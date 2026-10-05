@@ -339,3 +339,12 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   otro turno) / Ahora no / Otro día u horario (abre Nuevo turno cargado). Si ya tiene otro turno o no es cliente, sólo "Listo".
   "No vino" queda como link abajo. `handleCobrar` ya no cierra la ventana; nuevos `handleDeshacerCobro` y `handleAgendarProximo`;
   `db.insertVisita` devuelve el id de la visita.
+  Punto 5: **Nuevo turno en 3 toques** (`ModalTurno` + `calendario/turno/`: `PasoPerro`, `PasoServicio`, `PasoCuando`,
+  `PerroNuevoForm`). 1 · Perro: buscador; al escribir queda elegido el primero (primero los que el nombre del perro empieza así,
+  después los que lo contienen, después dueño/teléfono) y los otros en "También"; abajo cuidados, faltas y notas; link "perro nuevo".
+  2 · Servicio: chips de los 6 más usados, preseleccionado el de la última visita, "Otro…" para escribirlo. 3 · Cuándo: chips de los
+  días con horarios libres (`horariosLibresPau` → `libresPorDia`, sólo los que entran con esa duración) y los horarios de ese día;
+  "Otro día" / "Otra hora" abren un campo; sin horarios cargados, fecha y hora a mano. Botón "Agendar · Mar 13 16:00" (dice qué falta).
+  Se fueron Forma de pago y Estado: queda confirmado y en efectivo; editar un turno pendiente lo confirma. Precio y duración en "Más
+  opciones"; la duración sale de `duracionSugerida` hasta que se la cambia. Editar turno usa la misma pantalla (sin "perro nuevo").
+  Se fue la etiqueta "Sin confirmar"/"Confirmado" de "el resto del día". Se borraron `ClienteSelector` y `ClienteResumen`.

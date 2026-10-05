@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { toISODate, diasDesde, parseFecha } from '../src/lib/utils.js';
 import { calcFrecuencia, clientesParaVolver, enPausa, pausaHasta, PAUSA_SIEMPRE } from '../src/lib/frecuencia.js';
-import { turnosQueSePisan, fechaSugerida, serviciosFrecuentes, ultimaVisita, teclear } from '../src/pages/calendario/ayudaTurno.js';
+import { turnosQueSePisan, fechaSugerida, serviciosFrecuentes, ultimaVisita, teclear, duracionSugerida, libresPorDia, etiquetaDia } from '../src/pages/calendario/ayudaTurno.js';
 import { ocupadosPorAgenda, generarSlots } from '../src/pages/horarios/horariosUtils.js';
 import { agendadoPorCobrar, ingresosHastaDia, serviciosPorDia, calcResumenMes } from '../src/pages/finanzas/finanzasCalc.js';
 import { FILTROS, conFrecuencia, normalizar } from '../src/pages/clientes/filtrosClientes.js';
@@ -285,4 +285,29 @@ test('teclear arma el monto de Cobrar', () => {
   assert.equal(teclear(m, '⌫'), '1900');
   assert.equal(teclear('', '⌫'), '');
   assert.equal(teclear('999999', '000'), '9999990');
+});
+
+test('duracionSugerida: la del perro, si no la de cualquiera con ese servicio, si no 60', () => {
+  const ts = [
+    { id: 1, clientId: 7, servicio: 'Baño', fecha: dia(-40), hora: '10:00', duracion: 45 },
+    { id: 2, clientId: 8, servicio: 'baño ', fecha: dia(-5), hora: '10:00', duracion: 75 },
+    { id: 3, clientId: 7, servicio: 'Baño', fecha: dia(-10), hora: '10:00', duracion: 90 },
+  ];
+  assert.equal(duracionSugerida(ts, 7, 'Baño'), 90);
+  assert.equal(duracionSugerida(ts, 9, 'Baño'), 75);
+  assert.equal(duracionSugerida(ts, 7, 'Corte'), 60);
+  assert.equal(duracionSugerida(ts, 7, ''), 60);
+});
+
+test('libresPorDia agrupa y saca los horarios que no entran con esa duración', () => {
+  const libres = [{ fecha: dia(1), hora: '09:00' }, { fecha: dia(1), hora: '10:00' }, { fecha: dia(2), hora: '09:00' }];
+  const ts = [{ id: 1, fecha: dia(1), hora: '11:00', duracion: 60, estado: 'confirmed' }];
+  assert.deepEqual(libresPorDia(libres, ts, 60), [{ fecha: dia(1), horas: ['09:00', '10:00'] }, { fecha: dia(2), horas: ['09:00'] }]);
+  assert.deepEqual(libresPorDia(libres, ts, 90), [{ fecha: dia(1), horas: ['09:00'] }, { fecha: dia(2), horas: ['09:00'] }]);
+});
+
+test('etiquetaDia', () => {
+  assert.equal(etiquetaDia(dia(0)), 'Hoy');
+  assert.equal(etiquetaDia(dia(1)), 'Mañana');
+  assert.match(etiquetaDia(dia(3)), /^(Dom|Lun|Mar|Mié|Jue|Vie|Sáb) \d{1,2}$/);
 });

@@ -38,3 +38,35 @@ export function fechaSugerida(desde, cadaDias) {
 
 // Teclado de Cobrar: suma dígitos al monto (texto con sólo números, sin ceros adelante, hasta 7) o borra el último.
 export const teclear = (monto, tecla) => tecla === '⌫' ? monto.slice(0, -1) : (monto + tecla).replace(/^0+/, '').slice(0, 7);
+
+// Duración de un turno nuevo: la del último turno de ese perro con ese servicio; si no hay, la del último
+// de cualquier perro con ese servicio; si no, 60 min.
+export function duracionSugerida(turnos, clientId, servicio) {
+  const s = (servicio || '').trim().toLowerCase();
+  if (!s) return 60;
+  const conServicio = turnos.filter(t => t.duracion && (t.servicio || '').trim().toLowerCase() === s)
+    .sort((a, b) => `${b.fecha} ${b.hora || ''}`.localeCompare(`${a.fecha} ${a.hora || ''}`));
+  const delPerro = clientId && conServicio.find(t => String(t.clientId) === String(clientId));
+  return (delPerro || conServicio[0])?.duracion || 60;
+}
+
+// Horarios libres agrupados por día para Nuevo turno: [{ fecha, horas: ['09:00', …] }], sólo los que
+// entran con esa duración sin pisar otro turno. `libres` = [{fecha, hora}] (de `horariosLibresPau`).
+export function libresPorDia(libres, turnos, duracion) {
+  const dias = new Map();
+  for (const { fecha, hora } of libres) {
+    if (turnosQueSePisan(turnos, { fecha, hora, duracion }).length) continue;
+    if (!dias.has(fecha)) dias.set(fecha, []);
+    dias.get(fecha).push(hora);
+  }
+  return [...dias].map(([fecha, horas]) => ({ fecha, horas }));
+}
+
+// "Hoy", "Mañana", "Jue 8".
+const DIAS_CORTOS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+export function etiquetaDia(fecha, hoy = new Date()) {
+  const d = parseFecha(fecha);
+  const h = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  const dif = Math.round((d - h) / 86400000);
+  return dif === 0 ? 'Hoy' : dif === 1 ? 'Mañana' : `${DIAS_CORTOS[d.getDay()]} ${d.getDate()}`;
+}

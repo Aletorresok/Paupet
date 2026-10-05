@@ -111,13 +111,13 @@ Fuera de los 21 días que cubre, se usa un campo de hora.
 - [x] "No vino" queda como link chico abajo.
 
 ### 5. Nuevo turno en 3 toques (`pages/calendario/ModalTurno.jsx`)
-- [ ] Orden: **1 · Perro** (buscador, ya existe en `ClienteSelector`) → **2 · Servicio** (chips con
+- [x] Orden: **1 · Perro** (buscador, ya existe en `ClienteSelector`) → **2 · Servicio** (chips con
       `serviciosFrecuentes`, preseleccionado el de la última visita) → **3 · Cuándo** (chips de días y chips de
       horarios libres de ese día). Botón "Agendar · Jue 8 10:30".
-- [ ] Sacar del formulario: **Forma de pago** y **Estado** (siempre confirmado; se van también los contadores
+- [x] Sacar del formulario: **Forma de pago** y **Estado** (siempre confirmado; se van también los contadores
       de "sin confirmar"). Precio y duración van en "Más opciones" plegado; la duración sale sola del último
       turno de ese perro con ese servicio, si no hay, del último de cualquier perro con ese servicio, y si no, 60 min.
-- [ ] Horarios libres: la regla única de arriba (`lib/horariosLibres.js`, `ayudaTurno.turnosQueSePisan`).
+- [x] Horarios libres: la regla única de arriba (`lib/horariosLibres.js`, `ayudaTurno.turnosQueSePisan`).
       Si no hay, un campo de hora como hoy. Lo automático es Fase 2.
 
 ### 6. Avisos (nuevo: `pages/avisos/`)

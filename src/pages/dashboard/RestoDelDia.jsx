@@ -4,7 +4,6 @@ import { fmtDuracion } from '../../lib/duracion';
 import { C, cardStyle } from '../../lib/styles';
 
 const fila = {display:'flex',alignItems:'center',gap:12,padding:'12px 0',width:'100%',background:'none',border:'none',borderTop:'1px solid #EFECE7',fontFamily:'inherit',textAlign:'left',color:C.tinta,cursor:'pointer',minHeight:56};
-const etiqueta = (bg, fg) => ({fontSize:12,fontWeight:600,color:fg,background:bg,borderRadius:999,padding:'4px 10px',flexShrink:0});
 
 // El resto del día: los turnos sin cobrar que no son el de ahora y los huecos libres
 // ("Libre 1 h 30 · dar turno", según la regla única de lib/huecosLibres.js).
@@ -31,7 +30,6 @@ export default function RestoDelDia({ turnos, huecos, clientes, sinCobrar = [], 
           );
         }
         const c = clientes.find(x => x.id === t.clientId) || {};
-        const pendiente = t.estado === 'pending';
         const falta = sinCobrar.includes(t.id);
         return (
           <div key={t.id} style={{display:'flex',alignItems:'center',gap:8,borderTop:primera ? 'none' : fila.borderTop}}>
@@ -42,8 +40,6 @@ export default function RestoDelDia({ turnos, huecos, clientes, sinCobrar = [], 
                 <span style={{fontSize:16,fontWeight:500,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{t.dogName || c.dog}</span>
                 <span style={{fontSize:13,color:C.tintaSuave,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{[c.raza, t.servicio, c.owner].filter(Boolean).join(' · ')}</span>
               </span>
-              {!falta && (pendiente ? <span style={etiqueta(C.ambarSuave, '#7A4A00')}>Sin confirmar</span>
-                : !isMob && <span style={etiqueta('#E4F4EC', '#1F5A44')}>Confirmado</span>)}
             </button>
             {falta && (
               <button type="button" onClick={() => onCobrar(t.id)} title="Este turno quedó sin cobrar"
