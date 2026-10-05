@@ -121,11 +121,11 @@ Fuera de los 21 días que cubre, se usa un campo de hora.
       Si no hay, un campo de hora como hoy. Lo automático es Fase 2.
 
 ### 6. Avisos (nuevo: `pages/avisos/`)
-- [ ] Una sola bandeja: **Pedidos de turno** (Aceptar / Otro horario, lógica de `PedidosCard` y
+- [x] Una sola bandeja: **Pedidos de turno** (Aceptar / Otro horario, lógica de `PedidosCard` y
       `usePedidoActions`), **Recordar · <próximo día con turnos>** (lógica de `ManianaCard` + `lib/avisados.js`)
       y **Les toca volver** (`clientesParaVolver`, con el menú de pausar que ya existe).
-- [ ] Botón grande "Enviar a <perro> (1 de N)" que abre el WhatsApp del siguiente y lo marca enviado.
-- [ ] Cuando no queda nada: `enviado.webp` + "¡Todo enviado! 💌".
+- [x] Botón grande "Enviar a <perro> (1 de N)" que abre el WhatsApp del siguiente y lo marca enviado.
+- [x] Cuando no queda nada: `enviado.webp` + "¡Todo enviado! 💌".
 
 ### 7. Finanzas (`pages/finanzas/`)
 - [ ] Tres pestañas: **Mes · Año · Historial**.

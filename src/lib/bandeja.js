@@ -24,3 +24,11 @@ export function proximoDiaConTurnos(turnos, hoy = new Date()) {
 export function recordatoriosSinEnviar(turnosDelDia, clientes, enviados) {
   return turnosDelDia.filter(t => !enviados[t.id] && clientes.find(c => c.id === t.clientId)?.tel);
 }
+
+// Cola del botón "Enviar a <perro> (k de N)": `items` = [{ id, tel, enviado }] en el orden de la bandeja.
+// Sólo cuentan los que tienen teléfono. Devuelve { total, pendientes, siguiente, numero } (numero = k).
+export function colaMensajes(items) {
+  const conTel = items.filter(x => x.tel);
+  const pendientes = conTel.filter(x => !x.enviado);
+  return { total: conTel.length, pendientes: pendientes.length, siguiente: pendientes[0] || null, numero: conTel.length - pendientes.length + 1 };
+}

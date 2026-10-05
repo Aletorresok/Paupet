@@ -348,3 +348,11 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   Se fueron Forma de pago y Estado: queda confirmado y en efectivo; editar un turno pendiente lo confirma. Precio y duración en "Más
   opciones"; la duración sale de `duracionSugerida` hasta que se la cambia. Editar turno usa la misma pantalla (sin "perro nuevo").
   Se fue la etiqueta "Sin confirmar"/"Confirmado" de "el resto del día". Se borraron `ClienteSelector` y `ClienteResumen`.
+  Punto 6: **Avisos** como una sola bandeja (`pages/avisos/`: `AvisosPage`, `PedidoItem`, `FilaMensaje`). Arriba "N mensajes por
+  mandar · M pedidos por atender" y el botón "Enviar a <perro> (k de N)" (`colaMensajes` en `lib/bandeja.js`): abre el WhatsApp
+  del siguiente sin enviar (primero los recordatorios, después "les toca volver"; sólo los que tienen teléfono) y lo marca. Sin
+  nada pendiente: `enviado.webp` + "¡Todo enviado! 💌". Pedidos de turno en tarjetas (Otro horario / Aceptar; Agendar directo /
+  Proponer horario si no pidió uno libre; los "esperando respuesta" al final; aceptados → Ya le avisé / Avisarle 💬; rechazar en ⋯).
+  "Recordar · martes 6 (mañana)": recordatorio enviado = `lib/avisados.js` como antes. "Les toca volver": Enviar = WhatsApp + "Ya le
+  escribí" (oculto 7 días, `vuelta_pausa`); en la pantalla queda como Enviado hasta salir. Menú ⋯ de pausar y "Ver N ocultos" igual
+  que antes. En PC, dos columnas (mensajes | pedidos). Se borraron `PedidosCard`, `ManianaCard` y `VuelvenCard`.

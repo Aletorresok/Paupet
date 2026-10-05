@@ -6,6 +6,7 @@ import { turnosQueSePisan, fechaSugerida, serviciosFrecuentes, ultimaVisita, tec
 import { ocupadosPorAgenda, generarSlots } from '../src/pages/horarios/horariosUtils.js';
 import { agendadoPorCobrar, ingresosHastaDia, serviciosPorDia, calcResumenMes } from '../src/pages/finanzas/finanzasCalc.js';
 import { FILTROS, conFrecuencia, normalizar } from '../src/pages/clientes/filtrosClientes.js';
+import { colaMensajes } from '../src/lib/bandeja.js';
 
 // Fecha "YYYY-MM-DD" a `n` días de hoy (negativo = pasado).
 const dia = n => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + n); return toISODate(d); };
@@ -310,4 +311,14 @@ test('etiquetaDia', () => {
   assert.equal(etiquetaDia(dia(0)), 'Hoy');
   assert.equal(etiquetaDia(dia(1)), 'Mañana');
   assert.match(etiquetaDia(dia(3)), /^(Dom|Lun|Mar|Mié|Jue|Vie|Sáb) \d{1,2}$/);
+});
+
+test('colaMensajes: siguiente sin enviar y "k de N" sólo con los que tienen teléfono', () => {
+  const items = [{ id: 'a', tel: '1', enviado: true }, { id: 'b', tel: '', enviado: false }, { id: 'c', tel: '2', enviado: false }, { id: 'd', tel: '3', enviado: false }];
+  const cola = colaMensajes(items);
+  assert.equal(cola.total, 3);
+  assert.equal(cola.pendientes, 2);
+  assert.equal(cola.siguiente.id, 'c');
+  assert.equal(cola.numero, 2);
+  assert.equal(colaMensajes(items.map(x => ({ ...x, enviado: true }))).siguiente, null);
 });
