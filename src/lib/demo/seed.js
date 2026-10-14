@@ -214,5 +214,13 @@ export function crearDatosDemo() {
       fecha_prop: iso(masDias(lunes, 1)), hora_prop: '17:30' }),
   ];
 
-  return { creado: hoyISO, ultimoId: id, tablas: { clientes, visitas, turnos, notas, config, fotos_cliente: [], pedidos_turno } };
+  // Señas: Rocco pagó un corte por adelantado y todavía no tiene turno (aparece en Avisos); Coco dejó una seña y ya tiene turno.
+  const saldoDe = dog => clientes.find(c => c.dog === dog);
+  const mov = (c, extra) => ({ id: ++id, created_at: new Date().toISOString(), cliente_id: c.id, tipo: 'sena', forma_pago: 'transferencia', turno_id: null, visita_id: null, nota: '', fecha: iso(masDias(hoy, -2)), ...extra });
+  const saldo_movimientos = [
+    mov(saldoDe('Rocco'), { monto: 22000, nota: 'un corte por adelantado' }),
+    mov(saldoDe('Coco'), { monto: 8000, forma_pago: 'efectivo', nota: 'seña' }),
+  ];
+
+  return { creado: hoyISO, ultimoId: id, tablas: { clientes, visitas, turnos, notas, config, fotos_cliente: [], pedidos_turno, saldo_movimientos } };
 }

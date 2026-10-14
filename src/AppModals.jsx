@@ -5,10 +5,11 @@ import ModalTurno from './pages/calendario/ModalTurno';
 import ModalCobro from './pages/calendario/ModalCobro';
 import ModalNota from './pages/notas/ModalNota';
 import ModalProponer from './pages/dashboard/ModalProponer';
-import { CLOSED_TURNO, CLOSED_NOTA, CLOSED_COBRO } from './hooks/useModals';
+import ModalSena from './pages/clientes/ModalSena';
+import { CLOSED_TURNO, CLOSED_NOTA, CLOSED_COBRO, CLOSED_SENA } from './hooks/useModals';
 
 export default function AppModals({ modals, clientes, turnos, caps, toast, clienteActions: ca, turnoActions: ta, notaActions: na, pedidoActions: pa, pedidos = [], config, confirm, closeConfirm }) {
-  const { modalCliente, setModalCliente, modalNuevoCliente, setModalNuevoCliente, modalTurno, setModalTurno, modalNota, setModalNota, modalCobro, setModalCobro } = modals;
+  const { modalCliente, setModalCliente, modalNuevoCliente, setModalNuevoCliente, modalTurno, setModalTurno, modalNota, setModalNota, modalCobro, setModalCobro, modalSena, setModalSena } = modals;
   const turnoCobro = modalCobro.open ? turnos.find(t => t.id === modalCobro.turnoId) : null;
   const activeCliente = clientes.find(c=>c.id===modalCliente.id);
 
@@ -29,6 +30,9 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
         onEdit={c=>{setModalCliente({open:false,id:null});setModalNuevoCliente({open:true,initial:c});}}
         onAgregarPerro={c=>{setModalCliente({open:false,id:null});setModalNuevoCliente({open:true,initial:null,preset:{owner:c.owner,tel:c.tel||''}});}}
         onDecrementarInasistencia={ca.handleDecrementarInasistencia}
+        onCargarSena={id=>setModalSena({open:true,clienteId:id,turnoId:null})}
+        onDevolverSaldo={ca.handleDevolverSaldo}
+        onBorrarMovimiento={ca.handleBorrarMovimiento}
       />
       {modalNuevoCliente.open && <ModalClienteForm
         key={modalNuevoCliente.initial?.id ?? `nuevo${modalNuevoCliente.preset?.owner || ''}`}
@@ -64,6 +68,10 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
           onAgendar={ta.handleAgendarProximo}
           onNoVino={ta.handleNoVino}
         />
+      )}
+      {modalSena.open && clientes.some(c => c.id === modalSena.clienteId) && (
+        <ModalSena key={`${modalSena.clienteId}|${modalSena.turnoId}`} cliente={clientes.find(c => c.id === modalSena.clienteId)}
+          turno={turnos.find(t => t.id === modalSena.turnoId)} onClose={()=>setModalSena(CLOSED_SENA)} onGuardar={ca.handleCargarSena} />
       )}
       {modals.modalProponer.open && (
         <ModalProponer pedido={modals.modalProponer.pedido} config={config} turnos={turnos} pedidos={pedidos}

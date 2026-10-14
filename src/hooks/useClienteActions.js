@@ -1,4 +1,5 @@
 import { db } from '../lib/db';
+import { fmtPeso, todayStr } from '../lib/utils';
 
 export function useClienteActions({ clientes, loadAll, toast, askConfirm, modals }) {
   const { modalNuevoCliente, setModalCliente, setModalNuevoCliente } = modals;
@@ -27,6 +28,42 @@ export function useClienteActions({ clientes, loadAll, toast, askConfirm, modals
       await db.deleteVisita(visitaId);
       await loadAll();
       toast('Visita eliminada');
+    } catch(e) { toast(e.message, true); }
+  };
+
+  // Seña / pago adelantado: queda como saldo a favor del perro y se descuenta solo en el próximo cobro.
+  const handleCargarSena = async ({ clienteId, monto, formaPago, turnoId = null, nota = '' }) => {
+    if (!(monto > 0)) { toast('Escribí cuánto dejó', true); return false; }
+    try {
+      await db.insertMovimiento({ clienteId, monto, tipo: 'sena', formaPago, turnoId, nota, fecha: todayStr() });
+      await loadAll();
+      toast(`Seña de ${fmtPeso(monto)} guardada 💚`);
+      return true;
+    } catch(e) { toast(e.message, true); return false; }
+  };
+
+  // Devolver (parte de) la plata a favor: baja el saldo sin tocar los ingresos.
+  const handleDevolverSaldo = async (clienteId, monto) => {
+    const c = clientes.find(x => x.id === clienteId);
+    const devolver = Math.min(monto || c?.saldo || 0, c?.saldo || 0);
+    if (!(devolver > 0)) return;
+    const ok = await askConfirm(`¿Devolver ${fmtPeso(devolver)} a ${c.owner || c.dog}?`);
+    if (!ok) return;
+    try {
+      await db.insertMovimiento({ clienteId, monto: -devolver, tipo: 'devolucion', fecha: todayStr() });
+      await loadAll();
+      toast('Saldo devuelto');
+    } catch(e) { toast(e.message, true); }
+  };
+
+  // Borrar una seña cargada por error.
+  const handleBorrarMovimiento = async id => {
+    const ok = await askConfirm('¿Borrar este movimiento? El saldo se recalcula.');
+    if (!ok) return;
+    try {
+      await db.deleteMovimiento(id);
+      await loadAll();
+      toast('Movimiento borrado');
     } catch(e) { toast(e.message, true); }
   };
 
@@ -90,5 +127,5 @@ export function useClienteActions({ clientes, loadAll, toast, askConfirm, modals
     } catch(e) { toast(e.message, true); }
   };
 
-  return { handlePausarVuelta, handleSaveEtiquetas,handleSaveVisit, handleEditVisit, handleDeleteVisit, handleDeleteClient, handleSaveNewClient, handleDecrementarInasistencia };
+  return { handlePausarVuelta, handleSaveEtiquetas,handleSaveVisit, handleEditVisit, handleDeleteVisit, handleDeleteClient, handleSaveNewClient, handleDecrementarInasistencia, handleCargarSena, handleDevolverSaldo, handleBorrarMovimiento };
 }

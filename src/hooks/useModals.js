@@ -3,6 +3,7 @@ import { useState } from 'react';
 export const CLOSED_TURNO = {open:false,fecha:null,turnoEdit:null};
 export const CLOSED_NOTA = {open:false,tipo:'compra',initial:null};
 export const CLOSED_COBRO = {open:false,turnoId:null};
+export const CLOSED_SENA = {open:false,clienteId:null,turnoId:null};
 
 export function useModals() {
   const [modalCliente,      setModalCliente]      = useState({open:false,id:null});
@@ -10,6 +11,7 @@ export function useModals() {
   const [modalTurno,        setModalTurno]        = useState(CLOSED_TURNO);
   const [modalNota,         setModalNota]         = useState(CLOSED_NOTA);
   const [modalCobro,        setModalCobro]        = useState(CLOSED_COBRO);
+  const [modalSena,        setModalSena]        = useState(CLOSED_SENA);
   const [modalProponer,     setModalProponer]     = useState({open:false,pedido:null});
   return {
     modalCliente, setModalCliente,
@@ -17,6 +19,7 @@ export function useModals() {
     modalTurno, setModalTurno,
     modalNota, setModalNota,
     modalCobro, setModalCobro,
+    modalSena, setModalSena,
     modalProponer, setModalProponer,
   };
 }

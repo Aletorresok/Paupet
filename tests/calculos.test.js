@@ -7,6 +7,7 @@ import { ocupadosPorAgenda, generarSlots } from '../src/pages/horarios/horariosU
 import { agendadoPorCobrar, ingresosHastaDia, serviciosPorDia, calcResumenMes, ritmoServicios, serviciosPorTipo } from '../src/pages/finanzas/finanzasCalc.js';
 import { FILTROS, conFrecuencia, normalizar } from '../src/pages/clientes/filtrosClientes.js';
 import { colaMensajes } from '../src/lib/bandeja.js';
+import { saldoDe, repartoCobro, medioDeVisita, conSaldoSinTurno } from '../src/lib/saldo.js';
 
 // Fecha "YYYY-MM-DD" a `n` días de hoy (negativo = pasado).
 const dia = n => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + n); return toISODate(d); };
@@ -339,4 +340,30 @@ test('colaMensajes: siguiente sin enviar y "k de N" sólo con los que tienen tel
   assert.equal(cola.siguiente.id, 'c');
   assert.equal(cola.numero, 2);
   assert.equal(colaMensajes(items.map(x => ({ ...x, enviado: true }))).siguiente, null);
+});
+
+test('saldo: suma de señas, usos y devoluciones', () => {
+  assert.equal(saldoDe([]), 0);
+  assert.equal(saldoDe([{ monto: 20000 }, { monto: -15000 }, { monto: -2000 }]), 3000);
+});
+
+test('saldo: reparto del cobro', () => {
+  assert.deepEqual(repartoCobro(20000, 15000), { descuento: 15000, resto: 0, quedaAFavor: 5000 });
+  assert.deepEqual(repartoCobro(5000, 15000), { descuento: 5000, resto: 10000, quedaAFavor: 0 });
+  assert.deepEqual(repartoCobro(5000, 15000, false), { descuento: 0, resto: 15000, quedaAFavor: 5000 });
+  assert.deepEqual(repartoCobro(0, 15000), { descuento: 0, resto: 15000, quedaAFavor: 0 });
+  assert.deepEqual(repartoCobro(5000, 0), { descuento: 0, resto: 0, quedaAFavor: 5000 }, 'sin precio no se descuenta nada');
+});
+
+test('saldo: forma de pago de la visita', () => {
+  const movs = [{ id: 1, tipo: 'sena', forma_pago: 'efectivo', fecha: '2026-10-01' }, { id: 2, tipo: 'sena', forma_pago: 'transferencia', fecha: '2026-10-05' }];
+  assert.equal(medioDeVisita(movs, 'efectivo'), 'efectivo');
+  assert.equal(medioDeVisita(movs, null), 'transferencia', 'todo con saldo: la de la última seña');
+  assert.equal(medioDeVisita([], null), 'efectivo');
+});
+
+test('saldo: perros con plata a favor y sin turno por delante', () => {
+  const clientes = [{ id: 1, saldo: 5000 }, { id: 2, saldo: 9000 }, { id: 3, saldo: 0 }, { id: 4, saldo: 2000 }];
+  const turnos = [{ clientId: 2, fecha: dia(3), estado: 'confirmed' }, { clientId: 4, fecha: dia(-3), estado: 'confirmed' }, { clientId: 1, fecha: dia(1), estado: 'completed' }];
+  assert.deepEqual(conSaldoSinTurno(clientes, turnos, dia(0)).map(x => x.cliente.id), [1, 4]);
 });

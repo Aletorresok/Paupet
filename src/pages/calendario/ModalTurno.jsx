@@ -5,7 +5,7 @@ import Modal from '../../components/ui/Modal';
 import { DURACIONES, fmtDuracion } from '../../lib/duracion';
 import { horariosLibresPau } from '../../lib/huecosLibres';
 import { C, inputStyle } from '../../lib/styles';
-import { fmtFecha, todayStr } from '../../lib/utils';
+import { fmtFecha, fmtPeso, todayStr } from '../../lib/utils';
 import { duracionSugerida, etiquetaDia, libresPorDia, rangoTurno, serviciosFrecuentes, turnosQueSePisan, ultimaVisita } from './ayudaTurno';
 import PasoCuando from './turno/PasoCuando';
 import PasoPerro from './turno/PasoPerro';
@@ -94,6 +94,11 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
         </header>
 
         <PasoPerro clientes={clientes} cliente={cliente} onElegir={elegirPerro} nuevo={nuevo} onNuevo={isEdit ? null : setNuevo} form={form} set={set} />
+        {cliente?.saldo > 0 && (
+          <div role="status" style={{display:'flex',gap:8,alignItems:'center',padding:'10px 12px',borderRadius:12,background:C.mentaSuave,color:'#173F31',fontSize:14,fontWeight:600}}>
+            <Icon name="check" size={18} strokeWidth={2} />Tiene {fmtPeso(cliente.saldo)} a favor: se descuenta al cobrar.
+          </div>
+        )}
         <PasoServicio servicios={servicios} valor={form.svc} onElegir={s => { setSvcManual(true); set('svc', s); }} />
         <PasoCuando dias={dias} fecha={form.fecha} hora={form.hora} onFecha={elegirFecha} onHora={h => set('hora', h)}
           notaDuracion={`Dura ${fmtDuracion(duracion)}${comoLaUltima ? ', como la última vez' : ''}.`} />

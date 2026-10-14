@@ -9,9 +9,10 @@ import { marcarAvisado } from '../../lib/avisados';
 import { colaMensajes, proximoDiaConTurnos } from '../../lib/bandeja';
 import { DIAS_ES } from '../../lib/constants';
 import { PAUSA_SIEMPRE, clientesParaVolver, enPausa, fmtCada, fmtRestantes, pausaHasta } from '../../lib/frecuencia';
+import { conSaldoSinTurno } from '../../lib/saldo';
 import { C, serif } from '../../lib/styles';
-import { parseFecha } from '../../lib/utils';
-import { abrirWhatsApp, abrirWhatsAppVuelta } from '../../lib/whatsapp';
+import { fmtPeso, parseFecha, todayStr } from '../../lib/utils';
+import { abrirWhatsApp, abrirWhatsAppSaldo, abrirWhatsAppVuelta } from '../../lib/whatsapp';
 import FilaMensaje from './FilaMensaje';
 import PedidoItem from './PedidoItem';
 
@@ -25,7 +26,7 @@ const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
 // "les toca volver". El botón grande abre el WhatsApp del siguiente que falta y lo marca enviado.
 // Un recordatorio enviado se guarda en este dispositivo (`lib/avisados.js`); a uno de "les toca volver" se lo
 // saca de la lista 7 días ("Ya le escribí"), y en esta pantalla queda como Enviado hasta salir.
-export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActions, caps = {}, onOpenClient, onPausarVuelta }) {
+export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActions, caps = {}, onOpenClient, onPausarVuelta, onDarTurno }) {
   const { isMob, isTab } = useResp();
   const enviados = useAvisados();
   const [escritos, setEscritos] = useState([]); // ids de clientes de "les toca volver" a los que se escribió acá
@@ -41,6 +42,7 @@ export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActio
   const vuelven = paraVolver.filter(x => !enPausa(x.cliente) || escritos.includes(x.cliente.id))
     .map(x => ({ ...x, c: x.cliente, id: `c${x.cliente.id}`, tel: x.cliente.tel, enviado: escritos.includes(x.cliente.id) }));
   const ocultos = paraVolver.filter(x => enPausa(x.cliente) && !escritos.includes(x.cliente.id));
+  const conSaldo = caps.saldo ? conSaldoSinTurno(clientes, turnos, todayStr()) : [];
   const pedidosOrden = [...pedidos].sort((a, b) => (a.estado === 'propuesto') - (b.estado === 'propuesto'));
   const pedidosPorAtender = pedidos.filter(p => p.estado !== 'propuesto').length;
   const cola = colaMensajes([...recordar, ...vuelven]);
@@ -59,7 +61,7 @@ export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActio
     onPausar(c.id, hasta, dias == null ? `No se te va a recordar más a ${c.dog}` : `${c.dog} vuelve a aparecer el ${fechaCorta(hasta)}`);
   };
 
-  const resumen = [cola.pendientes ? `${plural(cola.pendientes, 'mensaje', 'mensajes')} por mandar` : 'Todo enviado',
+  const resumen = [conSaldo.length > 0 && `${plural(conSaldo.length, 'pago adelantado', 'pagos adelantados')} sin turno`, cola.pendientes ? `${plural(cola.pendientes, 'mensaje', 'mensajes')} por mandar` : 'Todo enviado',
     pedidosPorAtender > 0 && `${plural(pedidosPorAtender, 'pedido', 'pedidos')} por atender`].filter(Boolean).join(' · ');
 
   const arriba = cola.siguiente ? (
@@ -89,6 +91,20 @@ export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActio
           {recordar.map((x, i) => (
             <FilaMensaje key={x.id} primera={i === 0} cliente={x.c} perro={x.t.dogName || x.c.dog}
               detalle={[x.t.hora || 'sin hora', x.t.servicio].filter(Boolean).join(' · ')} enviado={x.enviado} onEnviar={() => enviarRecordatorio(x)} />
+          ))}
+        </div>
+      </>}
+
+      {conSaldo.length > 0 && <>
+        <h2 style={titulo}>Pagaron por adelantado · sin turno</h2>
+        <div style={lista}>
+          {conSaldo.map(({ cliente: c, saldo }, i) => (
+            <FilaMensaje key={c.id} primera={i === 0} cliente={c} perro={c.dog} onAbrir={() => onOpenClient(c.id)}
+              detalle={`${fmtPeso(saldo)} a favor · falta agendar`} colorDetalle="#1F6B50" sinEnviar
+              menu={<>
+                <button type="button" onClick={() => onDarTurno(c.id)} style={{flex:'none',height:44,padding:'0 14px',borderRadius:12,border:'none',background:C.menta,color:C.sobreMenta,fontFamily:'inherit',fontSize:15,fontWeight:600,cursor:'pointer'}}>Agendar</button>
+                {c.tel && <MenuMas label={`Más acciones de ${c.dog}`} acciones={[{ label:'Avisarle por WhatsApp', icon:'chat', onClick:() => abrirWhatsAppSaldo(c.tel, c.dog, c.owner, saldo) }]} />}
+              </>} />
           ))}
         </div>
       </>}

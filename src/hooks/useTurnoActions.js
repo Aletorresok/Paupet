@@ -1,5 +1,10 @@
 import { db } from '../lib/db';
+import { medioDeVisita } from '../lib/saldo';
+import { fmtPeso } from '../lib/utils';
 import { CLOSED_TURNO, CLOSED_COBRO } from './useModals';
+
+// "Turno agregado 📅 · tiene $20.000 a favor": al agendar a alguien con saldo, se avisa que ya pagó algo.
+const avisoSaldo = (c, texto) => c?.saldo > 0 ? `${texto} · tiene ${fmtPeso(c.saldo)} a favor` : texto;
 
 export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, modals }) {
   const { setModalTurno } = modals;
@@ -9,9 +14,13 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
 
   // Completa el turno con lo que efectivamente se cobró y lo guarda en el historial.
   // La ventana queda abierta mostrando "¡Cobrado!": devuelve lo necesario para deshacer, o null si no se cobró.
-  const handleCobrar = async (id, { servicio, precio, formaPago }) => {
+  // `descuento`: parte del precio que sale del saldo a favor (la visita lleva el precio entero).
+  // `formaPago` es la del resto; null si todo salió del saldo.
+  const handleCobrar = async (id, { servicio, precio, formaPago: medio, descuento = 0 }) => {
     const t = turnos.find(x=>x.id===id); if (!t) return null;
     if (t.estado === 'completed') { modals.setModalCobro(CLOSED_COBRO); return null; }
+    const cliente = clientes.find(x=>x.id===t.clientId);
+    const formaPago = medioDeVisita(cliente?.movimientos, medio);
     try {
       const marcado = await db.completarTurno(id, { servicio, precio, forma_pago: formaPago });
       if (!marcado) { modals.setModalCobro(CLOSED_COBRO); await loadAll(); return null; }
@@ -19,18 +28,21 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
       if (t.clientId) {
         try {
           visitaId = (await db.insertVisita(t.clientId, servicio, precio, t.fecha, formaPago))?.id ?? null;
+          if (descuento > 0 && visitaId) await db.insertMovimiento({ clienteId: t.clientId, monto: -descuento, tipo: 'uso', formaPago, turnoId: id, visitaId });
         } catch(e) {
+          if (visitaId) await db.deleteVisita(visitaId).catch(() => {});
           // Si no se pudo guardar la visita, el turno vuelve a quedar como estaba.
           await db.updateTurno(id, {estado: t.estado});
           throw e;
         }
       }
       await loadAll();
-      return { visitaId, antes: { estado: t.estado, servicio: t.servicio, precio: t.precio, formaPago: t.formaPago } };
+      return { visitaId, descuento, antes: { estado: t.estado, servicio: t.servicio, precio: t.precio, formaPago: t.formaPago } };
     } catch(e) { toast(e.message, true); return null; }
   };
 
-  // "Deshacer" después de cobrar: borra la visita creada y el turno vuelve a como estaba (sin cambios en la base).
+  // "Deshacer" después de cobrar: borra la visita creada (y con ella el descuento del saldo, que vuelve)
+  // y el turno vuelve a como estaba.
   const handleDeshacerCobro = async (id, { visitaId, antes }) => {
     try {
       if (visitaId) await db.deleteVisita(visitaId);
@@ -49,7 +61,7 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
     try {
       await db.insertTurno({ ...datos, dogName: t.dogName || '', precio: 0, estado: 'confirmed', formaPago: 'efectivo' });
       await loadAll();
-      toast('Próximo turno agendado 📅');
+      toast(avisoSaldo(clientes.find(x => x.id === t.clientId), 'Próximo turno agendado 📅'));
     } catch(e) { toast(e.message, true); }
   };
 
@@ -140,7 +152,7 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
       if (form.pedidoId) await db.updatePedido(form.pedidoId, { estado: 'aceptado', turno_id: nuevo?.id ?? null });
       setModalTurno(CLOSED_TURNO);
       await loadAll();
-      toast(form.pedidoId ? 'Turno agendado · falta avisarle por WhatsApp' : 'Turno agregado 📅');
+      toast(form.pedidoId ? 'Turno agendado · falta avisarle por WhatsApp' : avisoSaldo(c, 'Turno agregado 📅'));
     } catch(e) { toast('Error: ' + e.message, true); }
   };
 

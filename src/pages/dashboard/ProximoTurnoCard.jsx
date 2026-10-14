@@ -24,7 +24,7 @@ function titulo({ turno: t, estado, faltan }) {
 // El turno de ahora (o el próximo): quién es, sus cuidados y las dos acciones del momento.
 // Pau no marca el inicio: es el último que empezó y no se cobró (ver `turnoActual`).
 // Tocar el perro abre el Modo mesa.
-export default function ProximoTurnoCard({ actual, cliente: c, onAbrir, onCobrar, onEditTurno, onNoVino }) {
+export default function ProximoTurnoCard({ actual, cliente: c, onAbrir, onCobrar, onEditTurno, onNoVino, onSena }) {
   const { isMob } = useResp();
   const { turno: t, estado } = actual;
   const enCurso = estado !== 'proximo';
@@ -36,6 +36,7 @@ export default function ProximoTurnoCard({ actual, cliente: c, onAbrir, onCobrar
   const detalle = [c.raza, t.servicio, c.owner, !isMob && c.tel].filter(Boolean).join(' · ');
   const acciones = [
     { label: 'Editar turno', icon: 'edit', onClick: () => onEditTurno(t) },
+    ...(onSena && t.clientId ? [{ label: 'Cargar seña', icon: 'plus', onClick: () => onSena(t.clientId, t.id) }] : []),
     { label: 'No vino', icon: 'x', onClick: () => onNoVino(t.id), peligro: true },
   ];
 
@@ -67,6 +68,7 @@ export default function ProximoTurnoCard({ actual, cliente: c, onAbrir, onCobrar
             <span style={{fontSize:12,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:estado === 'terminado' ? C.ambar : C.verde}}>{titulo(actual)}</span>
             <span style={{fontSize:isMob ? 22 : 30,fontWeight:600,lineHeight:1.15}}>{nombre}</span>
             <span style={{fontSize:isMob ? 14 : 15,color:C.tintaSuave}}>{detalle}</span>
+            {c.saldo > 0 && <span style={{fontSize:14,fontWeight:600,color:'#1F6B50'}}>Tiene {fmtPeso(c.saldo)} a favor 💚</span>}
           </span>
         </button>
         {!isMob && botones}

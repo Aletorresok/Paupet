@@ -23,7 +23,7 @@ import { ParaMandarFila, ParaMandarLista } from './ParaMandar';
 // "¡Buen día, Pau! ☀️", según la hora.
 const fraseSaludo = h => h < 6 ? '¡Buenas noches, Pau! 🌙' : h < 13 ? '¡Buen día, Pau! ☀️' : h < 20 ? '¡Buenas tardes, Pau! 🌤️' : '¡Buenas noches, Pau! 🌙';
 
-export default function Dashboard({ clientes, turnos, config, pedidos = [], pedidoActions, caps = {}, toast, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno }) {
+export default function Dashboard({ clientes, turnos, config, pedidos = [], pedidoActions, caps = {}, toast, onNav, onOpenClient, onNuevoTurno, onCompletar, onNoVino, onEditTurno, onSena }) {
   const { isMob, isTab } = useResp();
   const enviados = useAvisados();
   // Se vuelve a calcular cada minuto: el turno de ahora y los huecos cambian con la hora.
@@ -57,7 +57,7 @@ export default function Dashboard({ clientes, turnos, config, pedidos = [], pedi
       actual={actual}
       cliente={clientes.find(c => c.id === actual.turno.clientId) || {}}
       onAbrir={() => setMesaId(actual.turno.id)}
-      onCobrar={onCompletar} onEditTurno={onEditTurno} onNoVino={onNoVino}
+      onCobrar={onCompletar} onEditTurno={onEditTurno} onNoVino={onNoVino} onSena={caps.saldo ? onSena : null}
     />
   ) : !turnosHoy.length ? (
     <section style={{...cardStyle,borderRadius:20,padding:'8px 18px 18px'}}>

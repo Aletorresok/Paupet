@@ -14,12 +14,13 @@ import FotosAntesDespues from './ficha/FotosAntesDespues';
 import FrecuenciaCard from './ficha/FrecuenciaCard';
 import HistorialVisitas from './ficha/HistorialVisitas';
 import PreciosCard from './ficha/PreciosCard';
+import SaldoCard from './ficha/SaldoCard';
 import Seccion from './ficha/Seccion';
 import { perrosDelDueno } from './ficha/etiquetas';
 
 // Ficha completa del perro: datos, frecuencia, etiquetas, fotos e historial.
 export default function ModalCliente({ open, cliente, clientes, turnos, caps, toast, onClose, onSelectCliente, onDarTurno,
-  onSaveVisit, onEditVisit, onDeleteVisit, onDelete, onEdit, onAgregarPerro, onDecrementarInasistencia, onSaveEtiquetas, onPausarVuelta }) {
+  onSaveVisit, onEditVisit, onDeleteVisit, onDelete, onEdit, onAgregarPerro, onDecrementarInasistencia, onSaveEtiquetas, onPausarVuelta, onCargarSena, onDevolverSaldo, onBorrarMovimiento }) {
   const { isMob } = useResp();
   if (!open || !cliente) return null;
   const c = cliente;
@@ -64,6 +65,12 @@ export default function ModalCliente({ open, cliente, clientes, turnos, caps, to
 
         <div style={{display:'grid',gridTemplateColumns:isMob?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1.15fr)',gap:16,alignItems:'start'}}>
           <div style={{display:'flex',flexDirection:'column',gap:16,minWidth:0}}>
+            {caps.saldo && (
+              <Seccion titulo="Señas y saldo a favor">
+                <SaldoCard cliente={c} sinTurno={!proximo} onCargar={() => onCargarSena(c.id)} onDevolver={() => onDevolverSaldo(c.id)}
+                  onBorrar={onBorrarMovimiento} onDarTurno={() => onDarTurno(c.id, todayStr())} />
+              </Seccion>
+            )}
             <Seccion titulo="Datos">
               <DatosPerro cliente={c} onRestarInasistencia={() => onDecrementarInasistencia(c.id)} />
             </Seccion>

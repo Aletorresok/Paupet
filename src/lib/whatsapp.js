@@ -1,5 +1,5 @@
 import { DIAS_ES, MESES } from './constants';
-import { diasDesde, fmtFecha, parseFecha } from './utils';
+import { diasDesde, fmtFecha, fmtPeso, parseFecha } from './utils';
 
 // "mañana lunes 28 de septiembre" / "el lunes 28 de septiembre" (sin el año).
 const fechaAmigable = f => {
@@ -40,6 +40,12 @@ export const abrirWhatsApp = (tel, dogName, ownerName, turno = null) => {
 export const abrirWhatsAppVuelta = (tel, dogName, ownerName) => {
   if (!tel) return;
   abrirChat(tel, `¡Hola ${ownerName}! 🐾 ¿Cómo está ${dogName}? Ya se está por cumplir el tiempo de su próximo baño. ¿Querés que le reservemos un turno? ✂️`);
+};
+
+// Invitación a sacar turno cuando el cliente ya pagó por adelantado (saldo a favor).
+export const abrirWhatsAppSaldo = (tel, dogName, ownerName, saldo) => {
+  if (!tel) return;
+  abrirChat(tel, `¡Hola ${ownerName}! 🐾 Tenés ${fmtPeso(saldo)} a favor para el próximo servicio de *${dogName}*. ¿Cuándo te queda cómodo que le demos un turno? ✂️`);
 };
 
 // Aviso de que el perro ya está listo para retirar.

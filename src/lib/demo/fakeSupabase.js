@@ -101,6 +101,12 @@ class Consulta {
         const ids = new Set(afectadas.map(r => r.id));
         db.tablas.visitas = db.tablas.visitas.filter(v => !ids.has(v.cliente_id));
         db.tablas.fotos_cliente = db.tablas.fotos_cliente.filter(v => !ids.has(v.cliente_id));
+        db.tablas.saldo_movimientos = (db.tablas.saldo_movimientos || []).filter(v => !ids.has(v.cliente_id));
+      }
+      // Como `on delete cascade` de saldo_movimientos.visita_id: borrar la visita devuelve el saldo que se usó.
+      if (t === 'visitas') {
+        const ids = new Set(afectadas.map(r => r.id));
+        db.tablas.saldo_movimientos = (db.tablas.saldo_movimientos || []).filter(m => !ids.has(m.visita_id));
       }
     }
     guardar();

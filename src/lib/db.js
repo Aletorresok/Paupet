@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { DEFAULT_CONFIG } from './constants';
+import { saldoDe } from './saldo';
 import { todayStr } from './utils';
 
 // Hay clientes cargados más de una vez (mismo perro + dueño). Se muestran como uno solo,
@@ -18,6 +19,7 @@ function mergeDuplicados(clientes) {
     } else {
       canon.aliasIds.push(c.id);
       canon.visitas = [...canon.visitas, ...c.visitas];
+      canon.movimientos = [...canon.movimientos, ...c.movimientos];
       canon.foto = canon.foto || c.foto;
       canon.tel = canon.tel || c.tel;
     }
@@ -27,7 +29,7 @@ function mergeDuplicados(clientes) {
 
 // Qué columnas/tablas nuevas existen en la base (ver supabase/migracion_02_agenda_ficha.sql).
 // Mientras no se corra la migración, la app funciona igual pero sin guardar esos datos.
-export const capacidades = { duracion: false, etiquetas: false, fotos: false, pedidos: false, push: false, vueltaPausa: false };
+export const capacidades = { duracion: false, etiquetas: false, fotos: false, pedidos: false, push: false, vueltaPausa: false, saldo: false };
 
 // Supabase devuelve como máximo 1000 filas por consulta: se piden por tandas hasta traer todo.
 // `consulta` es una función que arma la query (sin .range) para poder repetirla.
@@ -49,11 +51,11 @@ const existe = async (tabla, columna = 'id') => {
 // Capa de datos: todas las queries a Supabase.
 export const db = {
   async detectarCapacidades() {
-    const [duracion, etiquetas, fotos, pedidos, push, vueltaPausa] = await Promise.all([
+    const [duracion, etiquetas, fotos, pedidos, push, vueltaPausa, saldo] = await Promise.all([
       existe('turnos', 'duracion'), existe('clientes', 'etiquetas'), existe('fotos_cliente'), existe('pedidos_turno'), existe('push_suscripciones'),
-      existe('clientes', 'vuelta_pausa'),
+      existe('clientes', 'vuelta_pausa'), existe('saldo_movimientos'),
     ]);
-    Object.assign(capacidades, { duracion, etiquetas, fotos, pedidos, push, vueltaPausa });
+    Object.assign(capacidades, { duracion, etiquetas, fotos, pedidos, push, vueltaPausa, saldo });
     return { ...capacidades };
   },
 
@@ -72,6 +74,9 @@ export const db = {
       .select('*, visitas(*)')
       .order('dog', { ascending: true })
       .order('id', { ascending: true }));
+    const movs = capacidades.saldo ? await traerTodo(() => supabase.from('saldo_movimientos').select('*').order('id', { ascending: true })) : [];
+    const porCliente = new Map();
+    movs.forEach(m => porCliente.set(m.cliente_id, [...(porCliente.get(m.cliente_id) || []), m]));
     return mergeDuplicados(data.map(c => ({
       ...c,
       visitas: (c.visitas || []).map(v => ({
@@ -81,8 +86,9 @@ export const db = {
         fecha: v.fecha,
         forma_pago: v.forma_pago || 'efectivo',
         cliente_id: v.cliente_id,
-      }))
-    })));
+      })),
+      movimientos: porCliente.get(c.id) || [],
+    }))).map(c => ({ ...c, saldo: saldoDe(c.movimientos) }));
   },
   async insertCliente(c) {
     const { data, error } = await supabase
@@ -119,6 +125,19 @@ export const db = {
   },
   async deleteVisita(id) {
     const { error } = await supabase.from('visitas').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  // Señas y saldo a favor (migración 8). `tipo`: 'sena' (monto +), 'uso' o 'devolucion' (monto −).
+  async insertMovimiento({ clienteId, monto, tipo, formaPago = 'efectivo', turnoId = null, visitaId = null, nota = '', fecha }) {
+    const { data, error } = await supabase.from('saldo_movimientos').insert({
+      cliente_id: clienteId, monto, tipo, forma_pago: formaPago, turno_id: turnoId, visita_id: visitaId, nota, fecha: fecha || todayStr(),
+    }).select('id').single();
+    if (error) throw error;
+    return data;
+  },
+  async deleteMovimiento(id) {
+    const { error } = await supabase.from('saldo_movimientos').delete().eq('id', id);
     if (error) throw error;
   },
 

@@ -3,6 +3,7 @@ import Icon from '../../components/ui/Icon';
 import Modal from '../../components/ui/Modal';
 import PetAvatar from '../../components/ui/PetAvatar';
 import { C } from '../../lib/styles';
+import { repartoCobro } from '../../lib/saldo';
 import { fmtPeso } from '../../lib/utils';
 import { ultimaVisita } from './ayudaTurno';
 import CobroHecho from './CobroHecho';
@@ -18,17 +19,22 @@ export default function ModalCobro({ turno: t, cliente: c, turnos, tieneProximo 
   const [servicio, setServicio] = useState(t.servicio || '');
   const [monto, setMonto] = useState('');
   const [guardando, setGuardando] = useState(null);
+  const [usarSaldo, setUsarSaldo] = useState(true);
   const [hecho, setHecho] = useState(null); // { visitaId, antes, precio, medio } después de cobrar
   const nombre = t.dogName || c.dog || '';
   const precio = parseInt(monto || '0', 10);
   const ultima = ultimaVisita(c);
+  // Saldo a favor (señas): se descuenta solo, salvo que se destilde. `reparto.resto` es lo que hay que cobrar.
+  const saldo = c.saldo || 0;
+  const reparto = repartoCobro(saldo, precio, usarSaldo);
+  const todoConSaldo = precio > 0 && reparto.resto === 0;
 
   const cobrar = async medio => {
     if (!precio || guardando) return;
-    setGuardando(medio);
-    const r = await onCobrar(t.id, { servicio: servicio.trim() || t.servicio, precio, formaPago: medio });
+    setGuardando(medio || 'saldo');
+    const r = await onCobrar(t.id, { servicio: servicio.trim() || t.servicio, precio, formaPago: medio, descuento: reparto.descuento });
     setGuardando(null);
-    if (r) setHecho({ ...r, precio, medio });
+    if (r) setHecho({ ...r, precio, medio, descuento: reparto.descuento, quedaAFavor: reparto.quedaAFavor });
   };
   const deshacer = async () => { if (await onDeshacer(t.id, hecho)) setHecho(null); };
 
@@ -65,16 +71,32 @@ export default function ModalCobro({ turno: t, cliente: c, turnos, tieneProximo 
                 Igual que la última vez · {fmtPeso(ultima.precio)}
               </button>
             )} />
-            <div role="group" aria-label="Cómo pagó (guarda el cobro)" style={{display:'grid',gridTemplateColumns:'repeat(2,minmax(0,1fr))',gap:10,marginTop:2}}>
-              <button type="button" aria-disabled={!precio} onClick={() => cobrar('efectivo')}
-                style={{...pagar,background:C.menta,color:C.sobreMenta,opacity:precio ? 1 : .45}}>
-                {guardando === 'efectivo' ? 'Guardando…' : 'Efectivo'}
+            {saldo > 0 && (
+              <label style={{display:'flex',alignItems:'center',gap:10,minHeight:48,padding:'8px 14px',borderRadius:14,background:C.mentaSuave,color:'#173F31',fontSize:15,cursor:'pointer'}}>
+                <input type="checkbox" checked={usarSaldo} onChange={e => setUsarSaldo(e.target.checked)} style={{width:20,height:20,accentColor:C.verde,flexShrink:0}} />
+                <span style={{flex:1}}>
+                  <strong>Tiene {fmtPeso(saldo)} a favor.</strong>{' '}
+                  {!usarSaldo ? 'No se descuenta.' : !precio ? 'Se descuenta de este cobro.'
+                    : todoConSaldo ? `Cubre todo, le quedan ${fmtPeso(reparto.quedaAFavor)}.` : `Se descuentan ${fmtPeso(reparto.descuento)}: cobrás ${fmtPeso(reparto.resto)}.`}
+                </span>
+              </label>
+            )}
+            {todoConSaldo ? (
+              <button type="button" onClick={() => cobrar(null)} style={{...pagar,background:C.menta,color:C.sobreMenta}}>
+                {guardando ? 'Guardando…' : `Cobrar con saldo · ${fmtPeso(reparto.descuento)}`}
               </button>
-              <button type="button" aria-disabled={!precio} onClick={() => cobrar('transferencia')}
-                style={{...pagar,background:'#1F2A26',color:'white',opacity:precio ? 1 : .45}}>
-                {guardando === 'transferencia' ? 'Guardando…' : 'Transferencia'}
-              </button>
-            </div>
+            ) : (
+              <div role="group" aria-label="Cómo pagó (guarda el cobro)" style={{display:'grid',gridTemplateColumns:'repeat(2,minmax(0,1fr))',gap:10,marginTop:2}}>
+                <button type="button" aria-disabled={!precio} onClick={() => cobrar('efectivo')}
+                  style={{...pagar,background:C.menta,color:C.sobreMenta,opacity:precio ? 1 : .45}}>
+                  {guardando === 'efectivo' ? 'Guardando…' : 'Efectivo'}
+                </button>
+                <button type="button" aria-disabled={!precio} onClick={() => cobrar('transferencia')}
+                  style={{...pagar,background:'#1F2A26',color:'white',opacity:precio ? 1 : .45}}>
+                  {guardando === 'transferencia' ? 'Guardando…' : 'Transferencia'}
+                </button>
+              </div>
+            )}
             <button type="button" onClick={() => onNoVino(t.id)}
               style={{alignSelf:'center',height:44,padding:'0 12px',border:'none',background:'none',fontFamily:'inherit',fontSize:15,fontWeight:600,color:'#8E2A4A',cursor:'pointer'}}>
               No vino

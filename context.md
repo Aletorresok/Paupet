@@ -356,3 +356,12 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   "Recordar · martes 6 (mañana)": recordatorio enviado = `lib/avisados.js` como antes. "Les toca volver": Enviar = WhatsApp + "Ya le
   escribí" (oculto 7 días, `vuelta_pausa`); en la pantalla queda como Enviado hasta salir. Menú ⋯ de pausar y "Ver N ocultos" igual
   que antes. En PC, dos columnas (mensajes | pedidos). Se borraron `PedidosCard`, `ManianaCard` y `VuelvenCard`.
+- 2026-10-11 — **Señas y saldo a favor** (migración 8, `supabase/migracion_08_saldo.sql`, **falta correrla**; mientras no, la app oculta todo). Libro de
+  movimientos `saldo_movimientos` (seña +, uso −, devolución −; el saldo es la suma, `c.saldo` / `c.movimientos` en `getClientes`). Helpers en
+  `lib/saldo.js`. Ficha → "Señas y saldo a favor" (`ficha/SaldoCard`): Cargar seña (`clientes/ModalSena`, teclado + Efectivo/Transferencia), Devolver,
+  últimos movimientos. También "Cargar seña" en el ⋯ del turno de Hoy. **Cobrar**: si tiene saldo se descuenta solo (casilla para no usarlo); si cubre
+  todo, botón "Cobrar con saldo"; la visita lleva el precio entero (ingresos se reconocen al servicio, la seña no suma hasta usarse) y su forma de pago
+  es la del resto (o la de la última seña si todo salió del saldo). Deshacer o borrar la visita devuelve el saldo (`on delete cascade` de `visita_id`).
+  **Recordatorio:** Avisos → "Pagaron por adelantado · sin turno" (saldo > 0 y ningún turno por delante; Agendar / WhatsApp en el ⋯) y suma al número
+  de Avisos; desaparece al agendar. **Aviso al agendar:** Nuevo turno muestra "Tiene $X a favor", el toast al guardar también, y Hoy muestra
+  "Tiene $X a favor 💚" en el turno en curso. Demo: Rocco (22.000 sin turno) y Coco (8.000, turno hoy).
