@@ -19,13 +19,15 @@ const EMPTY_CLIENTE = {clientId:'',dog:'',owner:'',raza:'',tel:'',size:'',notes:
 // Se monta con `key` (ver AppModals): arranca de cero en cada apertura, sin efectos.
 // `defaultNuevo` = {dog, owner, raza, tel, size, notes}: perro nuevo ya cargado (p. ej. desde un pedido de /turnos).
 // `pedidoId`: al guardar, ese pedido queda aceptado.
-export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, turnos = [], config, defaultFecha, defaultHora, defaultClientId, defaultServicio, defaultDuracion, defaultNuevo, pedidoId, turnoEdit }) {
+// `calendarTurno`: turno que vino de Google Calendar y hay que completar; al guardar se actualiza ese turno.
+export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, turnos = [], config, defaultFecha, defaultHora, defaultClientId, defaultServicio, defaultDuracion, defaultNuevo, pedidoId, calendarTurno, turnoEdit }) {
   const isEdit = !!turnoEdit;
   const [nuevo, setNuevo] = useState(!isEdit && !!defaultNuevo);
   const [saving, setSaving] = useState(false);
   const [masOpciones, setMasOpciones] = useState(false);
   const servicios = useMemo(() => serviciosFrecuentes(clientes, 6), [clientes]);
-  const otrosTurnos = useMemo(() => turnos.filter(t => t.id !== turnoEdit?.id), [turnos, turnoEdit]);
+  const propioId = turnoEdit?.id ?? calendarTurno?.id;
+  const otrosTurnos = useMemo(() => turnos.filter(t => t.id !== propioId), [turnos, propioId]);
   const libres = useMemo(() => horariosLibresPau(config, otrosTurnos), [config, otrosTurnos]);
 
   const [form, setForm] = useState(() => {
@@ -38,7 +40,7 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
       ...EMPTY_CLIENTE, ...defaultNuevo, clientId: defaultClientId ? String(defaultClientId) : '',
       svc: defaultServicio || ultimaVisita(c)?.servicio || '',
       // Sin fecha pedida: el primer día con horarios libres (o hoy).
-      fecha: defaultFecha || libres[0]?.fecha || todayStr(), hora: defaultHora || '', precio: '', pedidoId: pedidoId || null,
+      fecha: defaultFecha || libres[0]?.fecha || todayStr(), hora: defaultHora || '', precio: '', pedidoId: pedidoId || null, calendarId: calendarTurno?.id || null,
     };
   });
   // Duración elegida a mano (si no, la sugerida). Al editar o si viene dada, se respeta.
@@ -79,13 +81,15 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
     setSaving(false);
   };
 
-  const subtitulo = isEdit ? `${turnoEdit.dogName || ''} · ${fmtFecha(turnoEdit.fecha)}` : pedidoId ? 'Cargado desde el pedido: revisá y agendá' : '';
+  const subtitulo = isEdit ? `${turnoEdit.dogName || ''} · ${fmtFecha(turnoEdit.fecha)}`
+    : calendarTurno ? `En Calendar dice “${calendarTurno.gcalTitulo || calendarTurno.dogName}”`
+    : pedidoId ? 'Cargado desde el pedido: revisá y agendá' : '';
   return (
     <Modal open={open} onClose={onClose} width={480}>
       <div style={{padding:'16px 20px 0',display:'flex',flexDirection:'column',gap:18}}>
         <header style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12}}>
           <div style={{display:'flex',flexDirection:'column',minWidth:0}}>
-            <h2 style={{margin:0,fontSize:22,fontWeight:600}}>{isEdit ? 'Editar turno' : 'Nuevo turno'}</h2>
+            <h2 style={{margin:0,fontSize:22,fontWeight:600}}>{isEdit ? 'Editar turno' : calendarTurno ? 'Completar turno' : 'Nuevo turno'}</h2>
             {subtitulo && <span style={{fontSize:14,color:C.tintaSuave}}>{subtitulo}</span>}
           </div>
           <button type="button" onClick={onClose} aria-label="Cerrar" style={{width:44,height:44,borderRadius:14,border:'none',background:'transparent',color:C.tinta,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
@@ -131,7 +135,7 @@ export default function ModalTurno({ open, onClose, onSave, onUpdate, clientes, 
       <div style={{position:'sticky',bottom:0,background:'white',padding:'12px 20px 20px',display:'flex',flexDirection:'column',gap:6}}>
         <button type="button" onClick={guardar} aria-disabled={!!falta.length || saving}
           style={{height:56,borderRadius:14,border:'none',background:C.menta,color:C.sobreMenta,fontFamily:'inherit',fontSize:17,fontWeight:600,cursor:'pointer',opacity:falta.length ? .5 : 1}}>
-          {saving ? 'Guardando…' : `${isEdit ? 'Guardar' : 'Agendar'}${cuando ? ` · ${cuando}` : ''}`}
+          {saving ? 'Guardando…' : `${isEdit || calendarTurno ? 'Guardar' : 'Agendar'}${cuando ? ` · ${cuando}` : ''}`}
         </button>
         <span style={{textAlign:'center',fontSize:13,color:C.tintaSuave}}>
           {falta.length ? `Falta elegir ${falta.join(', ').replace(/, ([^,]*)$/, ' y $1')}` : isEdit ? '' : 'El día anterior te aparece en Avisos para recordarle 💬'}

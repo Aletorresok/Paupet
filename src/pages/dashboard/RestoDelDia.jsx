@@ -2,6 +2,7 @@ import PetAvatar from '../../components/ui/PetAvatar';
 import { useResp } from '../../context/resp';
 import { fmtDuracion } from '../../lib/duracion';
 import { C, cardStyle } from '../../lib/styles';
+import { porCompletar } from '../../lib/calendarSync';
 
 const fila = {display:'flex',alignItems:'center',gap:12,padding:'12px 0',width:'100%',background:'none',border:'none',borderTop:'1px solid #EFECE7',fontFamily:'inherit',textAlign:'left',color:C.tinta,cursor:'pointer',minHeight:56};
 
@@ -38,7 +39,9 @@ export default function RestoDelDia({ turnos, huecos, clientes, sinCobrar = [], 
               <PetAvatar cliente={c} size={isMob ? 36 : 40} />
               <span style={{flex:1,minWidth:0,display:'flex',flexDirection:'column'}}>
                 <span style={{fontSize:16,fontWeight:500,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{t.dogName || c.dog}</span>
-                <span style={{fontSize:13,color:C.tintaSuave,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{[c.raza, t.servicio, c.owner].filter(Boolean).join(' · ')}</span>
+                {porCompletar(t)
+                  ? <span style={{fontSize:13,color:'#6E4300',fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>De Google Calendar · tocá para completar</span>
+                  : <span style={{fontSize:13,color:C.tintaSuave,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{[c.raza, t.servicio, c.owner].filter(Boolean).join(' · ')}</span>}
               </span>
             </button>
             {falta && (

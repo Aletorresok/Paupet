@@ -29,7 +29,7 @@ function mergeDuplicados(clientes) {
 
 // Qué columnas/tablas nuevas existen en la base (ver supabase/migracion_02_agenda_ficha.sql).
 // Mientras no se corra la migración, la app funciona igual pero sin guardar esos datos.
-export const capacidades = { duracion: false, etiquetas: false, fotos: false, pedidos: false, push: false, vueltaPausa: false, saldo: false };
+export const capacidades = { duracion: false, etiquetas: false, fotos: false, pedidos: false, push: false, vueltaPausa: false, saldo: false, calendar: false };
 
 // Supabase devuelve como máximo 1000 filas por consulta: se piden por tandas hasta traer todo.
 // `consulta` es una función que arma la query (sin .range) para poder repetirla.
@@ -51,11 +51,11 @@ const existe = async (tabla, columna = 'id') => {
 // Capa de datos: todas las queries a Supabase.
 export const db = {
   async detectarCapacidades() {
-    const [duracion, etiquetas, fotos, pedidos, push, vueltaPausa, saldo] = await Promise.all([
+    const [duracion, etiquetas, fotos, pedidos, push, vueltaPausa, saldo, gcal, calSync] = await Promise.all([
       existe('turnos', 'duracion'), existe('clientes', 'etiquetas'), existe('fotos_cliente'), existe('pedidos_turno'), existe('push_suscripciones'),
-      existe('clientes', 'vuelta_pausa'), existe('saldo_movimientos'),
+      existe('clientes', 'vuelta_pausa'), existe('saldo_movimientos'), existe('turnos', 'gcal_uid'), existe('calendar_sync'),
     ]);
-    Object.assign(capacidades, { duracion, etiquetas, fotos, pedidos, push, vueltaPausa, saldo });
+    Object.assign(capacidades, { duracion, etiquetas, fotos, pedidos, push, vueltaPausa, saldo, calendar: gcal && calSync });
     return { ...capacidades };
   },
 
@@ -174,6 +174,9 @@ export const db = {
       fromPortal: t.from_portal,
       formaPago: t.forma_pago || 'efectivo',
       duracion: t.duracion || 60,
+      gcalUid: t.gcal_uid || null,
+      gcalTitulo: t.gcal_titulo || '',
+      gcalInicio: t.gcal_inicio || '',
     }));
   },
   async insertTurno(t) {
@@ -188,6 +191,7 @@ export const db = {
       from_portal: t.fromPortal || false,
       forma_pago: t.formaPago || 'efectivo',
       ...(capacidades.duracion && t.duracion ? { duracion: t.duracion } : {}),
+      ...(capacidades.calendar && t.gcalUid ? { gcal_uid: t.gcalUid, gcal_titulo: t.gcalTitulo || '', gcal_inicio: t.gcalInicio || '' } : {}),
     }).select('id').single();
     if (error) throw error;
     return data;
@@ -197,6 +201,8 @@ export const db = {
     if ('clientId' in mapped) { mapped.cliente_id = mapped.clientId; delete mapped.clientId; }
     if ('dogName' in mapped) { mapped.dog_name = mapped.dogName; delete mapped.dogName; }
     if ('formaPago' in mapped) { mapped.forma_pago = mapped.formaPago; delete mapped.formaPago; }
+    if ('gcalUid' in mapped) { mapped.gcal_uid = mapped.gcalUid; delete mapped.gcalUid; }
+    if ('gcalInicio' in mapped) { mapped.gcal_inicio = mapped.gcalInicio; delete mapped.gcalInicio; }
     if (!capacidades.duracion) delete mapped.duracion;
     const { error } = await supabase.from('turnos').update(mapped).eq('id', id);
     if (error) throw error;
@@ -227,6 +233,21 @@ export const db = {
   },
   async updatePedido(id, fields) {
     const { error } = await supabase.from('pedidos_turno').update(fields).eq('id', id);
+    if (error) throw error;
+  },
+
+  // Conexión con Google Calendar (migración 9): { url, ignorados } o null si no está la migración.
+  // `ignorados`: eventos que se borraron de Paupet y siguen en Calendar (no se vuelven a traer).
+  async getCalendar() {
+    if (!capacidades.calendar) return null;
+    const { data } = await supabase.from('calendar_sync').select('*').eq('id', 1).single();
+    return { url: data?.ical_url || '', ignorados: Array.isArray(data?.ignorados) ? data.ignorados : [] };
+  },
+  async saveCalendar(campos) {
+    const fila = { id: 1, updated_at: new Date().toISOString() };
+    if ('url' in campos) fila.ical_url = campos.url;
+    if ('ignorados' in campos) fila.ignorados = campos.ignorados;
+    const { error } = await supabase.from('calendar_sync').upsert(fila);
     if (error) throw error;
   },
 

@@ -222,5 +222,7 @@ export function crearDatosDemo() {
     mov(saldoDe('Coco'), { monto: 8000, forma_pago: 'efectivo', nota: 'seña' }),
   ];
 
-  return { creado: hoyISO, ultimoId: id, tablas: { clientes, visitas, turnos, notas, config, fotos_cliente: [], pedidos_turno, saldo_movimientos } };
+  return { creado: hoyISO, ultimoId: id, tablas: { clientes, visitas, turnos, notas, config, fotos_cliente: [], pedidos_turno, saldo_movimientos,
+    // Google Calendar ya conectado (el calendario de mentira está en calendarDemo.js).
+    calendar_sync: [{ id: 1, ical_url: 'https://calendar.google.com/calendar/ical/demo/private-demo/basic.ics', ignorados: [] }] } };
 }

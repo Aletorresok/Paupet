@@ -41,13 +41,13 @@ export default function AppModals({ modals, clientes, turnos, caps, toast, clien
         onSave={ca.handleSaveNewClient}
       />}
       {modalTurno.open && <ModalTurno
-        key={modalTurno.turnoEdit ? `e${modalTurno.turnoEdit.id}` : `n${modalTurno.fecha}|${modalTurno.hora}|${modalTurno.clientId}|${modalTurno.servicio}|${modalTurno.pedidoId}`}
+        key={modalTurno.turnoEdit ? `e${modalTurno.turnoEdit.id}` : `n${modalTurno.fecha}|${modalTurno.hora}|${modalTurno.clientId}|${modalTurno.servicio}|${modalTurno.pedidoId}|${modalTurno.calendarTurno?.id}`}
         open={modalTurno.open}
         onClose={()=>setModalTurno(CLOSED_TURNO)}
         onSave={ta.handleSaveNewTurno} onUpdate={ta.handleUpdateTurno}
         clientes={clientes} turnos={turnos} config={config} defaultFecha={modalTurno.fecha} defaultHora={modalTurno.hora} defaultClientId={modalTurno.clientId}
         defaultServicio={modalTurno.servicio} defaultDuracion={modalTurno.duracion} turnoEdit={modalTurno.turnoEdit}
-        defaultNuevo={modalTurno.nuevo} pedidoId={modalTurno.pedidoId}
+        defaultNuevo={modalTurno.nuevo} pedidoId={modalTurno.pedidoId} calendarTurno={modalTurno.calendarTurno}
       />}
       {modalNota.open && <ModalNota
         key={modalNota.initial?.id ?? `n${modalNota.tipo}`}

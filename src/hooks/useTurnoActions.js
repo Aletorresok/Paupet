@@ -1,4 +1,5 @@
 import { db } from '../lib/db';
+import { porCompletar } from '../lib/calendarSync';
 import { medioDeVisita } from '../lib/saldo';
 import { fmtPeso } from '../lib/utils';
 import { CLOSED_TURNO, CLOSED_COBRO } from './useModals';
@@ -6,8 +7,14 @@ import { CLOSED_TURNO, CLOSED_COBRO } from './useModals';
 // "Turno agregado 📅 · tiene $20.000 a favor": al agendar a alguien con saldo, se avisa que ya pagó algo.
 const avisoSaldo = (c, texto) => c?.saldo > 0 ? `${texto} · tiene ${fmtPeso(c.saldo)} a favor` : texto;
 
-export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, modals }) {
+export function useTurnoActions({ clientes, turnos, calendar, loadAll, toast, askConfirm, modals }) {
   const { setModalTurno } = modals;
+
+  // Un turno que vino de Google Calendar y se saca de Paupet: se anota su evento para no volver a traerlo.
+  const olvidarEvento = async t => {
+    if (!t?.gcalUid || !calendar) return;
+    await db.saveCalendar({ ignorados: [...new Set([...(calendar.ignorados || []), t.gcalUid])] });
+  };
 
   // Abre la ventana "Completar y cobrar".
   const handleCompletar = (id) => modals.setModalCobro({ open: true, turnoId: id });
@@ -73,6 +80,7 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
     const c = clientes.find(x=>x.id===t.clientId);
     try {
       await db.deleteTurno(id);
+      await olvidarEvento(t);
       if (c) await db.updateCliente(c.id, {inasistencias:(c.inasistencias||0)+1});
       await loadAll();
       toast('Inasistencia registrada 📍');
@@ -87,7 +95,14 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
     } catch(e) { toast(e.message, true); }
   };
 
+  // Un turno de Calendar al que le falta el perro o el servicio se abre como "Completar turno":
+  // la misma pantalla de Nuevo turno (con "perro nuevo"), ya cargada con lo que se sabe.
   const handleEditTurno = (turno) => {
+    if (porCompletar(turno)) {
+      setModalTurno({open:true, turnoEdit:null, calendarTurno:turno, fecha:turno.fecha, hora:turno.hora || undefined,
+        clientId:turno.clientId || undefined, servicio:turno.servicio || undefined, duracion:turno.duracion});
+      return;
+    }
     setModalTurno({open:true, fecha:turno.fecha, turnoEdit:turno});
   };
 
@@ -101,10 +116,12 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
   };
 
   const handleDeleteTurno = async id => {
-    const ok = await askConfirm('¿Eliminar este turno?');
+    const t = turnos.find(x=>x.id===id);
+    const ok = await askConfirm(t?.gcalUid ? '¿Eliminar este turno? En Google Calendar queda como está.' : '¿Eliminar este turno?');
     if (!ok) return;
     try {
       await db.deleteTurno(id);
+      await olvidarEvento(t);
       await loadAll();
       toast('Turno eliminado');
     } catch(e) { toast(e.message, true); }
@@ -137,7 +154,7 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
       if (!resuelto) return;
       const { clientId, dogName } = resuelto;
       const c = clientes.find(x => x.id === clientId) || {};
-      const nuevo = await db.insertTurno({
+      const datos = {
         clientId,
         dogName: dogName || c.dog || '',
         servicio: form.svc,
@@ -147,7 +164,16 @@ export function useTurnoActions({ clientes, turnos, loadAll, toast, askConfirm, 
         estado: form.estado || 'confirmed',
         formaPago: form.formaPago || 'efectivo',
         duracion: Number(form.duracion) || 60,
-      });
+      };
+      // Completar un turno que vino de Google Calendar: se guarda sobre ese turno, no se crea otro.
+      if (form.calendarId) {
+        await db.updateTurno(form.calendarId, datos);
+        setModalTurno(CLOSED_TURNO);
+        await loadAll();
+        toast(avisoSaldo(c, 'Turno completado ✅'));
+        return;
+      }
+      const nuevo = await db.insertTurno(datos);
       // Si el turno sale de un pedido de /turnos, el pedido queda aceptado (falta avisarle al cliente).
       if (form.pedidoId) await db.updatePedido(form.pedidoId, { estado: 'aceptado', turno_id: nuevo?.id ?? null });
       setModalTurno(CLOSED_TURNO);

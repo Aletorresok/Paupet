@@ -11,7 +11,12 @@ const KEY = 'paupet_demo_db';
 function cargar() {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const guardado = JSON.parse(raw);
+      // Un demo guardado antes de la conexión con Calendar: se le agrega la tabla.
+      guardado.tablas.calendar_sync ??= crearDatosDemo().tablas.calendar_sync;
+      return guardado;
+    }
   } catch { /* sin almacenamiento local */ }
   return crearDatosDemo();
 }

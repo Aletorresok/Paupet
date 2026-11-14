@@ -365,3 +365,16 @@ https://claude.ai/artifact/2TqCWXt7HKh2mirih6uZWy
   **Recordatorio:** Avisos → "Pagaron por adelantado · sin turno" (saldo > 0 y ningún turno por delante; Agendar / WhatsApp en el ⋯) y suma al número
   de Avisos; desaparece al agendar. **Aviso al agendar:** Nuevo turno muestra "Tiene $X a favor", el toast al guardar también, y Hoy muestra
   "Tiene $X a favor 💚" en el turno en curso. Demo: Rocco (22.000 sin turno) y Coco (8.000, turno hoy).
+- 2026-11-14 — **Turnos desde Google Calendar** (migración 9, `supabase/migracion_09_calendar.sql`, corrida el 2026-11-14). Sólo Calendar → Paupet. Pau pega en Ajustes → Google Calendar la "dirección secreta en formato iCal" (se guarda en
+  `calendar_sync`, sólo usuarios logueados). **Regla:** entra el evento que tenga 🐶 o la palabra "turno" en el título; el resto se
+  descarta (`lib/ical.js`, lo usa la función de Vercel `api/calendar.js`, que necesita `SUPABASE_SERVICE_ROLE_KEY`, ya cargada).
+  Se sincroniza al abrir la app, al volver a ella (máx. una vez por minuto) y con "Sincronizar ahora" (`hooks/useCalendarSync.js`).
+  `lib/calendarSync.js`: `reconocer` saca perro y servicio del título (si no hay un solo perro posible, no adivina), `planSync` decide
+  qué crear / mover / sacar, `porCompletar` = importado sin perro o sin servicio. El turno guarda `gcal_uid` (único), `gcal_titulo` y
+  `gcal_inicio` (día, hora y duración del evento la última vez: el turno se mueve sólo si eso cambia en Calendar, no pisa lo que Pau
+  mueve en Paupet). Por completar: Avisos → "Desde Google Calendar · por completar" (suma al número), borde punteado en Agenda,
+  "tocá para completar" en Hoy → abre "Completar turno" (la pantalla de Nuevo turno cargada; guarda sobre ese turno). Borrar o "No
+  vino" de un turno importado anota el evento en `calendar_sync.ignorados` para no volver a traerlo. Evento borrado en Calendar:
+  el turno sin completar se va solo; el completo pregunta antes. **Limitaciones:** los eventos que se repiten no se importan
+  (Ajustes avisa cuántos hay); Paupet no escribe en Calendar. Demo: calendario de mentira en `lib/demo/calendarDemo.js`.
+  **Sin probar contra Google real** (sólo demo y tests en `tests/calendar.test.js`).

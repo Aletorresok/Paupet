@@ -7,10 +7,11 @@ import { DIAS_CONFIG } from '../../lib/constants';
 import { C } from '../../lib/styles';
 import ConfigGeneral from './ConfigGeneral';
 import RespaldoCard from './RespaldoCard';
+import CalendarCard from './CalendarCard';
 import AvisosCard from '../../components/ui/AvisosCard';
 import DiaConfigCard from './DiaConfigCard';
 
-export default function ConfigPage({ config, onSave, toast, caps, onNav, onLogout }) {
+export default function ConfigPage({ config, onSave, toast, caps, calendar, calendarSync, onNav, onLogout }) {
   const { isMob } = useResp();
   const [nombre, setNombre] = useState(config.nombre);
   const [msg, setMsg] = useState(config.msg||'');
@@ -43,6 +44,7 @@ export default function ConfigPage({ config, onSave, toast, caps, onNav, onLogou
         <Btn variant="ghost" onClick={() => onNav('horarios')} style={{width:'100%',justifyContent:'flex-start',marginBottom:16}}><Icon name="camera"/>Horarios para Stories</Btn>
       )}
       <AvisosCard habilitado={caps?.push} toast={toast} />
+      {calendarSync && <CalendarCard habilitado={caps?.calendar} calendar={calendar} sync={calendarSync} />}
       <RespaldoCard toast={toast} />
       <ConfigGeneral nombre={nombre} anticip={anticip} msg={msg} onNombre={setNombre} onAnticip={setAnticip} onMsg={setMsg} />
       {DIAS_CONFIG.map(d=>{
