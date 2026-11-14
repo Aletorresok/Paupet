@@ -4,7 +4,7 @@ import Icon from '../../components/ui/Icon';
 import { C, cardStyle, serif } from '../../lib/styles';
 import { descargarRespaldo, respaldoVencido, ultimoRespaldo } from '../../lib/respaldo';
 
-const NOMBRES = { clientes:'clientes', visitas:'visitas', turnos:'turnos', notas:'notas y gastos', config:'configuración', fotos_cliente:'fotos' };
+const NOMBRES = { clientes:'clientes', visitas:'visitas', turnos:'turnos', notas:'notas y gastos', config:'configuración', fotos_cliente:'fotos', saldo_movimientos:'señas', pedidos_turno:'pedidos de turno' };
 
 // Copia de seguridad: descarga todos los datos en un archivo para guardarlo.
 export default function RespaldoCard({ toast }) {

@@ -10,7 +10,8 @@ const TABLAS = ['clientes', 'visitas', 'turnos', 'notas', 'config'];
 // Descarga TODA la base (sin filtros ni fusiones) a un archivo JSON.
 // Devuelve cuántas filas tiene cada tabla, para mostrarlo.
 export async function descargarRespaldo() {
-  const tablas = [...TABLAS, ...(capacidades.fotos ? ['fotos_cliente'] : [])];
+  // Las tablas de las migraciones se suman si existen. No se guardan la dirección del calendario ni las suscripciones de avisos.
+  const tablas = [...TABLAS, ...(capacidades.fotos ? ['fotos_cliente'] : []), ...(capacidades.saldo ? ['saldo_movimientos'] : []), ...(capacidades.pedidos ? ['pedidos_turno'] : [])];
   const datos = {};
   for (const t of tablas) {
     datos[t] = await traerTodo(() => supabase.from(t).select('*').order('id', { ascending: true }));
