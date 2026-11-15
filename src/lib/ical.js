@@ -70,11 +70,13 @@ const sumarDias = (fecha, dias) => {
   return `${x.getUTCFullYear()}-${pad(x.getUTCMonth() + 1)}-${pad(x.getUTCDate())}`;
 };
 
-// Los turnos del calendario desde hoy hasta dentro de DIAS_ADELANTE días.
+// Los turnos del calendario desde el 1 del mes (o hace 7 días, lo que sea antes: a principio de mes también
+// entra la semana pasada) hasta dentro de DIAS_ADELANTE días. Lo pasado sirve para cobrar lo que no se cargó.
 // Devuelve { eventos, desde, hasta, repetidos } (`repetidos`: turnos que se repiten, que todavía no se importan).
 export function turnosDelCalendario(texto, ahora = new Date()) {
   if (!/BEGIN:VCALENDAR/.test(texto || '')) throw new Error('Eso no parece un calendario de Google');
-  const desde = enZona(ahora).fecha, hasta = sumarDias(desde, DIAS_ADELANTE);
+  const hoy = enZona(ahora).fecha, hasta = sumarDias(hoy, DIAS_ADELANTE);
+  const desde = [hoy.slice(0, 8) + '01', sumarDias(hoy, -7)].sort()[0];
   const turnos = leerEventos(texto).filter(e => !e.cancelado && esTurno(e.titulo));
   return {
     eventos: turnos.filter(e => !e.repetido && e.fecha >= desde && e.fecha <= hasta)

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { esTurno, leerEventos, turnosDelCalendario } from '../src/lib/ical.js';
-import { firma, limpiarTitulo, planSync, porCompletar, reconocer } from '../src/lib/calendarSync.js';
+import { faltaCobrar, firma, limpiarTitulo, planSync, porCompletar, reconocer } from '../src/lib/calendarSync.js';
 import { calendarioDemo } from '../src/lib/demo/calendarDemo.js';
 
 const ev = (lineas) => ['BEGIN:VEVENT', ...lineas, 'END:VEVENT'].join('\r\n');
@@ -38,14 +38,17 @@ test('sólo quedan los turnos: ni lo personal, ni lo pasado, ni lo cancelado, ni
   const r = turnosDelCalendario(ics(
     ev(['UID:si', 'DTSTART:20261116T130000Z', 'DTEND:20261116T140000Z', 'SUMMARY:🐶 Coco baño']),
     ev(['UID:facu', 'DTSTART:20261116T130000Z', 'SUMMARY:Parcial Análisis II']),
-    ev(['UID:viejo', 'DTSTART:20261110T130000Z', 'SUMMARY:🐶 Luna']),
+    ev(['UID:viejo', 'DTSTART:20261020T130000Z', 'SUMMARY:🐶 Luna']),
+    ev(['UID:del-mes', 'DTSTART:20261103T130000Z', 'SUMMARY:🐶 Coco']),
     ev(['UID:lejos', 'DTSTART:20270601T130000Z', 'SUMMARY:🐶 Luna']),
     ev(['UID:cancelado', 'DTSTART:20261116T150000Z', 'STATUS:CANCELLED', 'SUMMARY:🐶 Rex']),
     ev(['UID:fijo', 'DTSTART:20261001T130000Z', 'RRULE:FREQ=WEEKLY', 'SUMMARY:turno fijo Kira']),
   ), AHORA);
-  assert.deepEqual(r.eventos.map(e => e.uid), ['si']);
+  assert.deepEqual(r.eventos.map(e => e.uid).sort(), ['del-mes', 'si']);
   assert.equal(r.repetidos, 1);
-  assert.equal(r.desde, '2026-11-14');
+  assert.equal(r.desde, '2026-11-01');
+  // A principio de mes también entra la semana pasada.
+  assert.equal(turnosDelCalendario(ics(), new Date('2026-12-03T12:00:00-03:00')).desde, '2026-11-26');
   assert.throws(() => turnosDelCalendario('<html>login</html>', AHORA));
 });
 
@@ -109,8 +112,34 @@ test('por completar: importado, sin cobrar y sin perro o sin servicio', () => {
   assert.ok(!porCompletar({ clientId: null, servicio: '' }));
 });
 
+test('lo que ya estaba cargado a mano se vincula en vez de duplicarse', () => {
+  const cal = { desde: '2026-11-01', hasta: '2027-03-01', eventos: [
+    { uid: 'a', titulo: '🐶 Coco baño', fecha: '2026-11-03', hora: '10:00', duracion: 60 },   // mismo perro, misma hora
+    { uid: 'b', titulo: '🐶 Mía', fecha: '2026-11-04', hora: '15:00', duracion: 60 },          // mismo perro, otra hora
+    { uid: 'c', titulo: '🐶 Rex', fecha: '2026-11-05', hora: '09:00', duracion: 60 },          // perro desconocido, misma hora
+    { uid: 'd', titulo: '🐶 Coco', fecha: '2026-11-06', hora: '11:00', duracion: 60 },         // otro perro a esa hora: nuevo
+  ] };
+  const turnos = [
+    { id: 1, clientId: 1, fecha: '2026-11-03', hora: '10:00', estado: 'completed' },
+    { id: 2, clientId: 4, fecha: '2026-11-04', hora: '09:00', estado: 'completed' },
+    { id: 3, clientId: 2, fecha: '2026-11-05', hora: '09:00', estado: 'confirmed' },
+    { id: 4, clientId: 4, fecha: '2026-11-06', hora: '11:00', estado: 'confirmed' },
+  ];
+  const plan = planSync(cal, turnos, clientes, servicios);
+  assert.deepEqual(plan.vincular.map(v => [v.id, v.gcalUid]), [[1, 'a'], [2, 'b'], [3, 'c']]);
+  assert.deepEqual(plan.crear.map(e => e.uid), ['d']);
+  assert.equal(plan.vincular[0].gcalInicio, '2026-11-03 10:00 60');
+});
+
+test('falta cobrar: importado, de un día pasado y sin cobrar', () => {
+  assert.ok(faltaCobrar({ gcalUid: 'a', fecha: '2026-11-10', estado: 'confirmed' }, '2026-11-15'));
+  assert.ok(!faltaCobrar({ gcalUid: 'a', fecha: '2026-11-15', estado: 'confirmed' }, '2026-11-15'));
+  assert.ok(!faltaCobrar({ gcalUid: 'a', fecha: '2026-11-10', estado: 'completed' }, '2026-11-15'));
+  assert.ok(!faltaCobrar({ fecha: '2026-11-10', estado: 'confirmed' }, '2026-11-15'));
+});
+
 test('el calendario demo mezcla turnos con cosas personales y sólo entran los turnos', () => {
   const r = turnosDelCalendario(calendarioDemo(AHORA), AHORA);
-  assert.equal(r.eventos.length, 3);
+  assert.equal(r.eventos.length, 4);
   assert.ok(r.eventos.every(e => esTurno(e.titulo) && e.hora));
 });

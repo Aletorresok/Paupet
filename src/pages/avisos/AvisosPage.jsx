@@ -7,7 +7,7 @@ import { useResp } from '../../context/resp';
 import { useAvisados } from '../../hooks/useAvisados';
 import { marcarAvisado } from '../../lib/avisados';
 import { colaMensajes, proximoDiaConTurnos } from '../../lib/bandeja';
-import { porCompletar } from '../../lib/calendarSync';
+import { faltaCobrar, porCompletar } from '../../lib/calendarSync';
 import { etiquetaDia } from '../calendario/ayudaTurno';
 import { DIAS_ES } from '../../lib/constants';
 import { PAUSA_SIEMPRE, clientesParaVolver, enPausa, fmtCada, fmtRestantes, pausaHasta } from '../../lib/frecuencia';
@@ -28,7 +28,7 @@ const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
 // "les toca volver". El botón grande abre el WhatsApp del siguiente que falta y lo marca enviado.
 // Un recordatorio enviado se guarda en este dispositivo (`lib/avisados.js`); a uno de "les toca volver" se lo
 // saca de la lista 7 días ("Ya le escribí"), y en esta pantalla queda como Enviado hasta salir.
-export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActions, caps = {}, onOpenClient, onPausarVuelta, onDarTurno, onCompletarTurno }) {
+export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActions, caps = {}, onOpenClient, onPausarVuelta, onDarTurno, onCompletarTurno, onCobrarTurno }) {
   const { isMob, isTab } = useResp();
   const enviados = useAvisados();
   const [escritos, setEscritos] = useState([]); // ids de clientes de "les toca volver" a los que se escribió acá
@@ -45,7 +45,8 @@ export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActio
     .map(x => ({ ...x, c: x.cliente, id: `c${x.cliente.id}`, tel: x.cliente.tel, enviado: escritos.includes(x.cliente.id) }));
   const ocultos = paraVolver.filter(x => enPausa(x.cliente) && !escritos.includes(x.cliente.id));
   const conSaldo = caps.saldo ? conSaldoSinTurno(clientes, turnos, todayStr()) : [];
-  const deCalendar = turnos.filter(t => porCompletar(t) && t.fecha >= todayStr()).sort((a, b) => `${a.fecha} ${a.hora}`.localeCompare(`${b.fecha} ${b.hora}`));
+  // Turnos de Calendar: los que vienen sin perro o servicio, y los de días pasados que no se cobraron.
+  const deCalendar = turnos.filter(t => (porCompletar(t) && t.fecha >= todayStr()) || faltaCobrar(t, todayStr())).sort((a, b) => `${a.fecha} ${a.hora}`.localeCompare(`${b.fecha} ${b.hora}`));
   const pedidosOrden = [...pedidos].sort((a, b) => (a.estado === 'propuesto') - (b.estado === 'propuesto'));
   const pedidosPorAtender = pedidos.filter(p => p.estado !== 'propuesto').length;
   const cola = colaMensajes([...recordar, ...vuelven]);
@@ -64,7 +65,7 @@ export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActio
     onPausar(c.id, hasta, dias == null ? `No se te va a recordar más a ${c.dog}` : `${c.dog} vuelve a aparecer el ${fechaCorta(hasta)}`);
   };
 
-  const resumen = [deCalendar.length > 0 && `${plural(deCalendar.length, 'turno de Calendar', 'turnos de Calendar')} por completar`, conSaldo.length > 0 && `${plural(conSaldo.length, 'pago adelantado', 'pagos adelantados')} sin turno`, cola.pendientes ? `${plural(cola.pendientes, 'mensaje', 'mensajes')} por mandar` : 'Todo enviado',
+  const resumen = [deCalendar.length > 0 && `${plural(deCalendar.length, 'turno de Calendar', 'turnos de Calendar')} por completar o cobrar`, conSaldo.length > 0 && `${plural(conSaldo.length, 'pago adelantado', 'pagos adelantados')} sin turno`, cola.pendientes ? `${plural(cola.pendientes, 'mensaje', 'mensajes')} por mandar` : 'Todo enviado',
     pedidosPorAtender > 0 && `${plural(pedidosPorAtender, 'pedido', 'pedidos')} por atender`].filter(Boolean).join(' · ');
 
   const arriba = cola.siguiente ? (
@@ -89,14 +90,16 @@ export default function AvisosPage({ clientes, turnos, pedidos = [], pedidoActio
   const mensajes = (
     <>
       {deCalendar.length > 0 && <>
-        <h2 style={titulo}>Desde Google Calendar · por completar</h2>
+        <h2 style={titulo}>Desde Google Calendar · por completar o cobrar</h2>
         <div style={lista}>
           {deCalendar.map((t, i) => {
             const c = clientes.find(x => x.id === t.clientId);
+            const completar = porCompletar(t);
+            const pasado = t.fecha < todayStr();
             return (
               <FilaMensaje key={t.id} primera={i === 0} cliente={c || { owner: 'falta elegir el perro' }} perro={c?.dog || t.dogName}
-                detalle={`${etiquetaDia(t.fecha)} ${t.hora || 'sin hora'}${c ? ' · falta el servicio' : t.servicio ? ` · ${t.servicio}` : ''}`} colorDetalle="#6E4300" sinEnviar
-                menu={<button type="button" onClick={() => onCompletarTurno(t)} style={{flex:'none',height:44,padding:'0 14px',borderRadius:12,border:'none',background:C.menta,color:C.sobreMenta,fontFamily:'inherit',fontSize:15,fontWeight:600,cursor:'pointer'}}>Completar</button>} />
+                detalle={`${pasado ? fechaCorta(t.fecha) : etiquetaDia(t.fecha)} ${t.hora || 'sin hora'}${!completar ? ` · ${t.servicio} · falta cobrar` : c ? ' · falta el servicio' : t.servicio ? ` · ${t.servicio}` : ''}`} colorDetalle="#6E4300" sinEnviar
+                menu={<button type="button" onClick={() => completar ? onCompletarTurno(t) : onCobrarTurno(t.id)} style={{flex:'none',height:44,padding:'0 14px',borderRadius:12,border:'none',background:C.menta,color:C.sobreMenta,fontFamily:'inherit',fontSize:15,fontWeight:600,cursor:'pointer'}}>{completar ? 'Completar' : 'Cobrar'}</button>} />
             );
           })}
         </div>

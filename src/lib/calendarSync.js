@@ -13,6 +13,9 @@ export const limpiarTitulo = titulo => (titulo || '').replace(/🐶/gu, ' ').rep
 // Un turno importado al que le falta el perro o el servicio.
 export const porCompletar = t => !!t?.gcalUid && t.estado !== 'completed' && (!t.clientId || !(t.servicio || '').trim());
 
+// Un turno importado de un día que ya pasó y que no se cobró.
+export const faltaCobrar = (t, hoy) => !!t?.gcalUid && t.estado !== 'completed' && t.fecha < hoy;
+
 // Lo que cambia en Calendar y Paupet copia: día, hora y duración.
 export const firma = e => `${e.fecha} ${e.hora || ''} ${e.duracion || 60}`;
 
@@ -47,20 +50,33 @@ export function reconocer(titulo, clientes, servicios = []) {
 
 // Compara el calendario con los turnos de Paupet.
 //   crear:  eventos que todavía no son turnos (ya con perro y servicio reconocidos)
+//   vincular: eventos que ya estaban cargados a mano en Paupet (mismo día y hora, o mismo día y mismo perro):
+//           al turno sólo se le anota de qué evento es, para no duplicarlo
 //   mover:  turnos cuyo evento cambió de día, hora o duración en Calendar
 //   faltan: turnos cuyo evento ya no está en Calendar (se borró o perdió la marca)
 //   ignorados: los eventos que Pau borró de Paupet y siguen en Calendar (para no volver a traerlos)
 export function planSync({ eventos, desde, hasta }, turnos, clientes, servicios, ignorados = []) {
   const porUid = new Map(turnos.filter(t => t.gcalUid).map(t => [t.gcalUid, t]));
   const enCalendar = new Set(eventos.map(e => e.uid));
-  const crear = [], mover = [];
+  const crear = [], mover = [], vincular = [];
+  const aMano = turnos.filter(t => !t.gcalUid);
+  const usados = new Set();
   for (const e of eventos) {
     if (ignorados.includes(e.uid)) continue;
     const t = porUid.get(e.uid);
-    if (!t) { crear.push({ ...e, ...reconocer(e.titulo, clientes, servicios) }); continue; }
+    if (!t) {
+      const r = reconocer(e.titulo, clientes, servicios);
+      const delDia = aMano.filter(x => x.fecha === e.fecha && !usados.has(x.id));
+      const mismo = x => r.clientId && String(x.clientId) === String(r.clientId);
+      const igual = delDia.find(x => e.hora && x.hora === e.hora && mismo(x)) || delDia.find(mismo)
+        || delDia.find(x => e.hora && x.hora === e.hora && (!r.clientId || !x.clientId));
+      if (igual) { usados.add(igual.id); vincular.push({ id: igual.id, gcalUid: e.uid, gcalTitulo: e.titulo, gcalInicio: firma(e) }); }
+      else crear.push({ ...e, ...r });
+      continue;
+    }
     // Sólo si cambió en Calendar desde la última vez: lo que Pau movió en Paupet no se pisa.
     if (t.estado !== 'completed' && t.gcalInicio && t.gcalInicio !== firma(e)) mover.push({ id: t.id, fecha: e.fecha, hora: e.hora, duracion: e.duracion, gcalInicio: firma(e) });
   }
   const faltan = turnos.filter(t => t.gcalUid && t.estado !== 'completed' && !enCalendar.has(t.gcalUid) && t.fecha >= desde && t.fecha <= hasta);
-  return { crear, mover, faltan, ignorados: ignorados.filter(uid => enCalendar.has(uid)) };
+  return { crear, mover, vincular, faltan, ignorados: ignorados.filter(uid => enCalendar.has(uid)) };
 }

@@ -21,7 +21,7 @@ import { proximoDiaConTurnos, recordatoriosSinEnviar } from './lib/bandeja';
 import { conSaldoSinTurno } from './lib/saldo';
 import { useAvisados } from './hooks/useAvisados';
 import { useCalendarSync } from './hooks/useCalendarSync';
-import { porCompletar } from './lib/calendarSync';
+import { faltaCobrar, porCompletar } from './lib/calendarSync';
 import AppPages from './AppPages';
 import AppModals from './AppModals';
 
@@ -60,7 +60,7 @@ export default function AppShell({ onLogout }) {
   const enviados = useAvisados();
   const avisosCount = pedidosPend.filter(p => p.estado !== 'propuesto').length + recordatoriosSinEnviar(proximoDiaConTurnos(data.turnos).turnos, data.clientes, enviados).length
     + (data.caps.saldo ? conSaldoSinTurno(data.clientes, data.turnos, todayStr()).length : 0)
-    + data.turnos.filter(t => porCompletar(t) && t.fecha >= todayStr()).length;
+    + data.turnos.filter(t => (porCompletar(t) && t.fecha >= todayStr()) || faltaCobrar(t, todayStr())).length;
 
   return (
     <>

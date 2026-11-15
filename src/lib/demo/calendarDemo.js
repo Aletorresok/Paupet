@@ -11,6 +11,7 @@ export function calendarioDemo(hoy = new Date()) {
     `DTSTART:${utc(dia(hoy, mas), desde)}`, `DTEND:${utc(dia(hoy, mas), hasta)}`, `SUMMARY:${titulo}`, 'END:VEVENT'];
   return [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Google Inc//Google Calendar 70.9054//EN',
+    ...evento('luna', -2, 17, 18, '🐶 Luna baño'),             // de hace dos días y sin cobrar: aparece para cobrar
     ...evento('kira', 3, 15, 16, '🐶 Kira baño'),               // perro y servicio reconocidos: entra completo
     ...evento('rex', 4, 11, 12, '🐶 Rex (nuevo) baño y corte'),  // perro que no está cargado: por completar
     ...evento('nina', 5, 16, 17, 'Turno Nina'),                  // falta el servicio: por completar

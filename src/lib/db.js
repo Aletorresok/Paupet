@@ -203,6 +203,7 @@ export const db = {
     if ('formaPago' in mapped) { mapped.forma_pago = mapped.formaPago; delete mapped.formaPago; }
     if ('gcalUid' in mapped) { mapped.gcal_uid = mapped.gcalUid; delete mapped.gcalUid; }
     if ('gcalInicio' in mapped) { mapped.gcal_inicio = mapped.gcalInicio; delete mapped.gcalInicio; }
+    if ('gcalTitulo' in mapped) { mapped.gcal_titulo = mapped.gcalTitulo; delete mapped.gcalTitulo; }
     if (!capacidades.duracion) delete mapped.duracion;
     const { error } = await supabase.from('turnos').update(mapped).eq('id', id);
     if (error) throw error;

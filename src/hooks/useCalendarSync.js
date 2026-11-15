@@ -60,6 +60,7 @@ export function useCalendarSync({ loading, caps, calendar, clientes, turnos, loa
         }
       }
       for (const { id, ...campos } of plan.mover) await db.updateTurno(id, campos);
+      for (const { id, ...campos } of plan.vincular) await db.updateTurno(id, campos);
 
       // Eventos que ya no están en Calendar: si el turno estaba sin completar se va solo; si ya tenía datos, se pregunta.
       let sacados = 0;
@@ -72,11 +73,11 @@ export function useCalendarSync({ loading, caps, calendar, clientes, turnos, loa
       if (plan.ignorados.length !== (calendar?.ignorados || []).length) await db.saveCalendar({ ignorados: plan.ignorados });
 
       setEstado({ sincronizando: false, ultima: new Date(), error: '', repetidos: cal.repetidos || 0 });
-      const cambios = entraron + plan.mover.length + sacados;
+      const cambios = entraron + plan.mover.length + plan.vincular.length + sacados;
       if (cambios || urlNueva != null) await loadAll();
       if (entraron) toast(entraron === 1 ? 'Entró 1 turno desde Google Calendar 📅' : `Entraron ${entraron} turnos desde Google Calendar 📅`);
       else if (plan.mover.length) toast(plan.mover.length === 1 ? 'Se movió 1 turno, como en Google Calendar 📅' : `Se movieron ${plan.mover.length} turnos, como en Google Calendar 📅`);
-      else if (manual) toast('Calendar al día: no hay turnos nuevos');
+      else if (manual) toast(plan.vincular.length ? `Calendar al día: ${plan.vincular.length === 1 ? '1 turno ya estaba cargado' : `${plan.vincular.length} turnos ya estaban cargados`}` : 'Calendar al día: no hay turnos nuevos');
       return true;
     } catch (e) {
       setEstado(s => ({ ...s, sincronizando: false, error: e.message }));

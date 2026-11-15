@@ -17,7 +17,7 @@ export default function AppPages({ page, setPage, data, modals, toast, clienteAc
     case 'dashboard':
       return <Dashboard clientes={clientes} turnos={turnos} config={config} onNav={setPage} onOpenClient={id=>setModalCliente({open:true,id})} onNuevoTurno={(fecha,hora)=>setModalTurno({open:true,fecha,hora,turnoEdit:null})} onCompletar={ta.handleCompletar} onNoVino={ta.handleNoVino} onEditTurno={ta.handleEditTurno} onSena={(clienteId,turnoId)=>modals.setModalSena({open:true,clienteId,turnoId})} pedidos={pedidos} pedidoActions={pedidoActions} caps={data.caps} toast={toast}/>;
     case 'avisos':
-      return <AvisosPage clientes={clientes} turnos={turnos} pedidos={pedidos} pedidoActions={pedidoActions} caps={data.caps} onOpenClient={id=>setModalCliente({open:true,id})} onPausarVuelta={ca.handlePausarVuelta} onCompletarTurno={ta.handleEditTurno} onDarTurno={clientId=>setModalTurno({open:true,fecha:undefined,clientId,turnoEdit:null})}/>;
+      return <AvisosPage clientes={clientes} turnos={turnos} pedidos={pedidos} pedidoActions={pedidoActions} caps={data.caps} onOpenClient={id=>setModalCliente({open:true,id})} onPausarVuelta={ca.handlePausarVuelta} onCompletarTurno={ta.handleEditTurno} onCobrarTurno={ta.handleCompletar} onDarTurno={clientId=>setModalTurno({open:true,fecha:undefined,clientId,turnoEdit:null})}/>;
     case 'clientes':
       return <ClientesPage clientes={clientes} turnos={turnos} onOpenClient={id=>setModalCliente({open:true,id})} onNuevo={()=>setModalNuevoCliente({open:true,initial:null})}/>;
     case 'calendario':
