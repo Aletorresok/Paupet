@@ -1,0 +1,166 @@
+{
+  "demo": true,
+  "nombre": "Peluquería Canela",
+  "nombreCorto": "Canela",
+  "tema": "canela",
+  "eslogan": "Tu perro vuelve limpio, peinado y contento.",
+  "descripcion": "Baño, corte y mimos para perros de todos los tamaños en Villa Crespo. Con turno, sin jaulas y con aviso por WhatsApp cuando está listo.",
+  "whatsapp": "5491100000000",
+  "whatsappVisible": "11 0000-0000",
+  "instagram": "peluqueriacanela",
+  "direccion": "Av. Warnes 1234",
+  "barrio": "Villa Crespo, CABA",
+  "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Av.+Warnes+1234+Villa+Crespo",
+  "google": {
+    "puntaje": 4.9,
+    "resenas": 128,
+    "url": ""
+  },
+  "heroFoto": "fotos/caniche.webp",
+  "heroPerro": "Lola",
+  "heroMensaje": "¡Lola ya está lista! 🛁 Podés pasar a buscarla cuando quieras.",
+  "horarios": {
+    "lunes": "09:00-18:00",
+    "martes": "09:00-18:00",
+    "miercoles": "09:00-18:00",
+    "jueves": "09:00-13:00, 15:00-19:00",
+    "viernes": "09:00-18:00",
+    "sabado": "09:00-13:00",
+    "domingo": null
+  },
+  "destacados": [
+    {
+      "titulo": "Con turno, sin esperas",
+      "texto": "Lo traés a la hora acordada y lo atendemos enseguida."
+    },
+    {
+      "titulo": "Productos según el pelaje",
+      "texto": "Shampoo hipoalergénico para pieles sensibles y cachorros."
+    },
+    {
+      "titulo": "Te avisamos con foto",
+      "texto": "Te escribimos por WhatsApp apenas está listo para retirar."
+    }
+  ],
+  "mostrarPrecios": true,
+  "notaPrecios": "Precios orientativos. El final depende del pelaje y de cómo esté el manto (nudos, largo).",
+  "servicios": [
+    {
+      "nombre": "Baño",
+      "detalle": "Shampoo, acondicionador, secado y cepillado. Incluye limpieza de oídos.",
+      "duracion": "1 h",
+      "precios": {
+        "chico": 15000,
+        "mediano": 19000,
+        "grande": 25000
+      }
+    },
+    {
+      "nombre": "Baño y corte",
+      "detalle": "Todo lo del baño más corte a tijera o máquina, como te guste.",
+      "duracion": "1 h 30",
+      "precios": {
+        "chico": 22000,
+        "mediano": 28000,
+        "grande": 36000
+      }
+    },
+    {
+      "nombre": "Deslanado",
+      "detalle": "Saca el pelo muerto de la doble capa. Ideal para golden, ovejero y husky.",
+      "duracion": "2 h",
+      "precios": {
+        "chico": 24000,
+        "mediano": 30000,
+        "grande": 38000
+      }
+    },
+    {
+      "nombre": "Corte sanitario",
+      "detalle": "Patitas, cola, ojos y zona íntima. Para entre baño y baño.",
+      "duracion": "30 min",
+      "precio": 9000
+    },
+    {
+      "nombre": "Corte de uñas",
+      "detalle": "Sin turno largo: pasás, cortamos y listo.",
+      "duracion": "10 min",
+      "precio": 5000
+    }
+  ],
+  "fotos": [
+    {
+      "src": "fotos/caniche.webp",
+      "texto": "Lola · baño y corte"
+    },
+    {
+      "src": "fotos/golden.webp",
+      "texto": "Simba · deslanado"
+    },
+    {
+      "src": "fotos/salchicha.webp",
+      "texto": "Pancho · baño"
+    },
+    {
+      "src": "fotos/yorkie.webp",
+      "texto": "Mora · corte a tijera"
+    },
+    {
+      "src": "fotos/ovejero.webp",
+      "texto": "Thor · deslanado"
+    },
+    {
+      "src": "fotos/mestizo.webp",
+      "texto": "Coco · baño"
+    }
+  ],
+  "resenas": [
+    {
+      "nombre": "Sofía M.",
+      "perro": "fotos/caniche.webp",
+      "cuando": "hace 2 semanas",
+      "estrellas": 5,
+      "texto": "Lola es muy nerviosa y la trataron con una paciencia increíble. Volvió hermosa y tranquila. Ya sacamos el próximo turno."
+    },
+    {
+      "nombre": "Martín R.",
+      "perro": "fotos/golden.webp",
+      "cuando": "hace 1 mes",
+      "estrellas": 5,
+      "texto": "El deslanado de Simba quedó impecable, por fin dejó de llenar la casa de pelos. Puntuales y súper prolijos."
+    },
+    {
+      "nombre": "Carla G.",
+      "perro": "fotos/salchicha.webp",
+      "cuando": "hace 3 semanas",
+      "estrellas": 5,
+      "texto": "Me mandaron una foto cuando estaba listo y lo pasé a buscar al toque. Precio justo y atención muy cálida."
+    }
+  ],
+  "preguntas": [
+    {
+      "p": "¿Tiene que tener las vacunas al día?",
+      "r": "Sí, pedimos la antirrábica y la séxtuple vigentes para cuidar a todos los perros que vienen."
+    },
+    {
+      "p": "¿Cuánto tarda?",
+      "r": "Entre 1 y 2 horas según el servicio y el tamaño. Te escribimos por WhatsApp cuando está listo."
+    },
+    {
+      "p": "¿Atienden perros que muerden o son muy nerviosos?",
+      "r": "Sí. Avisanos al pedir el turno así le damos más tiempo y lo atendemos con calma."
+    },
+    {
+      "p": "¿Cómo se paga?",
+      "r": "En efectivo o por transferencia, al retirarlo."
+    },
+    {
+      "p": "¿Y si no puedo ir?",
+      "r": "Avisanos por WhatsApp con un día de anticipación y lo pasamos para otro día."
+    }
+  ],
+  "credito": {
+    "texto": "Sitio hecho con Paupet",
+    "url": ""
+  }
+}

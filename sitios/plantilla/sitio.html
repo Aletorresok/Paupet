@@ -1,0 +1,747 @@
+<title>Peluquería Canela</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Outfit:wght@400;500;600&display=swap">
+
+<!--
+  PLANTILLA DE SITIO PARA PELUQUERÍAS CANINAS
+  Todo lo que cambia de una peluquería a otra está en el bloque de datos (JSON) de abajo.
+  Para un cliente nuevo: copiá sitios/negocios/ejemplo.json, completalo y corré `node sitios/armar.mjs <nombre>`.
+-->
+<script type="application/json" id="negocio">
+{
+  "demo": true,
+  "nombre": "Peluquería Canela",
+  "nombreCorto": "Canela",
+  "tema": "canela",
+  "eslogan": "Tu perro vuelve limpio, peinado y contento.",
+  "descripcion": "Baño, corte y mimos para perros de todos los tamaños en Villa Crespo. Con turno, sin jaulas y con aviso por WhatsApp cuando está listo.",
+  "whatsapp": "5491100000000",
+  "whatsappVisible": "11 0000-0000",
+  "instagram": "peluqueriacanela",
+  "direccion": "Av. Warnes 1234",
+  "barrio": "Villa Crespo, CABA",
+  "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Av.+Warnes+1234+Villa+Crespo",
+  "google": { "puntaje": 4.9, "resenas": 128, "url": "" },
+  "heroFoto": "fotos/caniche.webp",
+  "heroPerro": "Lola",
+  "heroMensaje": "¡Lola ya está lista! 🛁 Podés pasar a buscarla cuando quieras.",
+  "horarios": {
+    "lunes": "09:00-18:00",
+    "martes": "09:00-18:00",
+    "miercoles": "09:00-18:00",
+    "jueves": "09:00-13:00, 15:00-19:00",
+    "viernes": "09:00-18:00",
+    "sabado": "09:00-13:00",
+    "domingo": null
+  },
+  "destacados": [
+    { "titulo": "Con turno, sin esperas", "texto": "Lo traés a la hora acordada y lo atendemos enseguida." },
+    { "titulo": "Productos según el pelaje", "texto": "Shampoo hipoalergénico para pieles sensibles y cachorros." },
+    { "titulo": "Te avisamos con foto", "texto": "Te escribimos por WhatsApp apenas está listo para retirar." }
+  ],
+  "mostrarPrecios": true,
+  "notaPrecios": "Precios orientativos. El final depende del pelaje y de cómo esté el manto (nudos, largo).",
+  "servicios": [
+    { "nombre": "Baño", "detalle": "Shampoo, acondicionador, secado y cepillado. Incluye limpieza de oídos.", "duracion": "1 h", "precios": { "chico": 15000, "mediano": 19000, "grande": 25000 } },
+    { "nombre": "Baño y corte", "detalle": "Todo lo del baño más corte a tijera o máquina, como te guste.", "duracion": "1 h 30", "precios": { "chico": 22000, "mediano": 28000, "grande": 36000 } },
+    { "nombre": "Deslanado", "detalle": "Saca el pelo muerto de la doble capa. Ideal para golden, ovejero y husky.", "duracion": "2 h", "precios": { "chico": 24000, "mediano": 30000, "grande": 38000 } },
+    { "nombre": "Corte sanitario", "detalle": "Patitas, cola, ojos y zona íntima. Para entre baño y baño.", "duracion": "30 min", "precio": 9000 },
+    { "nombre": "Corte de uñas", "detalle": "Sin turno largo: pasás, cortamos y listo.", "duracion": "10 min", "precio": 5000 }
+  ],
+  "fotos": [
+    { "src": "fotos/caniche.webp", "texto": "Lola · baño y corte" },
+    { "src": "fotos/golden.webp", "texto": "Simba · deslanado" },
+    { "src": "fotos/salchicha.webp", "texto": "Pancho · baño" },
+    { "src": "fotos/yorkie.webp", "texto": "Mora · corte a tijera" },
+    { "src": "fotos/ovejero.webp", "texto": "Thor · deslanado" },
+    { "src": "fotos/mestizo.webp", "texto": "Coco · baño" }
+  ],
+  "resenas": [
+    { "nombre": "Sofía M.", "perro": "fotos/caniche.webp", "cuando": "hace 2 semanas", "estrellas": 5, "texto": "Lola es muy nerviosa y la trataron con una paciencia increíble. Volvió hermosa y tranquila. Ya sacamos el próximo turno." },
+    { "nombre": "Martín R.", "perro": "fotos/golden.webp", "cuando": "hace 1 mes", "estrellas": 5, "texto": "El deslanado de Simba quedó impecable, por fin dejó de llenar la casa de pelos. Puntuales y súper prolijos." },
+    { "nombre": "Carla G.", "perro": "fotos/salchicha.webp", "cuando": "hace 3 semanas", "estrellas": 5, "texto": "Me mandaron una foto cuando estaba listo y lo pasé a buscar al toque. Precio justo y atención muy cálida." }
+  ],
+  "preguntas": [
+    { "p": "¿Tiene que tener las vacunas al día?", "r": "Sí, pedimos la antirrábica y la séxtuple vigentes para cuidar a todos los perros que vienen." },
+    { "p": "¿Cuánto tarda?", "r": "Entre 1 y 2 horas según el servicio y el tamaño. Te escribimos por WhatsApp cuando está listo." },
+    { "p": "¿Atienden perros que muerden o son muy nerviosos?", "r": "Sí. Avisanos al pedir el turno así le damos más tiempo y lo atendemos con calma." },
+    { "p": "¿Cómo se paga?", "r": "En efectivo o por transferencia, al retirarlo." },
+    { "p": "¿Y si no puedo ir?", "r": "Avisanos por WhatsApp con un día de anticipación y lo pasamos para otro día." }
+  ],
+  "credito": { "texto": "Sitio hecho con Paupet", "url": "" }
+}
+</script>
+
+<style>
+/* Layout: una sola columna que respira, bandas de color a lo ancho y el contenido en un carril de 1120 px.
+   El tema cambia sólo --acento y --sobre-acento: los tonos suaves y fuertes salen solos con color-mix. */
+:root{
+  --bg:#FFFAF3; --superficie:#FFFFFF; --hundido:#F7EFE4; --linea:#EADFD1;
+  --tinta:#2A1C12; --tinta-suave:#6B5A4C;
+  --acento:#D97A2B; --sobre-acento:#2A1405;
+  --acento-suave:color-mix(in oklab, var(--acento) 15%, var(--bg));
+  --acento-medio:color-mix(in oklab, var(--acento) 35%, var(--bg));
+  --acento-fuerte:color-mix(in oklab, var(--acento) 68%, #000);
+  --wa:#1C9E52; --sobre-wa:#FFFFFF; --estrella:#E5A11C;
+  --sombra:0 1px 2px rgba(42,28,18,.06), 0 10px 30px rgba(42,28,18,.08);
+  --display:'Bricolage Grotesque', 'Outfit', ui-rounded, system-ui, sans-serif;
+  --texto:'Outfit', ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --carril:1120px; --radio:22px;
+}
+:root[data-tema="menta"]   { --acento:#5FBF9B; --sobre-acento:#13302A; }
+:root[data-tema="lavanda"] { --acento:#9B83E0; --sobre-acento:#1E1240; }
+:root[data-tema="cielo"]   { --acento:#4C9BE0; --sobre-acento:#0B2238; }
+:root[data-tema="frutilla"]{ --acento:#E8698A; --sobre-acento:#3A0B18; }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16100B; --superficie:#211811; --hundido:#2A2018; --linea:#3B2E23;
+    --tinta:#F7EDE2; --tinta-suave:#C1AE9E;
+    --acento-fuerte:color-mix(in oklab, var(--acento) 62%, #fff);
+    --wa:#25C266; --sobre-wa:#05230F;
+    --sombra:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16100B; --superficie:#211811; --hundido:#2A2018; --linea:#3B2E23;
+  --tinta:#F7EDE2; --tinta-suave:#C1AE9E;
+  --acento-fuerte:color-mix(in oklab, var(--acento) 62%, #fff);
+  --wa:#25C266; --sobre-wa:#05230F;
+  --sombra:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{background:var(--bg);color:var(--tinta);font-family:var(--texto);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--bg)}
+h1,h2,h3{font-family:var(--display);line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.02em}
+p{margin:0}
+a{color:var(--acento-fuerte)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--acento);outline-offset:3px;border-radius:8px}
+.carril{max-width:var(--carril);margin:0 auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+.seccion{padding-block:72px}
+@media (max-width:640px){.seccion{padding-block:52px}}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--acento-fuerte)}
+.titulo-sec{font-size:clamp(32px,5vw,48px);font-weight:750;margin-top:10px}
+.bajada{color:var(--tinta-suave);max-width:58ch;margin-top:14px}
+.cabeza-sec{margin-bottom:36px}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 24px;border-radius:999px;font-weight:600;font-size:17px;text-decoration:none;border:0;cursor:pointer;transition:transform .15s, box-shadow .15s, background .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn-wa{background:var(--wa);color:var(--sobre-wa);box-shadow:0 6px 18px color-mix(in oklab, var(--wa) 35%, transparent)}
+.btn-sec{background:transparent;color:var(--tinta);border:1.5px solid var(--linea)}
+.btn-sec:hover{border-color:var(--acento)}
+.btn svg{width:22px;height:22px;flex:none}
+
+/* Banda de muestra */
+.muestra{background:var(--tinta);color:var(--bg);font-size:14px}
+.muestra .carril{display:flex;align-items:center;justify-content:space-between;gap:10px 20px;flex-wrap:wrap;padding-block:9px}
+.muestra-colores{display:flex;align-items:center;gap:10px}
+.muestra-colores span{opacity:.75}
+.swatch{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;background:var(--c)}
+.swatch[aria-pressed="true"]{border-color:var(--bg);box-shadow:0 0 0 2px var(--tinta), 0 0 0 4px var(--bg)}
+
+/* Encabezado */
+.cabecera{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in oklab, var(--bg) 88%, transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:border-color .2s}
+.cabecera.con-borde{border-bottom-color:var(--linea)}
+.cabecera .carril{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:68px}
+.marca{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--tinta);font-family:var(--display);font-weight:750;font-size:21px;letter-spacing:-.02em}
+.marca-logo{width:38px;height:38px;border-radius:12px;background:var(--acento);color:var(--sobre-acento);display:grid;place-items:center;font-size:20px;font-weight:800}
+.nav{display:flex;align-items:center;gap:26px}
+.nav a{color:var(--tinta-suave);text-decoration:none;font-weight:500;font-size:16px}
+.nav a:hover{color:var(--tinta)}
+.nav .btn{min-height:44px;padding:0 18px;font-size:15px;color:var(--sobre-wa)}
+@media (max-width:860px){.nav a:not(.btn){display:none}}
+
+/* Hero */
+.hero{position:relative;overflow:hidden}
+.hero .carril{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center;padding-block:56px 80px}
+@media (max-width:860px){.hero .carril{grid-template-columns:minmax(0,1fr);gap:40px;padding-block:32px 56px}}
+.estado{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;padding:6px 14px 6px 10px;border-radius:999px;background:var(--superficie);border:1px solid var(--linea)}
+.estado i{width:9px;height:9px;border-radius:50%;background:#9A8F86}
+.estado.abierto i{background:var(--wa);box-shadow:0 0 0 4px color-mix(in oklab, var(--wa) 22%, transparent)}
+.hero h1{font-size:clamp(42px,7vw,76px);font-weight:800;margin-top:22px}
+.hero h1 em{font-style:normal;color:var(--acento-fuerte);background:linear-gradient(transparent 62%, var(--acento-medio) 62%);padding:0 .06em}
+.hero-desc{font-size:19px;color:var(--tinta-suave);max-width:46ch;margin-top:20px}
+.hero-acciones{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero-google{display:flex;align-items:center;gap:12px;margin-top:28px;color:var(--tinta-suave);font-size:15px;text-decoration:none}
+.hero-google b{font-family:var(--display);font-size:26px;color:var(--tinta);font-weight:750}
+.estrellas{color:var(--estrella);letter-spacing:2px;font-size:17px}
+
+/* Chat del hero: lo que el cliente recibe cuando el perro está listo */
+.chat{position:relative;display:flex;flex-direction:column;gap:12px;max-width:400px;justify-self:center;width:100%}
+.chat-cab{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--tinta-suave)}
+.chat-cab .marca-logo{width:32px;height:32px;border-radius:10px;font-size:16px}
+.chat-cab b{color:var(--tinta);font-weight:600;font-size:15px}
+.burbuja{background:var(--superficie);border:1px solid var(--linea);border-radius:20px 20px 20px 6px;padding:10px;box-shadow:var(--sombra);align-self:flex-start;max-width:92%}
+.burbuja-foto{aspect-ratio:4/3;border-radius:14px;background:var(--acento-suave);display:grid;place-items:center;overflow:hidden}
+.burbuja-foto img{width:62%;max-width:100%;height:auto;border-radius:50%;filter:drop-shadow(0 8px 16px rgba(42,28,18,.15))}
+.burbuja-foto img.real{width:100%;height:100%;border-radius:0;object-fit:cover;filter:none}
+.burbuja p{padding:10px 6px 2px;font-size:16px}
+.hora{display:block;text-align:right;font-size:12px;color:var(--tinta-suave);padding:0 6px}
+.burbuja-yo{align-self:flex-end;background:var(--acento);color:var(--sobre-acento);border-color:transparent;border-radius:20px 20px 6px 20px;padding:12px 16px}
+.burbuja-yo p{padding:0}
+.burbuja-yo .hora{color:inherit;opacity:.7}
+/* Burbujas de jabón */
+.pompas{position:absolute;inset:0;pointer-events:none;z-index:-1}
+.pompa{position:absolute;border-radius:50%;background:radial-gradient(circle at 32% 30%, color-mix(in oklab, #fff 85%, transparent) 0 8%, transparent 9%), radial-gradient(circle at 50% 50%, transparent 58%, color-mix(in oklab, var(--acento) 30%, transparent) 72%, color-mix(in oklab, var(--acento) 10%, transparent) 100%);border:1px solid color-mix(in oklab, var(--acento) 25%, transparent);animation:flota 9s ease-in-out infinite}
+@media (max-width:860px){.pompa{opacity:.45}}
+@keyframes flota{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@media (prefers-reduced-motion:reduce){.pompa{animation:none}.btn{transition:none}html{scroll-behavior:auto}}
+
+/* Destacados */
+.destacados{background:var(--acento);color:var(--sobre-acento)}
+.destacados .carril{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;padding-block:34px}
+@media (max-width:760px){.destacados .carril{grid-template-columns:minmax(0,1fr);gap:20px}}
+.destacado{display:flex;gap:14px;align-items:flex-start}
+.destacado svg{width:30px;height:30px;flex:none;margin-top:2px}
+.destacado h3{font-size:20px;font-weight:700}
+.destacado p{font-size:15px;opacity:.85;margin-top:4px}
+
+/* Servicios */
+.tamanios{display:inline-flex;gap:4px;padding:4px;border-radius:999px;background:var(--hundido);margin-top:24px;flex-wrap:wrap}
+.tamanio{border:0;background:transparent;border-radius:999px;min-height:44px;padding:0 18px;font-weight:500;cursor:pointer;color:var(--tinta-suave)}
+.tamanio[aria-pressed="true"]{background:var(--superficie);color:var(--tinta);font-weight:600;box-shadow:0 1px 4px rgba(42,28,18,.12)}
+.servicios{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:16px}
+.servicio{background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio);padding:24px;display:flex;flex-direction:column;gap:10px}
+.servicio-cab{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.servicio h3{font-size:23px;font-weight:700}
+.precio{font-family:var(--display);font-size:24px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.precio small{font-family:var(--texto);font-size:13px;font-weight:500;color:var(--tinta-suave);margin-right:4px}
+.servicio p{color:var(--tinta-suave);font-size:16px}
+.duracion{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--tinta-suave);margin-top:auto;padding-top:4px}
+.duracion svg{width:16px;height:16px}
+.nota-precios{font-size:14px;color:var(--tinta-suave);margin-top:18px}
+
+/* Cómo es */
+.pasos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;counter-reset:paso}
+@media (max-width:760px){.pasos{grid-template-columns:minmax(0,1fr)}}
+.paso{position:relative;padding-top:66px}
+.paso::before{counter-increment:paso;content:counter(paso);position:absolute;top:0;left:0;width:50px;height:50px;border-radius:50%;background:var(--acento-suave);color:var(--acento-fuerte);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:24px}
+.paso h3{font-size:22px;font-weight:700}
+.paso p{color:var(--tinta-suave);margin-top:8px}
+
+/* Fotos */
+.banda-hundida{background:var(--hundido)}
+.galeria{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:640px){.galeria{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+.foto{position:relative;aspect-ratio:1;max-width:100%;border-radius:var(--radio);overflow:hidden;background:var(--acento-suave);display:grid;place-items:center;margin:0}
+.foto:nth-child(3n+2){background:var(--acento-medio)}
+.foto img{width:56%;height:auto;border-radius:50%}
+.foto img.real{width:100%;height:100%;border-radius:0;object-fit:cover}
+.foto figcaption{position:absolute;left:10px;bottom:10px;right:10px;font-size:14px;font-weight:500;background:color-mix(in oklab, var(--superficie) 90%, transparent);border-radius:999px;padding:5px 12px;width:fit-content;max-width:calc(100% - 20px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nota-demo{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--tinta-suave);border:1.5px dashed var(--linea);border-radius:999px;padding:6px 14px;margin-top:18px}
+.ig{display:inline-flex;align-items:center;gap:8px;margin-top:22px;font-weight:600;text-decoration:none}
+.ig svg{width:20px;height:20px}
+
+/* Reseñas */
+.resenas-cab{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.puntaje{display:flex;align-items:center;gap:14px}
+.puntaje b{font-family:var(--display);font-size:56px;font-weight:800;line-height:1}
+.puntaje small{display:block;color:var(--tinta-suave);font-size:14px}
+.resenas{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px}
+.resena{background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio);padding:24px;display:flex;flex-direction:column;gap:14px;margin:0}
+.resena blockquote{margin:0;font-size:17px}
+.resena figcaption{display:flex;align-items:center;gap:12px;margin-top:auto}
+.resena figcaption img{width:44px;height:44px;border-radius:50%}
+.resena figcaption b{display:block;font-weight:600}
+.resena figcaption span{font-size:14px;color:var(--tinta-suave)}
+
+/* Pedir turno */
+.turno .carril{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px;align-items:start}
+@media (max-width:900px){.turno .carril{grid-template-columns:minmax(0,1fr);gap:28px}}
+.turno-intro{position:sticky;top:110px}
+@media (max-width:900px){.turno-intro{position:static}}
+.form{background:var(--superficie);border:1px solid var(--linea);border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:24px;box-shadow:var(--sombra)}
+@media (max-width:480px){.form{padding:22px 18px;border-radius:22px}}
+.campo{display:flex;flex-direction:column;gap:10px}
+.campo > label,.campo > .etq{font-size:14px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--tinta-suave)}
+.fila{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:480px){.fila{grid-template-columns:minmax(0,1fr)}}
+.input{font:inherit;font-size:17px;height:52px;border-radius:14px;border:1.5px solid var(--linea);background:var(--bg);color:var(--tinta);padding:0 16px;width:100%}
+.input:focus{outline:none;border-color:var(--acento);background:var(--superficie)}
+.input::placeholder{color:color-mix(in oklab, var(--tinta-suave) 70%, transparent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:46px;padding:0 16px;border-radius:14px;border:1.5px solid var(--linea);background:var(--bg);cursor:pointer;font-size:16px;font-weight:500;transition:background .15s,border-color .15s}
+.chip:hover{border-color:var(--acento)}
+.chip[aria-pressed="true"]{background:var(--acento-suave);border-color:var(--acento);color:var(--tinta);font-weight:600}
+.dias{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;margin:0 -2px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.dia{flex:0 0 auto;scroll-snap-align:start;width:72px;padding:9px 4px;border-radius:16px;border:1.5px solid var(--linea);background:var(--bg);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0}
+.dia span{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--tinta-suave)}
+.dia b{font-family:var(--display);font-size:26px;font-weight:750;line-height:1.15}
+.dia[aria-pressed="true"]{background:var(--acento);border-color:var(--acento);color:var(--sobre-acento)}
+.dia[aria-pressed="true"] span{color:inherit;opacity:.8}
+.enviar{display:flex;flex-direction:column;gap:10px;padding-top:4px}
+.enviar .btn{width:100%;min-height:58px;font-size:18px}
+.enviar .btn[aria-disabled="true"]{background:var(--hundido);color:var(--tinta-suave);box-shadow:none}
+.falta{font-size:15px;color:var(--tinta-suave);text-align:center;min-height:1.5em}
+.falta.marcar{color:var(--acento-fuerte);font-weight:600}
+.vista{background:var(--hundido);border-radius:16px;padding:14px 16px;font-size:15px;white-space:pre-wrap;color:var(--tinta-suave);line-height:1.5}
+.vista-tit{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-suave);margin-bottom:6px}
+
+/* Horarios y ubicación */
+.donde .carril{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:760px){.donde .carril{grid-template-columns:minmax(0,1fr)}}
+.tarjeta{background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio);padding:28px}
+.tarjeta h3{font-size:26px;font-weight:750;margin-bottom:18px}
+.horarios{display:grid;grid-template-columns:auto 1fr;gap:0;margin:0}
+.horarios dt,.horarios dd{margin:0;padding:11px 0;border-bottom:1px solid var(--linea);font-variant-numeric:tabular-nums}
+.horarios dd{text-align:right;color:var(--tinta-suave)}
+.horarios .hoy{font-weight:700;color:var(--tinta)}
+.horarios .hoy::after{content:"hoy";margin-left:8px;font-size:12px;font-weight:600;background:var(--acento-suave);color:var(--acento-fuerte);border-radius:999px;padding:2px 8px;vertical-align:2px}
+.horarios .cerrado{color:color-mix(in oklab, var(--tinta-suave) 70%, transparent)}
+.direccion{font-family:var(--display);font-size:28px;font-weight:700;line-height:1.15}
+.direccion-barrio{color:var(--tinta-suave);margin-top:6px}
+.contacto{display:flex;flex-direction:column;gap:12px;margin-top:24px}
+.contacto .btn{align-self:flex-start}
+.numero{font-size:15px;color:var(--tinta-suave)}
+.numero b{color:var(--tinta);font-weight:600;user-select:all}
+
+/* Preguntas */
+.preguntas{max-width:760px}
+.pregunta{border-bottom:1px solid var(--linea)}
+.pregunta summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 0;font-size:19px;font-weight:600}
+.pregunta summary::-webkit-details-marker{display:none}
+.pregunta summary::after{content:"+";font-family:var(--display);font-size:28px;font-weight:500;color:var(--acento-fuerte);transition:transform .2s;flex:none}
+.pregunta[open] summary::after{transform:rotate(45deg)}
+.pregunta p{color:var(--tinta-suave);padding-bottom:20px;max-width:62ch}
+
+/* Pie */
+.pie{border-top:1px solid var(--linea)}
+.pie .carril{display:flex;justify-content:space-between;align-items:center;gap:12px 24px;flex-wrap:wrap;padding-block:28px 110px;font-size:15px;color:var(--tinta-suave)}
+@media (min-width:861px){.pie .carril{padding-bottom:28px}}
+.pie a{color:var(--tinta-suave)}
+
+/* WhatsApp flotante en el celular */
+.wa-flota{position:fixed;right:max(16px, calc(env(safe-area-inset-right,0px) + 12px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:35;width:60px;height:60px;border-radius:50%;background:var(--wa);color:var(--sobre-wa);display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.wa-flota svg{width:30px;height:30px}
+@media (min-width:861px){.wa-flota{display:none}}
+</style>
+
+<div class="muestra" id="muestra" hidden>
+  <div class="carril">
+    <span><b>Sitio de muestra</b> · los datos son de ejemplo</span>
+    <div class="muestra-colores" id="colores"><span>Probá otro color:</span></div>
+  </div>
+</div>
+
+<header class="cabecera" id="cabecera">
+  <div class="carril">
+    <a class="marca" href="#inicio"><span class="marca-logo" data-inicial></span><span data-nombre></span></a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#servicios">Servicios</a>
+      <a href="#fotos">Fotos</a>
+      <a href="#resenas">Reseñas</a>
+      <a href="#donde">Dónde estamos</a>
+      <a class="btn btn-wa" href="#turno">Pedir turno</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="pompas" id="pompas" aria-hidden="true"></div>
+    <div class="carril">
+      <div>
+        <span class="estado" id="estado"><i></i><span></span></span>
+        <h1 id="eslogan"></h1>
+        <p class="hero-desc" id="descripcion"></p>
+        <div class="hero-acciones">
+          <a class="btn btn-wa" href="#turno" data-icono="wa">Pedir turno por WhatsApp</a>
+          <a class="btn btn-sec" href="#servicios">Ver servicios y precios</a>
+        </div>
+        <a class="hero-google" id="hero-google" target="_blank" rel="noopener"></a>
+      </div>
+      <div class="chat" aria-label="Ejemplo de mensaje cuando tu perro está listo">
+        <div class="chat-cab"><span class="marca-logo" data-inicial></span><span><b data-nombre></b><br>en línea</span></div>
+        <div class="burbuja">
+          <div class="burbuja-foto"><img id="hero-foto" alt=""></div>
+          <p id="hero-msj"></p>
+          <span class="hora">16:42</span>
+        </div>
+        <div class="burbuja burbuja-yo"><p>¡Quedó hermosa! Ya salgo para allá 😍</p><span class="hora">16:43</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="destacados" id="destacados" aria-label="Por qué elegirnos"><div class="carril"></div></section>
+
+  <section class="seccion" id="servicios">
+    <div class="carril">
+      <div class="cabeza-sec">
+        <p class="eyebrow">Servicios</p>
+        <h2 class="titulo-sec">Qué le hacemos</h2>
+        <div class="tamanios" id="tamanios" role="group" aria-label="Tamaño de tu perro"></div>
+      </div>
+      <div class="servicios" id="lista-servicios"></div>
+      <p class="nota-precios" id="nota-precios"></p>
+    </div>
+  </section>
+
+  <section class="seccion banda-hundida" aria-labelledby="como-tit">
+    <div class="carril">
+      <div class="cabeza-sec">
+        <p class="eyebrow">Cómo es el turno</p>
+        <h2 class="titulo-sec" id="como-tit">Fácil, de principio a fin</h2>
+      </div>
+      <ol class="pasos" style="list-style:none;margin:0;padding:0">
+        <li class="paso"><h3>Pedís el turno</h3><p>Elegís servicio y día acá abajo y nos llega por WhatsApp. Te confirmamos el horario.</p></li>
+        <li class="paso"><h3>Lo traés</h3><p>Nos contás cómo lo querés y si hay algo a tener en cuenta: nudos, nervios, piel sensible.</p></li>
+        <li class="paso"><h3>Te avisamos</h3><p>Cuando está listo te mandamos una foto y lo pasás a buscar. Pagás al retirarlo.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="seccion" id="fotos">
+    <div class="carril">
+      <div class="cabeza-sec">
+        <p class="eyebrow">Fotos</p>
+        <h2 class="titulo-sec">Recién salidos del baño</h2>
+        <span class="nota-demo" id="nota-fotos" hidden>📷 Acá van las fotos de tu Instagram</span>
+      </div>
+      <div class="galeria" id="galeria"></div>
+      <a class="ig" id="ig" target="_blank" rel="noopener" hidden></a>
+    </div>
+  </section>
+
+  <section class="seccion banda-hundida" id="resenas">
+    <div class="carril">
+      <div class="cabeza-sec resenas-cab">
+        <div>
+          <p class="eyebrow">Reseñas</p>
+          <h2 class="titulo-sec">Lo que dicen en Google</h2>
+        </div>
+        <div class="puntaje" id="puntaje"></div>
+      </div>
+      <div class="resenas" id="lista-resenas"></div>
+    </div>
+  </section>
+
+  <section class="seccion turno" id="turno">
+    <div class="carril">
+      <div class="turno-intro">
+        <p class="eyebrow">Turnos</p>
+        <h2 class="titulo-sec">Pedí tu turno</h2>
+        <p class="bajada">Completá lo que puedas y se arma el mensaje solo. Lo mandás por WhatsApp y te confirmamos el horario.</p>
+      </div>
+      <form class="form" id="form" novalidate>
+        <div class="fila">
+          <div class="campo"><label for="f-perro">Tu perro</label><input class="input" id="f-perro" placeholder="Nombre" autocomplete="off"></div>
+          <div class="campo"><label for="f-raza">Raza <span style="text-transform:none;font-weight:400;letter-spacing:0">(opcional)</span></label><input class="input" id="f-raza" placeholder="Ej.: caniche, mestizo" autocomplete="off"></div>
+        </div>
+        <div class="campo"><span class="etq" id="e-tam">Tamaño</span><div class="chips" id="f-tam" role="group" aria-labelledby="e-tam"></div></div>
+        <div class="campo"><span class="etq" id="e-serv">Qué necesita</span><div class="chips" id="f-serv" role="group" aria-labelledby="e-serv"></div></div>
+        <div class="campo"><span class="etq" id="e-dia">Qué día</span><div class="dias" id="f-dia" role="group" aria-labelledby="e-dia"></div></div>
+        <div class="campo"><span class="etq" id="e-fr">A qué hora</span><div class="chips" id="f-franja" role="group" aria-labelledby="e-fr"></div></div>
+        <div class="campo"><label for="f-nombre">Tu nombre</label><input class="input" id="f-nombre" placeholder="Para saber quién escribe" autocomplete="given-name"></div>
+        <div class="vista" id="vista" aria-live="polite"><div class="vista-tit">Tu mensaje</div><span id="vista-txt"></span></div>
+        <div class="enviar">
+          <a class="btn btn-wa" id="enviar" target="_blank" rel="noopener" data-icono="wa">Mandar por WhatsApp</a>
+          <p class="falta" id="falta"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="seccion banda-hundida donde" id="donde" aria-label="Horarios y ubicación">
+    <div class="carril">
+      <div class="tarjeta">
+        <h3>Horarios</h3>
+        <dl class="horarios" id="horarios"></dl>
+      </div>
+      <div class="tarjeta">
+        <h3>Dónde estamos</h3>
+        <p class="direccion" id="direccion"></p>
+        <p class="direccion-barrio" id="barrio"></p>
+        <div class="contacto">
+          <a class="btn btn-sec" id="maps" target="_blank" rel="noopener">Cómo llegar ↗</a>
+          <p class="numero">WhatsApp: <b id="numero"></b></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion" id="preguntas">
+    <div class="carril">
+      <div class="cabeza-sec">
+        <p class="eyebrow">Preguntas frecuentes</p>
+        <h2 class="titulo-sec">Antes de venir</h2>
+      </div>
+      <div class="preguntas" id="lista-preguntas"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="pie">
+  <div class="carril">
+    <span>© <span id="anio"></span> <span data-nombre></span> · <span id="pie-barrio"></span></span>
+    <span id="credito"></span>
+  </div>
+</footer>
+
+<a class="wa-flota" id="wa-flota" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp" data-icono="wa"></a>
+
+<script>
+(function () {
+  const N = JSON.parse(document.getElementById('negocio').textContent);
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const plata = n => '$ ' + Number(n).toLocaleString('es-AR');
+  const ICONOS = {
+    wa: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>',
+    reloj: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    ig: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
+    destacados: [
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg>',
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3c3 4 6 7 6 11a6 6 0 0 1-12 0c0-4 3-7 6-11Z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/></svg>',
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3v12H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+    ],
+  };
+  const conIcono = el => { if (el.dataset.icono) el.insertAdjacentHTML('afterbegin', ICONOS[el.dataset.icono]); };
+  const waLink = texto => `https://wa.me/${N.whatsapp}${texto ? '?text=' + encodeURIComponent(texto) : ''}`;
+  const fotoReal = src => !/^fotos\/(caniche|golden|salchicha|yorkie|ovejero|mestizo)\.webp$/.test(src);
+
+  // Tema y datos básicos
+  const raiz = document.documentElement;
+  if (N.tema) raiz.dataset.tema = N.tema;
+  document.title = N.nombre;
+  document.querySelectorAll('[data-nombre]').forEach(el => el.textContent = N.nombre);
+  document.querySelectorAll('[data-inicial]').forEach(el => el.textContent = (N.nombreCorto || N.nombre).trim()[0]);
+  document.querySelectorAll('[data-icono]').forEach(conIcono);
+
+  // Banda de muestra con selector de color (sólo en la demo para mostrar a clientes)
+  if (N.demo) {
+    $('muestra').hidden = false;
+    const TEMAS = { canela: '#D97A2B', menta: '#5FBF9B', lavanda: '#9B83E0', cielo: '#4C9BE0', frutilla: '#E8698A' };
+    const caja = $('colores');
+    Object.entries(TEMAS).forEach(([t, c]) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'swatch'; b.style.setProperty('--c', c);
+      b.setAttribute('aria-label', 'Color ' + t);
+      b.setAttribute('aria-pressed', String((N.tema || 'canela') === t));
+      b.onclick = () => {
+        raiz.dataset.tema = t;
+        caja.querySelectorAll('.swatch').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      };
+      caja.appendChild(b);
+    });
+  }
+
+  // Horarios: "09:00-13:00, 15:00-19:00" → [[540,780],[900,1140]]
+  const DIAS = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+  const DIAS_TXT = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const min = h => { const [a, b] = h.trim().split(':').map(Number); return a * 60 + (b || 0); };
+  const hhmm = m => `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`;
+  const rangos = dia => (N.horarios?.[DIAS[dia]] || '').split(',').filter(s => s.includes('-')).map(s => s.split('-').map(min));
+
+  const ahora = new Date();
+  const hoy = ahora.getDay();
+  (function estado() {
+    const m = ahora.getHours() * 60 + ahora.getMinutes();
+    const el = $('estado'); const txt = el.querySelector('span');
+    const abierto = rangos(hoy).find(([a, b]) => m >= a && m < b);
+    if (abierto) { el.classList.add('abierto'); txt.textContent = `Abierto ahora · hasta las ${hhmm(abierto[1])}`; return; }
+    const luego = rangos(hoy).find(([a]) => a > m);
+    if (luego) { txt.textContent = `Cerrado · abre hoy a las ${hhmm(luego[0])}`; return; }
+    for (let i = 1; i <= 7; i++) {
+      const d = (hoy + i) % 7; const r = rangos(d);
+      if (r.length) { txt.textContent = `Cerrado · abre ${i === 1 ? 'mañana' : 'el ' + DIAS_TXT[d].toLowerCase()} a las ${hhmm(r[0][0])}`; return; }
+    }
+    el.hidden = true;
+  })();
+
+  // Hero
+  const esl = N.eslogan || '';
+  const coma = esl.indexOf(',');
+  $('eslogan').innerHTML = coma > 0 ? `${esc(esl.slice(0, coma + 1))} <em>${esc(esl.slice(coma + 1).trim())}</em>` : esc(esl);
+  $('descripcion').textContent = N.descripcion || '';
+  const hf = $('hero-foto'); hf.src = N.heroFoto || 'fotos/caniche.webp';
+  if (fotoReal(hf.getAttribute('src'))) hf.classList.add('real');
+  hf.alt = N.heroPerro ? `${N.heroPerro} después del baño` : 'Perro después del baño';
+  $('hero-msj').textContent = N.heroMensaje || '¡Ya está listo! 🛁 Podés pasar a buscarlo cuando quieras.';
+  const g = N.google;
+  if (g?.puntaje) {
+    const hg = $('hero-google');
+    hg.innerHTML = `<b>${String(g.puntaje).replace('.', ',')}</b><span><span class="estrellas">★★★★★</span><br>${g.resenas} reseñas en Google</span>`;
+    if (g.url) hg.href = g.url; else hg.removeAttribute('target');
+    $('puntaje').innerHTML = `<b>${String(g.puntaje).replace('.', ',')}</b><span><span class="estrellas">★★★★★</span><small>${g.resenas} reseñas en Google</small></span>`;
+  }
+
+  // Pompas de jabón
+  [[8, 18, 54], [72, 10, 90], [86, 62, 40], [40, 78, 26], [58, 40, 18], [18, 70, 34]].forEach(([x, y, s], i) => {
+    const p = document.createElement('span'); p.className = 'pompa';
+    p.style.cssText = `left:${x}%;top:${y}%;width:${s}px;height:${s}px;animation-delay:${-i * 1.4}s`;
+    $('pompas').appendChild(p);
+  });
+
+  // Destacados
+  const dest = N.destacados || [];
+  if (dest.length) $('destacados').querySelector('.carril').innerHTML = dest.map((d, i) =>
+    `<div class="destacado">${ICONOS.destacados[i % 3]}<div><h3>${esc(d.titulo)}</h3><p>${esc(d.texto)}</p></div></div>`).join('');
+  else $('destacados').hidden = true;
+
+  // Servicios con precio por tamaño
+  const TAMS = [['chico', 'Chico'], ['mediano', 'Mediano'], ['grande', 'Grande']];
+  let tam = 'chico';
+  const hayPorTam = N.mostrarPrecios && (N.servicios || []).some(s => s.precios);
+  function pintarServicios() {
+    $('lista-servicios').innerHTML = (N.servicios || []).map(s => {
+      let precio = '';
+      if (N.mostrarPrecios) {
+        if (s.precios?.[tam]) precio = `<span class="precio"><small>desde</small>${plata(s.precios[tam])}</span>`;
+        else if (s.precio) precio = `<span class="precio"><small>desde</small>${plata(s.precio)}</span>`;
+      }
+      return `<article class="servicio"><div class="servicio-cab"><h3>${esc(s.nombre)}</h3>${precio}</div><p>${esc(s.detalle)}</p>${s.duracion ? `<span class="duracion">${ICONOS.reloj}${esc(s.duracion)} aprox.</span>` : ''}</article>`;
+    }).join('');
+  }
+  if (hayPorTam) {
+    $('tamanios').innerHTML = TAMS.map(([k, t]) => `<button type="button" class="tamanio" data-tam="${k}" aria-pressed="${k === tam}">${t}</button>`).join('');
+    $('tamanios').addEventListener('click', e => {
+      const b = e.target.closest('[data-tam]'); if (!b) return;
+      tam = b.dataset.tam;
+      $('tamanios').querySelectorAll('[data-tam]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      pintarServicios();
+    });
+  } else $('tamanios').hidden = true;
+  pintarServicios();
+  $('nota-precios').textContent = N.mostrarPrecios ? (N.notaPrecios || '') : 'Consultanos el precio por WhatsApp: depende del tamaño y el pelaje.';
+
+  // Fotos
+  const fotos = N.fotos || [];
+  $('galeria').innerHTML = fotos.map(f => `<figure class="foto"><img src="${esc(f.src)}" alt="${esc(f.texto)}" loading="lazy"${fotoReal(f.src) ? ' class="real"' : ''}>${f.texto ? `<figcaption>${esc(f.texto)}</figcaption>` : ''}</figure>`).join('');
+  if (!fotos.length) $('fotos').hidden = true;
+  if (N.demo && fotos.some(f => !fotoReal(f.src))) $('nota-fotos').hidden = false;
+  if (N.instagram) { const ig = $('ig'); ig.hidden = false; ig.href = `https://instagram.com/${N.instagram}`; ig.innerHTML = `${ICONOS.ig}Más fotos en @${esc(N.instagram)}`; }
+
+  // Reseñas
+  const res = N.resenas || [];
+  $('lista-resenas').innerHTML = res.map(r => `<figure class="resena"><span class="estrellas" aria-label="${r.estrellas || 5} estrellas">${'★'.repeat(r.estrellas || 5)}</span><blockquote>${esc(r.texto)}</blockquote><figcaption>${r.perro ? `<img src="${esc(r.perro)}" alt="" loading="lazy">` : ''}<span><b>${esc(r.nombre)}</b><span>${esc(r.cuando || 'Reseña de Google')}</span></span></figcaption></figure>`).join('');
+  if (!res.length) $('resenas').hidden = true;
+
+  // Horarios
+  const orden = [1, 2, 3, 4, 5, 6, 0];
+  $('horarios').innerHTML = orden.map(d => {
+    const r = rangos(d); const cls = [d === hoy ? 'hoy' : '', r.length ? '' : 'cerrado'].join(' ').trim();
+    return `<dt class="${cls}">${DIAS_TXT[d]}</dt><dd class="${cls.replace('hoy', '')}">${r.length ? r.map(([a, b]) => `${hhmm(a)} a ${hhmm(b)}`).join(' y ') : 'Cerrado'}</dd>`;
+  }).join('');
+  $('direccion').textContent = N.direccion || '';
+  $('barrio').textContent = N.barrio || '';
+  $('pie-barrio').textContent = N.barrio || '';
+  $('maps').href = N.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((N.direccion || '') + ' ' + (N.barrio || ''))}`;
+  $('numero').textContent = N.whatsappVisible || N.whatsapp;
+  $('wa-flota').href = waLink(`¡Hola ${N.nombreCorto || N.nombre}! 🐾`);
+
+  // Preguntas
+  const pre = N.preguntas || [];
+  $('lista-preguntas').innerHTML = pre.map(q => `<details class="pregunta"><summary>${esc(q.p)}</summary><p>${esc(q.r)}</p></details>`).join('');
+  if (!pre.length) $('preguntas').hidden = true;
+
+  // Pie
+  $('anio').textContent = ahora.getFullYear();
+  if (N.credito?.texto) $('credito').innerHTML = N.credito.url ? `<a href="${esc(N.credito.url)}" target="_blank" rel="noopener">${esc(N.credito.texto)}</a>` : esc(N.credito.texto);
+
+  // Formulario "Pedí tu turno" → mensaje de WhatsApp
+  const f = { tam: '', serv: [], dia: null, franja: '' };
+  const chips = (cont, opciones, multi, clave) => {
+    cont.innerHTML = opciones.map(o => `<button type="button" class="chip" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join('');
+    cont.addEventListener('click', e => {
+      const b = e.target.closest('[data-v]'); if (!b) return;
+      const v = b.dataset.v;
+      if (multi) f[clave] = f[clave].includes(v) ? f[clave].filter(x => x !== v) : [...f[clave], v];
+      else f[clave] = f[clave] === v ? '' : v;
+      cont.querySelectorAll('[data-v]').forEach(x => x.setAttribute('aria-pressed', String(multi ? f[clave].includes(x.dataset.v) : f[clave] === x.dataset.v)));
+      actualizar();
+    });
+  };
+  chips($('f-tam'), ['Chico', 'Mediano', 'Grande'], false, 'tam');
+  chips($('f-serv'), (N.servicios || []).map(s => s.nombre), true, 'serv');
+
+  // Próximos días abiertos (hasta 12)
+  const CORTO = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const dias = [];
+  for (let i = 0; dias.length < 12 && i < 30; i++) {
+    const d = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() + i);
+    const r = rangos(d.getDay()); if (!r.length) continue;
+    if (i === 0 && ahora.getHours() * 60 + ahora.getMinutes() > r[r.length - 1][1] - 60) continue;
+    dias.push({ d, r, et: i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : CORTO[d.getDay()] });
+  }
+  $('f-dia').innerHTML = dias.map((x, i) => `<button type="button" class="dia" data-i="${i}" aria-pressed="false"><span>${x.et}</span><b>${x.d.getDate()}</b></button>`).join('');
+  const franjasDe = r => {
+    const out = [];
+    if (r.some(([a]) => a < 13 * 60)) out.push('Mañana');
+    if (r.some(([, b]) => b > 14 * 60)) out.push('Tarde');
+    out.push('Me da igual');
+    return out;
+  };
+  function pintarFranjas() {
+    const ops = f.dia === null ? ['Mañana', 'Tarde', 'Me da igual'] : franjasDe(dias[f.dia].r);
+    if (!ops.includes(f.franja)) f.franja = '';
+    const cont = $('f-franja');
+    cont.innerHTML = ops.map(o => `<button type="button" class="chip" data-v="${o}" aria-pressed="${f.franja === o}">${o}</button>`).join('');
+  }
+  $('f-dia').addEventListener('click', e => {
+    const b = e.target.closest('[data-i]'); if (!b) return;
+    const i = Number(b.dataset.i); f.dia = f.dia === i ? null : i;
+    $('f-dia').querySelectorAll('[data-i]').forEach(x => x.setAttribute('aria-pressed', String(Number(x.dataset.i) === f.dia)));
+    pintarFranjas(); actualizar();
+  });
+  $('f-franja').addEventListener('click', e => {
+    const b = e.target.closest('[data-v]'); if (!b) return;
+    f.franja = f.franja === b.dataset.v ? '' : b.dataset.v;
+    $('f-franja').querySelectorAll('[data-v]').forEach(x => x.setAttribute('aria-pressed', String(f.franja === x.dataset.v)));
+    actualizar();
+  });
+  pintarFranjas();
+
+  function mensaje() {
+    const perro = $('f-perro').value.trim(), raza = $('f-raza').value.trim(), yo = $('f-nombre').value.trim();
+    const desc = [raza, f.tam && f.tam.toLowerCase()].filter(Boolean).join(', ');
+    let cuando = '';
+    if (f.dia !== null) {
+      const d = dias[f.dia].d;
+      cuando = `${DIAS_TXT[d.getDay()].toLowerCase()} ${d.getDate()}/${d.getMonth() + 1}`;
+      if (f.franja === 'Me da igual') cuando += ', cualquier horario';
+      else if (f.franja) cuando += ` a la ${f.franja.toLowerCase()}`;
+    }
+    const falta = [];
+    if (!perro) falta.push('el nombre de tu perro');
+    if (!f.serv.length) falta.push('qué necesita');
+    if (f.dia === null) falta.push('el día');
+    const lineas = [
+      `¡Hola ${N.nombreCorto || N.nombre}! Quiero pedir un turno 🐾`,
+      '',
+      `*Perro:* ${perro || '…'}${desc ? ` (${desc})` : ''}`,
+      `*Servicio:* ${f.serv.join(' + ') || '…'}`,
+      `*Cuándo:* ${cuando || '…'}`,
+      yo ? `*Soy:* ${yo}` : null,
+      '',
+      '¿Tienen lugar? ¡Gracias!',
+    ].filter(l => l !== null);
+    return { texto: lineas.join('\n'), falta };
+  }
+  function actualizar(marcar) {
+    const { texto, falta } = mensaje();
+    $('vista-txt').textContent = texto;
+    const btn = $('enviar');
+    btn.href = waLink(texto);
+    btn.setAttribute('aria-disabled', String(falta.length > 0));
+    const fl = $('falta');
+    fl.textContent = falta.length ? 'Falta: ' + falta.join(', ') + '.' : 'Se abre WhatsApp con el mensaje listo. Sólo tenés que enviarlo.';
+    fl.classList.toggle('marcar', !!marcar && falta.length > 0);
+  }
+  ['f-perro', 'f-raza', 'f-nombre'].forEach(id => $(id).addEventListener('input', () => actualizar()));
+  $('enviar').addEventListener('click', e => { if (mensaje().falta.length) { e.preventDefault(); actualizar(true); } });
+  $('form').addEventListener('submit', e => e.preventDefault());
+  actualizar();
+
+  // Borde del encabezado al bajar
+  const cab = $('cabecera');
+  const borde = () => cab.classList.toggle('con-borde', window.scrollY > 8);
+  window.addEventListener('scroll', borde, { passive: true }); borde();
+})();
+</script>
